@@ -4,10 +4,256 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// Enum del tipo de género
+enum Gender {
+  Masculino
+  Femenino
+  Otro
+}
+
+// Enum del tipo de estancia
+enum Stance {
+  Orthodox
+  Southpaw
+  Switch
+  Open_Stance
+}
+
+// Enum del resultado de la pelea
+enum BoutResult {
+  Win_Red
+  Win_Blue
+  Draw
+  No_Contest
+}
+
+// Enum del metodo de victoria
+enum WinMethod {
+  KO
+  TKO
+  Submission
+  Unanimous_Decision
+  Split_Decision
+  Majority_Decision
+  Doctor_Stoppage
+  Disqualification
+}
+
+// Enum del tipo de lesión
+enum InjurySeverity {
+  Menor
+  Moderado
+  Severo
+}
+
+// Tabla de los luchadores
+model fighters {
+  id Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  nickname String?
+  slug String @unique
+  birth_date DateTime?
+  gender Gender?
+  nationality String?
+  height Float?
+  weight Float?
+  stance Stance?
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  divisions fighterDivision[]
+  teams fighterTeams[]
+  injuries fighterInjuries[]
+  boutsWeights boutWeighIns[]
+  bouts_red bouts[] @relation("RedCorner")
+  metrics boutMetrics[]
+  bouts_blue bouts[] @relation("BlueCorner")
+  @@map("fighters")
+}
+
+// Tabla de lesiones o inactividades de un luchador
+model fighterInjuries {
+  id Int @id @default(autoincrement())
+  fighter_id Int
+  description_injury String
+  severity_injury InjurySeverity
+  injury_date DateTime?
+  recovery_date DateTime?
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@map("fighter_injuries")
+}
+
+// Tabla de las divisiones de pesos de los luchadores
+model divisions {
+  id Int @id @default(autoincrement())
+  name_division String
+  weight_class String
+  gender Gender
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighters fighterDivision[]
+  bouts bouts[]
+  @@map("divisions")
+}
+
+// Tabla intermedia de la relación entre luchadores y divisiones
+model fighterDivision {
+  fighter_id Int
+  division_id Int
+  is_current Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  division divisions @relation(fields: [division_id], references: [id])
+  @@unique([fighter_id, division_id])
+  @@map("fighter_division")
+}
+
+// Tabla de equipos
+model teams {
+  id Int @id @default(autoincrement())
+  name_team String
+  description_team String?
+  date_founded DateTime?
+  location String
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighters fighterTeams[]
+  @@map("teams")
+}
+
+// Tabla de los equipos de luchadores
+model fighterTeams {
+  fighter_id Int
+  team_id Int
+  is_current Boolean @default(false)
+  joined_date DateTime?
+  left_date DateTime?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  team teams @relation(fields: [team_id], references: [id])
+  @@unique([fighter_id, team_id])
+  @@map("fighter_teams")
+}
+
+// tabla de los eventos
+model events {
+  id Int @id @default(autoincrement())
+  name_event String
+  date_event DateTime
+  location_event String
+  venue_event String?
+  octagon_size Float?
+  is_active Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bouts bouts[]
+  @@map("events")
+}
+
+// Tabla de las peleas de un evento
+model bouts {
+  id Int @id @default(autoincrement())
+  event_id Int
+  division_id Int
+  red_corner_id Int
+  blue_corner_id Int
+  result BoutResult?
+  method WinMethod?
+  rounded_ended Int?
+  time_ended String?
+  referee String?
+  is_title_fight Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  event events @relation(fields: [event_id], references: [id])
+  division divisions @relation(fields: [division_id], references: [id])
+  red_corner fighters @relation("RedCorner" ,fields: [red_corner_id], references: [id])
+  blue_corner fighters @relation("BlueCorner" ,fields: [blue_corner_id], references: [id])
+  judges boutJudges[]
+  metrics boutMetrics[]
+  boutWeighIns boutWeighIns[]
+  @@map("bouts")
+}
+
+// Tabla de las metricas de la pelea de un luchador
+model boutMetrics {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  fighter_id Int
+  round Int
+  sig_strikes_landed Int @default(0)
+  sig_strikes_attempted Int @default(0)
+  total_strikes_landed Int @default(0)
+  total_strikes_attempted Int @default(0)
+  head_strikes_landed Int @default(0)
+  body_strikes_landed Int @default(0)
+  leg_strikes_landed Int @default(0)
+  takedowns_landed Int @default(0)
+  takedowns_attempted Int @default(0)
+  submissions_landed Int @default(0)
+  reversals Int @default(0)
+  control_time Int @default(0)
+  knockdowns Int @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@unique([bout_id, fighter_id, round])
+  @@map("bout_metrics")
+}
+
+// Tabla de los jueces de una pelea
+model boutJudges {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  judge_name String
+  red_score Int
+  blue_score Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  @@unique([bout_id, judge_name])
+  @@map("bout_judges")
+}
+
+// Tabla de los pesajes oficiales de un luchador para una pelea
+model boutWeighIns {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  fighter_id Int
+  weight_recorded Float
+  missed_weight Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@unique([bout_id, fighter_id])
+  @@map("bout_weigh_ins")
 }
