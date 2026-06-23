@@ -8,4 +8,10 @@ export interface StableDTO {
 }
 
 // Defino la interfaz para actualizar los equipos de los luchadores
-export interface UpdateStableDTO extends StableDTO {}
+export interface UpdateStableDTO {
+    fighter_id?: number;
+    team_id?: number;
+    is_current?: boolean;
+    joined_date?: Date;
+    left_date?: Date;
+}
