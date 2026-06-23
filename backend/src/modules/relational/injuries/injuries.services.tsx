@@ -1,5 +1,5 @@
 import type { InjuryDTO, UpdateInjuryDTO } from '../../../types/relational/injuries/injuries.types.js';
-import { InjurySeverity } from '../../../../generated/prisma/enums.js';
+import { InjurySeverity } from '../../../../generated/prisma/index.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
 
