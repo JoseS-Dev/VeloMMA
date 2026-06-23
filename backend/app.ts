@@ -5,10 +5,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-import { registerRoutes } from './src/utils/functions/function.js';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { settings } from './config/settings.js';
-import { Routes } from './src/api/routes.js';
+import { apiRouter } from './src/api/routes.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -30,7 +29,7 @@ app.get(`${settings.basePath}`, (req: Request, res: Response) => {
 })
 
 // Rutas
-registerRoutes(app, Routes);
+app.use(apiRouter);
 
 // Escuchamos el servidor
 if(settings.nodeEnv === 'development'){
