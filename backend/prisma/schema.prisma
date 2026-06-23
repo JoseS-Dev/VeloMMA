@@ -114,6 +114,7 @@ model divisions {
 
 // Tabla intermedia de la relación entre luchadores y divisiones
 model fighterDivision {
+  id Int @id @default(autoincrement())
   fighter_id Int
   division_id Int
   is_current Boolean @default(false)
@@ -143,6 +144,7 @@ model teams {
 
 // Tabla de los equipos de luchadores
 model fighterTeams {
+  id Int @id @default(autoincrement())
   fighter_id Int
   team_id Int
   is_current Boolean @default(false)
@@ -153,7 +155,6 @@ model fighterTeams {
   deleted_at DateTime?
   fighter fighters @relation(fields: [fighter_id], references: [id])
   team teams @relation(fields: [team_id], references: [id])
-  @@unique([fighter_id, team_id])
   @@map("fighter_teams")
 }
 
