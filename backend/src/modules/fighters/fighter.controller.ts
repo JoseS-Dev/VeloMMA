@@ -45,35 +45,35 @@ export class FighterController {
     // Controlador para obtener un luchador por su id
     @SendResponse('Luchador obtenido correctamente', 200)
     async findById(req: Request, res: Response) {
-        const {id} = req.params;
-        const fighter = await this.fighterService.findById(Number(id));
+        const {fighterId} = req.params;
+        const fighter = await this.fighterService.findById(Number(fighterId));
         return fighter;
     }
 
     // Controlador para actualizar un luchador
     @SendResponse('Luchador actualizado correctamente', 200)
     async update(req: Request, res: Response) {
-        const {id} = req.params;
+        const {fighterId} = req.params;
         const validation = validateFighterUpdate(req.body);
         if(!validation.success) return res.status(400).json(validation.error);
-        const fighter = await this.fighterService.update(Number(id), validation.data);
+        const fighter = await this.fighterService.update(Number(fighterId), validation.data);
         return fighter;
     }
 
     // Controlador para cambiar el estado de un luchador
     @SendResponse('Luchador actualizado correctamente', 200)
     async changeStatus(req: Request, res: Response) {
-        const {id} = req.params;
+        const {fighterId} = req.params;
         const {status} = req.body;
-        const fighter = await this.fighterService.changeStatus(Number(id), Boolean(status));
+        const fighter = await this.fighterService.changeStatus(Number(fighterId), Boolean(status));
         return fighter;
     }
 
     // Controlador para eliminar un luchador
     @SendResponse('Luchador eliminado correctamente', 200)
     async delete(req: Request, res: Response) {
-        const {id} = req.params;
-        const fighter = await this.fighterService.delete(Number(id));
+        const {fighterId} = req.params;
+        const fighter = await this.fighterService.delete(Number(fighterId));
         return fighter;
     }
 }
