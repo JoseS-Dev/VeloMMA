@@ -6,7 +6,8 @@ import { divisionRoutes } from '../modules/divisions/division.route.js';
 import { eventRoutes } from '../modules/events/event.route.js';
 import { 
     injuryRoutes,
-    stableRoutes 
+    stableRoutes,
+    weightRoutes
 } from '../modules/relational/index.js';
 
 // Rutas de la API
@@ -19,5 +20,6 @@ apiRouter.use(`${settings.basePath}/divisions`, divisionRoutes);
 apiRouter.use(`${settings.basePath}/events`, eventRoutes);
 apiRouter.use(`${settings.basePath}/injuries`, injuryRoutes);
 apiRouter.use(`${settings.basePath}/stables`, stableRoutes);
+apiRouter.use(`${settings.basePath}/weights`, weightRoutes);
 
 export { apiRouter };
