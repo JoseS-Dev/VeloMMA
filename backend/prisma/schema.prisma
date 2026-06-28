@@ -47,6 +47,14 @@ enum WinMethod {
   Disqualification
 }
 
+// Enum del tipo de bono
+enum BonusType {
+  Fight_of_the_night
+  Performance_of_the_night
+  Submission_of_the_night
+  Knockout_of_the_night
+}
+
 // Enum del tipo de lesión
 enum InjurySeverity {
   Menor
@@ -86,6 +94,8 @@ model fighters {
   bouts_red bouts[] @relation("RedCorner")
   metrics boutMetrics[]
   bouts_blue bouts[] @relation("BlueCorner")
+  rankings fighterRankings[]
+  bonuses boutBonuses[]
   @@map("fighters")
 }
 
@@ -117,6 +127,7 @@ model divisions {
   deleted_at DateTime?
   fighters fighterDivision[]
   bouts bouts[]
+  rankings fighterRankings[]
   @@map("divisions")
 }
 
@@ -206,6 +217,7 @@ model bouts {
   judges boutJudges[]
   metrics boutMetrics[]
   boutWeighIns boutWeighIns[]
+  bonuses boutBonuses[]
   @@map("bouts")
 }
 
@@ -266,4 +278,33 @@ model boutWeighIns {
   fighter fighters @relation(fields: [fighter_id], references: [id])
   @@unique([bout_id, fighter_id])
   @@map("bout_weigh_ins")
+}
+
+// Modelo que representa la clasificación de los luchadores en una división
+model fighterRankings {
+  id Int @id @default(autoincrement())
+  fighter_id Int
+  division_id Int
+  rank Int
+  as_of_date DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  division divisions @relation(fields: [division_id], references: [id])
+  @@map("fighter_rankings")
+}
+
+// Modelo para los bonos de un luchador
+model boutBonuses {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  fighter_id Int
+  bonus_type BonusType
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@map("bout_bonuses")
 }
