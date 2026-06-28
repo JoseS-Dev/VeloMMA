@@ -13,9 +13,9 @@ router.get('/', controller.findAll.bind(controller));
 // Ruta para obtener un equipo por su id
 router.get('/:teamId', controller.findById.bind(controller));
 // Ruta para actualizar los datos de un equipo
-router.put('/:teamId', controller.update.bind(controller));
+router.patch('/:teamId', controller.update.bind(controller));
 // Ruta para cambiar el estado de un equipo
-router.put('/:teamId/status', controller.changeStatus.bind(controller));
+router.patch('/:teamId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar un equipo
 router.delete('/:teamId', controller.delete.bind(controller));
 

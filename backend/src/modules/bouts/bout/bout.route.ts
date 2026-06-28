@@ -18,9 +18,9 @@ router.get('/division/:divisionId', controller.findAllByDivision.bind(controller
 // Ruta para obtener una pelea
 router.get('/:BoutId', controller.findById.bind(controller));
 // Ruta para actualizar una pelea
-router.put('/:BoutId', controller.update.bind(controller));
+router.patch('/:BoutId', controller.update.bind(controller));
 // Ruta para cambiar el estado de una pelea
-router.put('/:BoutId/status', controller.changeStatus.bind(controller));
+router.patch('/:BoutId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar una pelea
 router.delete('/:BoutId', controller.delete.bind(controller));
 

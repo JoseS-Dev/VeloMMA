@@ -10,7 +10,7 @@ const controller = new StableController(new StableService(prisma));
 // Ruta para crear un nuevo equipo
 router.post('/', controller.create.bind(controller));
 // Ruta para obtener todos los equipos de un luchador
-router.get('/:fighterId', controller.findAll.bind(controller));
+router.get('/fighter/:fighterId', controller.findAll.bind(controller));
 // Ruta para obtener un equipo de un luchador por su id
 router.get('/:stableId', controller.findById.bind(controller));
 // Ruta para actualizar un equipo de un luchador

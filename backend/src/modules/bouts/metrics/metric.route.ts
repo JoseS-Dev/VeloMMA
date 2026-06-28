@@ -16,7 +16,7 @@ router.get('/bout/:BoutId/fighter/:fighterId/round/:round', controller.findAllBy
 // Ruta para obtener una métrica por su ID
 router.get('/:MetricId', controller.findById.bind(controller));
 // Ruta para actualizar una métrica por su ID
-router.put('/:MetricId', controller.update.bind(controller));
+router.patch('/:MetricId', controller.update.bind(controller));
 // Ruta para eliminar una métrica por su ID
 router.delete('/:MetricId', controller.delete.bind(controller));
 

@@ -1,4 +1,4 @@
-import { Gender } from "../../../generated/prisma/enums.js";
+import { Gender } from "../../../generated/prisma/index.js";
 // Defino la interfaz de las divisiones
 export interface DivisionDTO {
     name_division: string;

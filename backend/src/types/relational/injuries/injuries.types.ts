@@ -1,4 +1,4 @@
-import { InjurySeverity } from "../../../../generated/prisma/enums.js";
+import { InjurySeverity } from "../../../../generated/prisma/index.js";
 // Defino la interfaz de las lesiones o inactividades de un luchador
 export interface InjuryDTO {
     fighter_id: number;

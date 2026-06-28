@@ -1,4 +1,4 @@
-import { Gender, Stance } from "../../../generated/prisma/enums.js";
+import { Gender, Stance } from "../../../generated/prisma/index.js";
 // Defino la interfaz de los luchadores
 export interface FighterDTO {
     first_name: string;
