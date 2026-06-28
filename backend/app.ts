@@ -8,7 +8,8 @@ import rateLimit from 'express-rate-limit';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
-import { prisma } from './src/utils/prisma/prisma.js';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/docs.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -55,6 +56,9 @@ app.get(`${settings.basePath}/ping`, (req: Request, res: Response) => {
         timestamp: new Date().toISOString()
     })
 });
+
+// Swagger
+app.use(`${settings.basePath}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas
 app.use(apiRouter);

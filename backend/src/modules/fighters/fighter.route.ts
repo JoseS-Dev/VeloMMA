@@ -14,7 +14,7 @@ router.get('/', controller.findAll.bind(controller));
 // Ruta para obtener un luchador por su id
 router.get('/:fighterId', controller.findById.bind(controller));
 // Ruta para obtener un luchador por su slug
-router.get('/:slug', controller.findBySlug.bind(controller));
+router.get('/slug/:slug', controller.findBySlug.bind(controller));
 // Ruta para actualizar un luchador
 router.patch('/:fighterId', controller.update.bind(controller));
 // Ruta para cambiar el estado de un luchador

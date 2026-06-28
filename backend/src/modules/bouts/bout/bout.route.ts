@@ -12,7 +12,7 @@ router.post('/', controller.create.bind(controller));
 // Ruta para obtener todas las peleas
 router.get('/', controller.findAll.bind(controller));
 // Ruta para obtener todas las peleas de un evento en común
-router.get('/event/:eventId', controller.findallByEvent.bind(controller));
+router.get('/event/:eventId', controller.findAllByEvent.bind(controller));
 // Ruta para obtener todas las peleas de una división de peso
 router.get('/division/:divisionId', controller.findAllByDivision.bind(controller));
 // Ruta para obtener una pelea

@@ -36,7 +36,7 @@ export class BoutController {
 
     // Controlador para obtener todas las peleas de un evento en común
     @SendResponse('Peleas obtenidas exitosamente', 200)
-    async findallByEvent(req: Request, res: Response){
+    async findAllByEvent(req: Request, res: Response){
         const {eventId} = req.params;
         const {page, limit} = req.query;
 
