@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import { settings } from '../../config/settings.js';
 import { fighterRoutes } from '../modules/fighters/fighter.route.js';
 import { teamRoutes } from '../modules/teams/team.route.js';
@@ -12,7 +12,8 @@ import {
 import {
     judgeRoutes,
     weighInsRoutes,
-    boutRoutes
+    boutRoutes,
+    metricRoutes
 } from '../modules/bouts/index.js';
 
 // Rutas de la API
@@ -29,5 +30,6 @@ apiRouter.use(`${settings.basePath}/weights`, weightRoutes);
 apiRouter.use(`${settings.basePath}/judges`, judgeRoutes);
 apiRouter.use(`${settings.basePath}/weighIns`, weighInsRoutes);
 apiRouter.use(`${settings.basePath}/bouts`, boutRoutes);
+apiRouter.use(`${settings.basePath}/metrics`, metricRoutes);
 
 export { apiRouter };
