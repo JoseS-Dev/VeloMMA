@@ -5,7 +5,7 @@ import { SendResponse } from '../../../common/decorator/decorator.js';
 
 // Controlador que interactua con los jueces de una pelea
 export class JudgeController {
-    constructor(private readonly judgeService: JudgeService) {}
+    constructor(private judgeService: JudgeService) {}
 
     // Controlador para crear un juez a una pelea
     @SendResponse('Juez creado correctamente', 201)
