@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import type { DivisionDTO, UpdateDivisionDTO } from '../../types/divisions/division.types.js';
-import { Gender } from '../../../generated/prisma/enums.js';
+import { Gender } from '../../../generated/prisma/index.js';
 // Defino el esquema de validación de las divisiones
 const DivisionSchema = z.object({
     name_division: z.string().min(3).max(50).trim(),

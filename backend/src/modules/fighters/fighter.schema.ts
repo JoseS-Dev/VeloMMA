@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { FighterDTO, FighterUpdateDTO } from '../../types/index.js';
-import { Gender, Stance } from '../../../generated/prisma/enums.js';
+import { Gender, Stance } from '../../../generated/prisma/index.js';
 
 // Esquema de validación de los datos de un luchador
 export const fighterSchema = z.object({
