@@ -9,6 +9,9 @@ import {
     stableRoutes,
     weightRoutes
 } from '../modules/relational/index.js';
+import {
+    judgeRoutes
+} from '../modules/bouts/index.js';
 
 // Rutas de la API
 const apiRouter: Router = Router();
@@ -21,5 +24,6 @@ apiRouter.use(`${settings.basePath}/events`, eventRoutes);
 apiRouter.use(`${settings.basePath}/injuries`, injuryRoutes);
 apiRouter.use(`${settings.basePath}/stables`, stableRoutes);
 apiRouter.use(`${settings.basePath}/weights`, weightRoutes);
+apiRouter.use(`${settings.basePath}/judges`, judgeRoutes);
 
 export { apiRouter };
