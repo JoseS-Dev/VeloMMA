@@ -1,0 +1,121 @@
+import type { RankingDTO, RankingUpdateDTO } from "../../../types/index.js";
+import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+
+// Modelo que interactua con la tabla de clasificaciones de los luchadores
+export class RankingService {
+    constructor(private prisma: PrismaClient) {}
+
+    // Servicio para agregar una clasificación de un luchador
+    async create(data: RankingDTO){
+        if(!data) throw new BadRequestException('Los datos son obligatorios');
+        // Se verifica que exista la división y el luchador en cuestión
+        const [existingDivision, existingFighter] = await Promise.all([
+            this.prisma.divisions.findUnique({ where: { id: data.division_id } }),
+            this.prisma.fighters.findUnique({ where: { id: data.fighter_id } })
+        ]);
+        if(!existingDivision) throw new NotFoundException('No existe la división');
+        if(!existingFighter) throw new NotFoundException('No existe el luchador');
+        // Se agrega la clasificación
+        const newRanking = await this.prisma.fighterRankings.create({
+            data: data
+        });
+        if(!newRanking) throw new BadRequestException('No se pudo agregar la clasificación');
+        return newRanking;
+    }
+
+    // Servicio para obtener todas las clasificaciones
+    async findAll(
+        page: number = 1,
+        limit: number = 10,
+    ){
+        const skip = (page - 1) * limit;
+        // Se cuenta el total de clasificaciones
+        const total = await this.prisma.fighterRankings.count();
+        // Se obtienen las clasificaciones
+        const rankings = await this.prisma.fighterRankings.findMany({
+            skip: skip,
+            take: limit,
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+        return {
+            rankings,
+            total: total
+        }
+    }
+
+    // Servicio para obtener todas las clasificaciones de una división
+    async findAllByDivision(
+        divisionId: number,
+        page: number = 1,
+        limit: number = 10,
+    ){
+        if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
+        // Se verifica que exista la división
+        const existingDivision = await this.prisma.divisions.findUnique({
+            where: { id: divisionId }
+        });
+        if(!existingDivision) throw new NotFoundException('No existe la división');
+        const skip = (page - 1) * limit;
+        // Se cuenta el total de clasificaciones
+        const total = await this.prisma.fighterRankings.count({
+            where: { division_id: divisionId }
+        });
+        // Se obtienen las clasificaciones
+        const rankings = await this.prisma.fighterRankings.findMany({
+            where: { division_id: divisionId },
+            skip: skip,
+            take: limit,
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+        return {
+            rankings,
+            total: total
+        }
+    }
+
+    // Servicio para obtener una clasificación por su ID
+    async findById(rankingId: number){
+        if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
+        // Se verifica que exista la clasificación
+        const existingRanking = await this.prisma.fighterRankings.findUnique({
+            where: { id: rankingId }
+        });
+        if(!existingRanking) throw new NotFoundException('No existe la clasificación');
+        return existingRanking;
+    }
+
+    // Servicio para actualizar una clasificación por su ID
+    async update(rankingId: number, data: RankingUpdateDTO){
+        if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
+        if(!data) throw new BadRequestException('Los datos son obligatorios');
+        // Se verifica que exista la clasificación
+        const existingRanking = await this.findById(rankingId);
+        if(!existingRanking) throw new NotFoundException('No existe la clasificación');
+        // Se actualiza la clasificación
+        const updatedRanking = await this.prisma.fighterRankings.update({
+            where: { id: rankingId },
+            data: data
+        });
+        if(!updatedRanking) throw new BadRequestException('No se pudo actualizar la clasificación');
+        return updatedRanking;
+    }
+
+    // Servicio para eliminar una clasificación por su ID
+    async delete(rankingId: number){
+        if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
+        // Se verifica que exista la clasificación
+        const existingRanking = await this.findById(rankingId);
+        if(!existingRanking) throw new NotFoundException('No existe la clasificación');
+        // Se elimina la clasificación
+        const deletedRanking = await this.prisma.fighterRankings.delete({
+            where: { id: rankingId }
+        });
+        if(!deletedRanking) throw new BadRequestException('No se pudo eliminar la clasificación');
+        return deletedRanking;
+    }
+}
