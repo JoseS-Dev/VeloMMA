@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
+import { prisma } from './src/utils/prisma/prisma.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -30,6 +31,30 @@ app.use(rateLimit(settings.rateLimit));
 app.get(`${settings.basePath}`, (req: Request, res: Response) => {
     return res.send('Bienvenido a la API de VeloMMA');
 })
+
+// Ruta de health
+app.get(`${settings.basePath}/health`, async (req: Request, res: Response) => {
+    return res.json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        memory: {
+            total: process.memoryUsage().heapTotal,
+            used: process.memoryUsage().heapUsed,
+            rss: process.memoryUsage().rss
+        },
+        version: process.version,
+        environment: process.env.NODE_ENV || 'development'
+    })
+});
+
+// Ruta de ping
+app.get(`${settings.basePath}/ping`, (req: Request, res: Response) => {
+    return res.json({
+        status: 'pong',
+        timestamp: new Date().toISOString()
+    })
+});
 
 // Rutas
 app.use(apiRouter);
