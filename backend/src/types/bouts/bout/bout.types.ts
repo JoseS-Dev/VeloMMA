@@ -1,6 +1,7 @@
 import { 
     BoutResult,
-    WinMethod 
+    WinMethod,
+    BoutStatus 
 } from "../../../../generated/prisma/index.js";
 // Defino la interfaz para el tipo de datos de las luchas
 export interface BoutDTO {
@@ -13,7 +14,8 @@ export interface BoutDTO {
     rounded_ended?: number;
     time_ended?: string;
     referee?: string;
-    is_title_fight: boolean;
+    is_title_fight?: boolean;
+    status_bout?: BoutStatus;
 }
 
 // Defino la interfaz para el tipo de datos de las luchas a la hora de ser actaulizadas

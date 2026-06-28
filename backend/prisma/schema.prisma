@@ -54,6 +54,14 @@ enum InjurySeverity {
   Severo
 }
 
+// Enum del estado de la pelea
+enum BoutStatus {
+  Programada
+  Cancelada
+  En_Proceso
+  Finalizada
+}
+
 // Tabla de los luchadores
 model fighters {
   id Int @id @default(autoincrement())
@@ -187,6 +195,7 @@ model bouts {
   time_ended String?
   referee String?
   is_title_fight Boolean @default(false)
+  status_bout BoutStatus @default(Programada)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?

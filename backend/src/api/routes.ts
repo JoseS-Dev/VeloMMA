@@ -11,7 +11,8 @@ import {
 } from '../modules/relational/index.js';
 import {
     judgeRoutes,
-    weighInsRoutes
+    weighInsRoutes,
+    boutRoutes
 } from '../modules/bouts/index.js';
 
 // Rutas de la API
@@ -27,5 +28,6 @@ apiRouter.use(`${settings.basePath}/stables`, stableRoutes);
 apiRouter.use(`${settings.basePath}/weights`, weightRoutes);
 apiRouter.use(`${settings.basePath}/judges`, judgeRoutes);
 apiRouter.use(`${settings.basePath}/weighIns`, weighInsRoutes);
+apiRouter.use(`${settings.basePath}/bouts`, boutRoutes);
 
 export { apiRouter };
