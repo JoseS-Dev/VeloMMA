@@ -12,7 +12,7 @@ const InjurySchema = z.object({
 });
 
 // Defino el esquema de validación para actualizar las lesiones o inactividades de un luchador
-const updateInjurySchema = InjurySchema.extend({
+const updateInjurySchema = InjurySchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 

@@ -1,6 +1,6 @@
 import type { RankingDTO, RankingUpdateDTO } from "../../../types/index.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
-import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { BadRequestException, NotFoundException, ConflictException } from "../../../common/errors/error.js";
 
 // Modelo que interactua con la tabla de clasificaciones de los luchadores
 export class RankingService {
@@ -9,13 +9,20 @@ export class RankingService {
     // Servicio para agregar una clasificación de un luchador
     async create(data: RankingDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
-        // Se verifica que exista la división y el luchador en cuestión
-        const [existingDivision, existingFighter] = await Promise.all([
+        // Se verifica que exista la división, el luchador en cuestión y que no exista una relación
+        const [existingDivision, existingFighter, existingRanking] = await Promise.all([
             this.prisma.divisions.findUnique({ where: { id: data.division_id } }),
-            this.prisma.fighters.findUnique({ where: { id: data.fighter_id } })
+            this.prisma.fighters.findUnique({ where: { id: data.fighter_id } }),
+            this.prisma.fighterRankings.findFirst({
+                where: {
+                    fighter_id: data.fighter_id,
+                    division_id: data.division_id
+                }
+            })
         ]);
         if(!existingDivision) throw new NotFoundException('No existe la división');
         if(!existingFighter) throw new NotFoundException('No existe el luchador');
+        if(existingRanking) throw new ConflictException('El luchador ya pertenece a dicha clasificación');
         // Se agrega la clasificación
         const newRanking = await this.prisma.fighterRankings.create({
             data: data

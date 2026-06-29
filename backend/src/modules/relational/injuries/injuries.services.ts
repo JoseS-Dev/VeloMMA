@@ -84,6 +84,8 @@ export class InjuryService {
 
     // Servicio para cambiar el estado de una lesión o inactividad
     async changeStatus(injuryId: number, isActive: boolean){
+        if(!injuryId) throw new BadRequestException('El id es obligatorio');
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);
         if(!existingInjury) throw new BadRequestException('No se encontró la lesión o inactividad');
