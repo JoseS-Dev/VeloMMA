@@ -19,6 +19,6 @@ router.patch('/:teamId', controller.update.bind(controller));
 // Ruta para cambiar el estado de un equipo
 router.patch('/:teamId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar un equipo
-router.delete('/:teamId', controller.delete.bind(controller));
+router.patch('/soft/:teamId', controller.delete.bind(controller));
 
 export const teamRoutes = router;

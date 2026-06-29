@@ -54,7 +54,7 @@ export class StableService {
         });
         // Se obtienen los equipos
         const stables = await this.prisma.fighterTeams.findMany({
-            where: {fighter_id: FighterId},
+            where: {fighter_id: FighterId, deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {created_at: 'asc'}
@@ -67,7 +67,7 @@ export class StableService {
 
     async findById(stableId: number){
         const stable = await this.prisma.fighterTeams.findUnique({
-            where: {id: stableId}
+            where: {id: stableId, deleted_at: null}
         });
         if(!stable) throw new BadRequestException('No se encontró el equipo');
         return stable;
@@ -107,8 +107,9 @@ export class StableService {
         const existingStable = await this.findById(stableId);
         if(!existingStable) throw new BadRequestException('No se encontró el equipo');
         // Se elimina el equipo
-        const stable = await this.prisma.fighterTeams.delete({
-            where: {id: stableId}
+        const stable = await this.prisma.fighterTeams.update({
+            where: {id: stableId},
+            data: {deleted_at: new Date()}
         });
         if(!stable) throw new BadRequestException('No se pudo eliminar el equipo');
         return stable;

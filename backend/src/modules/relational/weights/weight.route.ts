@@ -16,6 +16,6 @@ router.get('/:weightId', controller.findById.bind(controller));
 // Ruta para actualizar un peso oficial de un luchador
 router.patch('/:weightId', controller.update.bind(controller));
 // Ruta para eliminar un peso oficial de un luchador
-router.delete('/:weightId', controller.delete.bind(controller));
+router.patch('/soft/:weightId', controller.delete.bind(controller));
 
 export const weightRoutes = router;

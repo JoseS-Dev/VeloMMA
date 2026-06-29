@@ -54,7 +54,7 @@ export class TeamService {
         const teams = await this.prisma.teams.findMany({
             skip: skip,
             take: limit,
-            where: {is_active: true},
+            where: {is_active: true, deleted_at: null},
             orderBy: {created_at: 'asc'}
         });
         return {
@@ -66,7 +66,7 @@ export class TeamService {
     // Servicio para obtener los datos de un equipo por su id
     async findById(teamId: number){
         const team = await this.prisma.teams.findUnique({
-            where: {id: teamId}
+            where: {id: teamId, deleted_at: null}
         });
         if(!team) throw new NotFoundException('No se encontró el equipo');
         return team;
@@ -122,8 +122,9 @@ export class TeamService {
         const existingTeam = await this.findById(teamId);
         if(!existingTeam) throw new NotFoundException('No se encontró el equipo');
         // Se elimina el equipo
-        const team = await this.prisma.teams.delete({
-            where: {id: teamId}
+        const team = await this.prisma.teams.update({
+            where: {id: teamId},
+            data: {deleted_at: new Date()}
         });
         if(!team) throw new BadRequestException('No se pudo eliminar el equipo');
         return team;

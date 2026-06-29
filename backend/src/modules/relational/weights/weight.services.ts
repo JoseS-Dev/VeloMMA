@@ -54,7 +54,7 @@ export class WeightService {
         });
         // Se obtienen los pesos
         const weights = await this.prisma.fighterDivision.findMany({
-            where: {fighter_id: FighterId},
+            where: {fighter_id: FighterId, deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {created_at: 'asc'}
@@ -68,7 +68,7 @@ export class WeightService {
     // Servicio para obtener un peso de un luchador por su id
     async findById(weightId: number){
         const weight = await this.prisma.fighterDivision.findUnique({
-            where: {id: weightId}
+            where: {id: weightId, deleted_at: null}
         });
         if(!weight) throw new NotFoundException('No se encontró el peso');
         return weight;
@@ -95,8 +95,9 @@ export class WeightService {
         const existingWeight = await this.findById(weightId);
         if(!existingWeight) throw new NotFoundException('No se encontró el peso');
         // Se elimina el peso
-        const weight = await this.prisma.fighterDivision.delete({
-            where: {id: weightId}
+        const weight = await this.prisma.fighterDivision.update({
+            where: {id: weightId},
+            data: {deleted_at: new Date()}
         });
         if(!weight) throw new BadRequestException('No se pudo eliminar el peso');
         return weight;
