@@ -34,6 +34,24 @@ export class FighterController {
         };
     }
 
+    // Controlador para obtener todos los luchadores activos
+    @SendResponse('Luchadores obtenidos correctamente', 200)
+    async findAllActive(req: Request, res: Response) {
+        const { page, limit } = req.query;
+        // Se valida el parámetro page y limit
+        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
+        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
+        const { fighters, total } = await this.fighterService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        return { 
+            data: fighters,
+            meta: {
+                total: total,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10,
+            } 
+        };
+    }
+
     // Controlador para obtener un luchador por su slug
     @SendResponse('Luchador obtenido correctamente', 200)
     async findBySlug(req: Request, res: Response) {
@@ -65,6 +83,7 @@ export class FighterController {
     async changeStatus(req: Request, res: Response) {
         const {fighterId} = req.params;
         const {status} = req.body;
+        if(status && !Boolean(status)) return res.status(400).json({message: 'El estado es obligatorio'});
         const fighter = await this.fighterService.changeStatus(Number(fighterId), Boolean(status));
         return fighter;
     }

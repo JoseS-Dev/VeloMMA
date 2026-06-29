@@ -48,6 +48,24 @@ export class FighterService {
         }
     }
 
+    // Servicio para obtener todos los luchadores activos
+    async findAllActive(
+        page: number = 1,
+        limit: number = 10,
+    ){
+        const skip = (page - 1) * limit;
+        // se obtiene todos los luchadores activos
+        const fighters = await this.prisma.fighters.findMany({
+            skip: skip,
+            take: limit,
+            where: {is_active: true},
+        });
+        return {
+            fighters,
+            total: await this.prisma.fighters.count(),
+        }
+    }
+
     // Servicio para obtener un luchador por su slug
     async findBySlug(slug: string){
         const fighter = await this.prisma.fighters.findUnique({
@@ -74,21 +92,23 @@ export class FighterService {
         if(!fighter) throw new NotFoundException('El luchador no existe');
         // Si existe, se actualiza el luchador
         // Si se va actualizar el nombre y el apellido, se actualiza el slug
-        const slugFighter = `${data.first_name.toLowerCase()}-${data.last_name.toLowerCase()}`;
-        if(slugFighter !== fighter.slug){
-            const existingFighter = await this.prisma.fighters.findUnique({
-                where: {slug: slugFighter},
-            });
-            if(existingFighter) throw new ConflictException('El slug ya existe');
-            const updatedFighter = await this.prisma.fighters.update({
-                where: {id: id},
-                data: {
-                    ...data,
-                    slug: slugFighter,
-                }
-            });
-            if(!updatedFighter) throw new BadRequestException('No se pudo actualizar el luchador');
-            return updatedFighter;
+        if(data.first_name || data.last_name){
+            const slugFighter = `${data?.first_name?.toLowerCase()}-${data?.last_name?.toLowerCase()}`;
+            if(slugFighter !== fighter.slug){
+                const existingFighter = await this.prisma.fighters.findUnique({
+                    where: {slug: slugFighter},
+                });
+                if(existingFighter) throw new ConflictException('El slug ya existe');
+                const updatedFighter = await this.prisma.fighters.update({
+                    where: {id: id},
+                    data: {
+                        ...data,
+                        slug: slugFighter,
+                    }
+                });
+                if(!updatedFighter) throw new BadRequestException('No se pudo actualizar el luchador');
+                return updatedFighter;
+            }
         }
         const updatedFighter = await this.prisma.fighters.update({
             where: {id: id},
@@ -100,7 +120,8 @@ export class FighterService {
 
     // Servicio para cambiar el estado de un luchador
     async changeStatus(id: number, status: boolean){
-        if(!status) throw new BadRequestException('El estado es obligatorio');
+        if(!id) throw new BadRequestException('El id es obligatorio');
+        if(typeof status !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         // Se verifica que el luchador exista
         const fighter = await this.findById(id);
         if(!fighter) throw new NotFoundException('El luchador no existe');

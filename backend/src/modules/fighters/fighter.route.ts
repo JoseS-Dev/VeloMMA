@@ -11,6 +11,8 @@ const controller = new FighterController(new FighterService(prisma));
 router.post('/', controller.create.bind(controller));
 // Ruta para obtener todos los luchadores
 router.get('/', controller.findAll.bind(controller));
+// Ruta para obtener todos los luchadores activos
+router.get('/active', controller.findAllActive.bind(controller));
 // Ruta para obtener un luchador por su id
 router.get('/:fighterId', controller.findById.bind(controller));
 // Ruta para obtener un luchador por su slug

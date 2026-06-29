@@ -16,7 +16,7 @@ export const fighterSchema = z.object({
 });
 
 // Esquema de validación de los datos de actualización de un luchador
-export const fighterUpdateSchema = fighterSchema.extend({
+export const fighterUpdateSchema = fighterSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 
