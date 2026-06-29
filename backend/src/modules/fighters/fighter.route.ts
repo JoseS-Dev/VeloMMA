@@ -22,6 +22,6 @@ router.patch('/:fighterId', controller.update.bind(controller));
 // Ruta para cambiar el estado de un luchador
 router.patch('/:fighterId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar un luchador
-router.delete('/:fighterId', controller.delete.bind(controller));
+router.patch('/soft/:fighterId', controller.delete.bind(controller));
 
 export const fighterRoutes = router;

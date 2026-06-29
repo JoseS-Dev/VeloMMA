@@ -53,7 +53,7 @@ export class EventService {
         const events = await this.prisma.events.findMany({
             skip: skip,
             take: limit,
-            where: {is_active: true},
+            where: {is_active: true, deleted_at: null},
             orderBy: {name_event: 'asc'}
         });
         return {
@@ -65,7 +65,7 @@ export class EventService {
     // Servicio para obtener los datos de un evento por su id
     async findById(eventId: number){
         const event = await this.prisma.events.findUnique({
-            where: {id: eventId}
+            where: {id: eventId, deleted_at: null}
         });
         if(!event) throw new BadRequestException('No se encontró el evento');
         return event;
@@ -74,7 +74,7 @@ export class EventService {
     // Servicio para obtener tdos los eventos de una locación en especifico
     async findByLocation(location: string){
         const events = await this.prisma.events.findMany({
-            where: {location_event: location}
+            where: {location_event: location, deleted_at: null}
         });
         if(!events) throw new BadRequestException('No se encontraron eventos en esa locación');
         return events;
@@ -128,8 +128,9 @@ export class EventService {
         const existingEvent = await this.findById(eventId);
         if(!existingEvent) throw new BadRequestException('No se encontró el evento');
         // Se elimina el evento
-        const event = await this.prisma.events.delete({
-            where: {id: eventId}
+        const event = await this.prisma.events.update({
+            where: {id: eventId},
+            data: {deleted_at: new Date()}
         });
         if(!event) throw new BadRequestException('No se pudo eliminar el evento');
         return event;

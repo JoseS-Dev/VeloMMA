@@ -19,6 +19,6 @@ router.patch('/:divisionId', controller.update.bind(controller));
 // Ruta para cambiar el estado de una division
 router.patch('/:divisionId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar una division
-router.delete('/:divisionId', controller.delete.bind(controller));
+router.patch('/soft/:divisionId', controller.delete.bind(controller));
 
 export const divisionRoutes = router;

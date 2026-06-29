@@ -21,6 +21,6 @@ router.patch('/:eventId', controller.update.bind(controller));
 // Ruta para cambiar el estado de un evento
 router.patch('/:eventId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar un evento
-router.delete('/:eventId', controller.delete.bind(controller));
+router.patch('/soft/:eventId', controller.delete.bind(controller));
 
 export const eventRoutes = router;
