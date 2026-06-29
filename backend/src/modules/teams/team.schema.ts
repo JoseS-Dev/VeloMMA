@@ -10,7 +10,7 @@ const teamSchema = z.object({
 });
 
 // Defino el esquema de validación para actualizar los datos de un equipo
-const updateTeamSchema = teamSchema.extend({
+const updateTeamSchema = teamSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 

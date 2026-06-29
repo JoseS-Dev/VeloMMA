@@ -8,6 +8,6 @@ export interface EventDTO {
 }
 
 // Defino la interfaz para actualizar los datos de un evento
-export interface UpdateEventDTO extends EventDTO {
+export interface UpdateEventDTO extends Partial<EventDTO> {
     is_active?: boolean;
 }

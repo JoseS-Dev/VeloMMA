@@ -34,7 +34,28 @@ export class TeamService {
         const teams = await this.prisma.teams.findMany({
             skip: skip,
             take: limit,
-            orderBy: {name_team: 'asc'}
+            orderBy: {created_at: 'asc'}
+        });
+        return {
+            teams, 
+            total: total
+        };
+    }
+
+    // Servicio para obtener todos los datos de los equipos activos
+    async findAllActive(
+        page: number = 1,
+        limit: number = 10,
+    ){
+        const skip = (page - 1) * limit;
+        // Se cuenta el total de registros
+        const total = await this.prisma.teams.count();
+        // Se obtienen los datos de los equipos activos
+        const teams = await this.prisma.teams.findMany({
+            skip: skip,
+            take: limit,
+            where: {is_active: true},
+            orderBy: {created_at: 'asc'}
         });
         return {
             teams, 
@@ -81,6 +102,8 @@ export class TeamService {
 
     // Servicio para cambiar el estado de un equipo
     async changeStatus(teamId: number, isActive: boolean){
+        if(!teamId) throw new BadRequestException('El id es obligatorio');
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         // Se verifica que el equipo existe
         const existingTeam = await this.findById(teamId);
         if(!existingTeam) throw new NotFoundException('No se encontró el equipo');

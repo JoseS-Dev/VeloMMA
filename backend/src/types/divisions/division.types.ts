@@ -7,6 +7,6 @@ export interface DivisionDTO {
 }
 
 // Defino la interfaz para actualizar las divisiones
-export interface UpdateDivisionDTO extends DivisionDTO {
+export interface UpdateDivisionDTO extends Partial<DivisionDTO> {
     is_active?: boolean;
 }

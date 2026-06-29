@@ -7,6 +7,6 @@ export interface TeamDTO {
 }
 
 // Defino la interfaz para actualizar los datos de un equipo
-export interface UpdateTeamDTO extends TeamDTO {
+export interface UpdateTeamDTO extends Partial<TeamDTO> {
     is_active?: boolean;
 }

@@ -9,6 +9,6 @@ export interface InjuryDTO {
 }
 
 // Defino la interfaz para actualizar las lesiones o inactividades de un luchador
-export interface UpdateInjuryDTO extends InjuryDTO {
+export interface UpdateInjuryDTO extends Partial<InjuryDTO> {
     is_active?: boolean;
 }

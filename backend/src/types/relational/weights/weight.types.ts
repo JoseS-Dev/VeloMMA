@@ -6,8 +6,4 @@ export interface WeightDTO {
 }
 
 // Defino la interfaz para actualizar los pesos oficiales de un luchador
-export interface UpdateWeightDTO {
-    fighter_id?: number;
-    division_id?: number;
-    is_current?: boolean;
-}
+export interface UpdateWeightDTO extends Partial<WeightDTO> {}

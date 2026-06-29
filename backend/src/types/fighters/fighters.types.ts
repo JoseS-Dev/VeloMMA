@@ -13,6 +13,6 @@ export interface FighterDTO {
 }
 
 // Defino la interfaz pra actualizar los datos de un luchador
-export interface FighterUpdateDTO extends FighterDTO {
+export interface FighterUpdateDTO extends Partial<FighterDTO> {
     is_active?: boolean;
 }
