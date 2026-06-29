@@ -19,6 +19,6 @@ router.patch('/:injuryId', controller.update.bind(controller));
 // Ruta para cambiar el estado de una lesión o inactividad
 router.patch('/:injuryId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar una lesión o inactividad
-router.delete('/:injuryId', controller.delete.bind(controller));
+router.patch('/soft/:injuryId', controller.delete.bind(controller));
 
 export const injuryRoutes = router;

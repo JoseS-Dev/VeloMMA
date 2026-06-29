@@ -16,6 +16,6 @@ router.get('/:stableId', controller.findById.bind(controller));
 // Ruta para actualizar un equipo de un luchador
 router.patch('/:stableId', controller.update.bind(controller));
 // Ruta para eliminar un equipo de un luchador
-router.delete('/:stableId', controller.delete.bind(controller));
+router.patch('/soft/:stableId', controller.delete.bind(controller));
 
 export const stableRoutes = router;

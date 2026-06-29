@@ -36,7 +36,7 @@ export class InjuryService {
         });
         // Se obtienen las lesiones o inactividades
         const injuries = await this.prisma.fighterInjuries.findMany({
-            where: {fighter_id: FighterId},
+            where: {fighter_id: FighterId, deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {injury_date: 'asc'}
@@ -50,7 +50,7 @@ export class InjuryService {
     // Servicio para obtener una lesión o inactividad de un luchador por su id
     async findById(injuryId: number){
         const injury = await this.prisma.fighterInjuries.findUnique({
-            where: {id: injuryId}
+            where: {id: injuryId, deleted_at: null}
         });
         if(!injury) throw new BadRequestException('No se encontró la lesión o inactividad');
         return injury;
@@ -61,7 +61,7 @@ export class InjuryService {
         if(!severity) throw new BadRequestException('Debe especificar la severidad de la lesión');
         // Se obtienen las lesiones o inactividades
         const injuries = await this.prisma.fighterInjuries.findMany({
-            where: {fighter_id: fighterId, severity_injury: severity}
+            where: {fighter_id: fighterId, severity_injury: severity, deleted_at: null}
         });
         if(!injuries) throw new BadRequestException('No se encontraron las lesiones o inactividades');
         return injuries;
@@ -104,8 +104,9 @@ export class InjuryService {
         const existingInjury = await this.findById(injuryId);
         if(!existingInjury) throw new BadRequestException('No se encontró la lesión o inactividad');
         // Se elimina la lesión o inactividad
-        const injury = await this.prisma.fighterInjuries.delete({
-            where: {id: injuryId}
+        const injury = await this.prisma.fighterInjuries.update({
+            where: {id: injuryId},
+            data: {deleted_at: new Date()}
         });
         if(!injury) throw new BadRequestException('No se pudo eliminar la lesión o inactividad');
         return injury;

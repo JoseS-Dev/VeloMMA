@@ -41,6 +41,7 @@ export class RankingService {
         const total = await this.prisma.fighterRankings.count();
         // Se obtienen las clasificaciones
         const rankings = await this.prisma.fighterRankings.findMany({
+            where: {deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {
@@ -72,7 +73,7 @@ export class RankingService {
         });
         // Se obtienen las clasificaciones
         const rankings = await this.prisma.fighterRankings.findMany({
-            where: { division_id: divisionId },
+            where: { division_id: divisionId, deleted_at: null },
             skip: skip,
             take: limit,
             orderBy: {
@@ -90,7 +91,7 @@ export class RankingService {
         if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
         // Se verifica que exista la clasificación
         const existingRanking = await this.prisma.fighterRankings.findUnique({
-            where: { id: rankingId }
+            where: { id: rankingId, deleted_at: null }
         });
         if(!existingRanking) throw new NotFoundException('No existe la clasificación');
         return existingRanking;
@@ -119,8 +120,9 @@ export class RankingService {
         const existingRanking = await this.findById(rankingId);
         if(!existingRanking) throw new NotFoundException('No existe la clasificación');
         // Se elimina la clasificación
-        const deletedRanking = await this.prisma.fighterRankings.delete({
-            where: { id: rankingId }
+        const deletedRanking = await this.prisma.fighterRankings.update({
+            where: { id: rankingId },
+            data: {deleted_at: new Date()}
         });
         if(!deletedRanking) throw new BadRequestException('No se pudo eliminar la clasificación');
         return deletedRanking;

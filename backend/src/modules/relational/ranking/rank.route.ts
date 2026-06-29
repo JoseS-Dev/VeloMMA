@@ -18,6 +18,6 @@ router.get('/:RankingId', controller.findById.bind(controller));
 // Ruta para actualizar una clasificación por su ID
 router.patch('/:RankingId', controller.update.bind(controller));
 // Ruta para eliminar una clasificación por su ID
-router.delete('/:RankingId', controller.delete.bind(controller));
+router.patch('/soft/:RankingId', controller.delete.bind(controller));
 
 export const rankingRoutes = router;
