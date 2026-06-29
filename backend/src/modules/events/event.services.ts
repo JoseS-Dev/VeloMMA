@@ -33,6 +33,27 @@ export class EventService {
         const events = await this.prisma.events.findMany({
             skip: skip,
             take: limit,
+            orderBy: {created_at: 'asc'}
+        });
+        return {
+            events, 
+            total: total
+        };
+    }
+
+    // Servicio para obtener todos los eventos activos
+    async findAllActive(
+        page: number = 1,
+        limit: number = 10,
+    ){
+        const skip = (page - 1) * limit;
+        // Se cuenta el total de registros
+        const total = await this.prisma.events.count();
+        // Se obtienen los eventos activos
+        const events = await this.prisma.events.findMany({
+            skip: skip,
+            take: limit,
+            where: {is_active: true},
             orderBy: {name_event: 'asc'}
         });
         return {

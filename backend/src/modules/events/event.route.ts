@@ -10,6 +10,8 @@ const controller = new EventController(new EventService(prisma));
 router.post('/', controller.create.bind(controller));
 // Ruta para obtener todos los eventos
 router.get('/', controller.findAll.bind(controller));
+// Ruta para obtener todos los eventos activos
+router.get('/active', controller.findAllActive.bind(controller));
 // Ruta para obtener un evento por su id
 router.get('/:eventId', controller.findById.bind(controller));
 // Ruta para obtener los eventos de una locación en especifico

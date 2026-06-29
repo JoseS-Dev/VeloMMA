@@ -11,7 +11,7 @@ const eventSchema = z.object({
 });
 
 // Defino el esquema de validación para actualizar los datos de un evento
-const updateEventSchema = eventSchema.extend({
+const updateEventSchema = eventSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 

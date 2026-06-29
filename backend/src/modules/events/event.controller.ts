@@ -34,6 +34,24 @@ export class EventController {
         };
     }
 
+    // Controlador para obtener todos los eventos activos
+    @SendResponse('Eventos obtenidos correctamente', 200)
+    async findAllActive(req: Request, res: Response) {
+        const { page, limit } = req.query;
+        // Se valida el parámetro page y limit
+        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
+        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
+        const { events, total } = await this.eventService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        return { 
+            data: events,
+            meta: {
+                total: total,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10,
+            } 
+        };
+    }
+
     // Controlador para obtener un evento por su id
     @SendResponse('Evento obtenido correctamente', 200)
     async findById(req: Request, res: Response) {
