@@ -35,6 +35,24 @@ export class TeamController {
         };
     }
 
+    // Controlador para obtener todos los equipos activos
+    @SendResponse('Equipos obtenidos correctamente', 200)
+    async findAllActive(req: Request, res: Response){
+        const { page, limit } = req.query;
+        // Se valida el parámetro page y limit
+        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
+        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
+        const { teams, total } = await this.teamService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        return { 
+            data: teams,
+            meta: {
+                total: total,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10,
+            } 
+        };
+    }
+
     // Controlador para obtener un equipo por su id
     @SendResponse('Equipo obtenido correctamente', 200)
     async findById(req: Request, res: Response){

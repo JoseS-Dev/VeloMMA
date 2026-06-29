@@ -1,6 +1,6 @@
 import type { StableDTO, UpdateStableDTO } from '../../../types/relational/stables/stable.types.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
-import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
+import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
 // Servicio para obtener todos los equipos de los luchadores
 export class StableService {
@@ -9,17 +9,24 @@ export class StableService {
     // Crear un nuevo equipo de un luchador
     async create(data: StableDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
-        // Se verifica que exista el luchador y el equipo
-        const [existingFighter, existingTeam] = await Promise.all([
+        // Se verifica que exista el luchador, el equipo y que ya existe una relación
+        const [existingFighter, existingTeam, existingStable] = await Promise.all([
             this.prisma.fighters.findFirst({
                 where: {id: data.fighter_id}
             }),
             this.prisma.teams.findFirst({
                 where: {id: data.team_id}
+            }),
+            this.prisma.fighterTeams.findFirst({
+                where: {
+                    fighter_id: data.fighter_id,
+                    team_id: data.team_id
+                }
             })
         ]);
         if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
         if(!existingTeam) throw new NotFoundException('No se encontró el equipo');
+        if(existingStable) throw new ConflictException('El luchador ya pertence a dicho equipo');
         // Si existe, se crea el equipo
         const stable = await this.prisma.fighterTeams.create({
             data: data
@@ -34,6 +41,12 @@ export class StableService {
         page: number = 1,
         limit: number = 10,
     ){
+        if(!FighterId) throw new BadRequestException('El id es obligatorio');
+        // Se verifica que el luchador exista
+        const existingFighter = await this.prisma.fighters.findFirst({
+            where: {id: FighterId}
+        });
+        if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
         const skip = (page - 1) * limit;
         // Se cuenta el total de registros
         const total = await this.prisma.fighterTeams.count({
@@ -44,7 +57,7 @@ export class StableService {
             where: {fighter_id: FighterId},
             skip: skip,
             take: limit,
-            orderBy: {joined_date: 'asc'}
+            orderBy: {created_at: 'asc'}
         });
         return {
             stables, 

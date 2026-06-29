@@ -11,13 +11,7 @@ const StableSchema = z.object({
 });
 
 // Defino el esquema de validación para actualizar los equipos de los luchadores
-const updateStableSchema = StableSchema.partial().extend({
-    fighter_id: z.number().nonnegative().positive().optional(),
-    team_id: z.number().nonnegative().positive().optional(),
-    is_current: z.boolean().optional(),
-    joined_date: z.coerce.date().optional(),
-    left_date: z.coerce.date().optional(),
-});
+const updateStableSchema = StableSchema.partial()
 
 // Validacion de los equipos de los luchadores
 export function validateStable(data: StableDTO){

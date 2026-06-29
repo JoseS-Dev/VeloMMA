@@ -9,11 +9,7 @@ const WeightSchema = z.object({
 })
 
 // Defino el esquema de validación para actualizar los pesos de los luchadores
-const updateWeightSchema = WeightSchema.extend({
-    fighter_id: z.number().nonnegative().positive().optional(),
-    division_id: z.number().nonnegative().positive().optional(),
-    is_current: z.boolean().optional(),
-});
+const updateWeightSchema = WeightSchema.partial()
 
 // Validacion de los pesos de los luchadores
 export function validateWeight(data: WeightDTO){

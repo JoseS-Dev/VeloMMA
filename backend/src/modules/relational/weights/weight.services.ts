@@ -1,6 +1,6 @@
 import type { WeightDTO, UpdateWeightDTO } from '../../../types/relational/weights/weight.types.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
-import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
+import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
 // Servicio para obtener todos los pesos de los luchadores
 export class WeightService {
@@ -9,17 +9,24 @@ export class WeightService {
     // Crear un nuevo peso para un luchador
     async create(data: WeightDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
-        // Se verifica que exista el luchador y la división
-        const [existingFighter, existingDivision] = await Promise.all([
+        // Se verifica que exista el luchador, la división y que no exista una relación
+        const [existingFighter, existingDivision, existingWeight] = await Promise.all([
             this.prisma.fighters.findFirst({
                 where: {id: data.fighter_id}
             }),
             this.prisma.divisions.findFirst({
                 where: {id: data.division_id}
+            }),
+            this.prisma.fighterDivision.findFirst({
+                where: {
+                    fighter_id: data.fighter_id,
+                    division_id: data.division_id
+                }
             })
         ]);
         if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
         if(!existingDivision) throw new NotFoundException('No se encontró la división');
+        if(existingWeight) throw new ConflictException('El luchador ya pertence a dicho peso');
         // Si existe, se crea el peso
         const weight = await this.prisma.fighterDivision.create({
             data: data
@@ -34,6 +41,12 @@ export class WeightService {
         page: number = 1,
         limit: number = 10,
     ) {
+        if(!FighterId) throw new BadRequestException('El ID del luchador es obligatorio')
+        // Se verifica que exista el luchador en cuestión
+        const existingFighter = await this.prisma.fighters.findUnique({
+            where: {id: FighterId}
+        });
+        if(!existingFighter) throw new NotFoundException('El luchador no existen')
         const skip = (page - 1) * limit;
         // Se cuenta el total de registros
         const total = await this.prisma.fighterDivision.count({

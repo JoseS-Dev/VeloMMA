@@ -10,6 +10,8 @@ const controller = new TeamController(new TeamService(prisma));
 router.post('/', controller.create.bind(controller));
 // Ruta para obtener todos los equipos
 router.get('/', controller.findAll.bind(controller));
+// Ruta para obtener todos los equipos activos
+router.get('/active', controller.findAllActive.bind(controller));
 // Ruta para obtener un equipo por su id
 router.get('/:teamId', controller.findById.bind(controller));
 // Ruta para actualizar los datos de un equipo
