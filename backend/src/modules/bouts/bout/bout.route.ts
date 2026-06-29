@@ -22,6 +22,6 @@ router.patch('/:BoutId', controller.update.bind(controller));
 // Ruta para cambiar el estado de una pelea
 router.patch('/:BoutId/status', controller.changeStatus.bind(controller));
 // Ruta para eliminar una pelea
-router.delete('/:BoutId', controller.delete.bind(controller));
+router.patch('/soft/:BoutId', controller.delete.bind(controller));
 
 export const boutRoutes = router;

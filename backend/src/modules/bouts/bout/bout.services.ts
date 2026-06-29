@@ -2,6 +2,7 @@ import type { BoutDTO, BoutUpdateDTO } from "../../../types/index.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
+import { BoutStatusRecord } from "../../../utils/functions/function.js";
 // Modelo que interactua con la tabla bouts de la base de datos
 export class BoutService {
     constructor(private readonly prisma: PrismaClient) {}
@@ -38,6 +39,7 @@ export class BoutService {
         const total = await this.prisma.bouts.count();
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
+            where: {deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {
@@ -59,7 +61,7 @@ export class BoutService {
         if(!eventId) throw new BadRequestException('El id del evento es obligatorio');
         // Se verifica que exista el evento
         const existingEvent = await this.prisma.events.findUnique({
-            where: { id: eventId }
+            where: { id: eventId, deleted_at: null }
         });
         if(!existingEvent) throw new NotFoundException('No existe el evento');
         const skip = (page - 1) * limit;
@@ -69,7 +71,7 @@ export class BoutService {
         });
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
-            where: { event_id: eventId },
+            where: { event_id: eventId, deleted_at: null },
             skip: skip,
             take: limit,
             orderBy: {
@@ -97,11 +99,11 @@ export class BoutService {
         const skip = (page - 1) * limit;
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
-            where: { division_id: divisionId }
+            where: { division_id: divisionId, deleted_at: null }
         });
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
-            where: { division_id: divisionId },
+            where: { division_id: divisionId, deleted_at: null },
             skip: skip,
             take: limit,
             orderBy: {
@@ -119,7 +121,7 @@ export class BoutService {
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: BoutId }
+            where: { id: BoutId, deleted_at: null }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
         return existingBout;
@@ -149,6 +151,12 @@ export class BoutService {
         // Se verifica que exista la pelea
         const existingBout = await this.findById(BoutId);
         if(!existingBout) throw new NotFoundException('No existe la pelea');
+        const currentStatus = existingBout.status_bout;
+        // Valido si el estado es el mismo
+        if(currentStatus === status) return existingBout;
+        // Valido la transición de estado
+        const allowedTransitions = BoutStatusRecord[currentStatus];
+        if(!allowedTransitions?.includes(status)) throw new BadRequestException('Estado no permitido');
         // Se actualiza el estado de la pelea
         const updatedBout = await this.prisma.bouts.update({
             where: { id: BoutId },
@@ -165,8 +173,9 @@ export class BoutService {
         const existingBout = await this.findById(BoutId);
         if(!existingBout) throw new NotFoundException('No existe la pelea');
         // Se elimina la pelea
-        const deletedBout = await this.prisma.bouts.delete({
-            where: { id: BoutId }
+        const deletedBout = await this.prisma.bouts.update({
+            where: { id: BoutId },
+            data: {deleted_at: new Date()}
         });
         if(!deletedBout) throw new BadRequestException('No se pudo eliminar la pelea');
         return deletedBout;

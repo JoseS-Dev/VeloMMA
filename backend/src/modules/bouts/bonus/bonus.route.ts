@@ -18,6 +18,6 @@ router.get('/:bonusId', controller.findById.bind(controller));
 // Ruta para actualizar un bono por su ID
 router.patch('/:bonusId', controller.update.bind(controller));
 // Ruta para eliminar un bono por su ID
-router.delete('/:bonusId', controller.delete.bind(controller));
+router.patch('/soft/:bonusId', controller.delete.bind(controller));
 
 export const bonusRoutes = router;
