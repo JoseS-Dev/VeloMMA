@@ -9,7 +9,7 @@ const DivisionSchema = z.object({
 });
 
 // Defino el esquema de validación para actualizar las divisiones
-const updateDivisionSchema = DivisionSchema.extend({
+const updateDivisionSchema = DivisionSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 

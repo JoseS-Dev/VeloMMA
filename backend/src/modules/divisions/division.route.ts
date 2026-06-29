@@ -10,6 +10,8 @@ const controller = new DivisionController(new DivisionService(prisma));
 router.post('/', controller.create.bind(controller));
 // Ruta para obtener todas las divisiones
 router.get('/', controller.findAll.bind(controller));
+// Ruta para obtener todas las divisiones activas
+router.get('/active', controller.findAllActive.bind(controller));
 // Ruta para obtener una division por su id
 router.get('/:divisionId', controller.findById.bind(controller));
 // Ruta para actualizar las divisiones

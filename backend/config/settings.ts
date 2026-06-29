@@ -10,7 +10,7 @@ export const settings = {
     basePath: process.env.BASE_PATH || '',
     nodeEnv: process.env.NODE_ENV || 'development',
     corsOrigin: process.env.CORS_ORIGIN || '*',
-    apiKey: process.env.API_KEY || '',
+    apiKey: process.env.API_SECRET_KEY || '',
     cookieSecret: process.env.COOKIE_SECRET || '',
     rateLimit: {
         windowMs: 1 * 60 * 1000, // 5 minutos
