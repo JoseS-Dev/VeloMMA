@@ -17,6 +17,6 @@ router.get('/:id', controller.findById.bind(controller));
 // Ruta para actualizar un pesaje oficial de una pelea
 router.patch('/:id', controller.update.bind(controller));
 // Ruta para eliminar un pesaje oficial de una pelea
-router.delete('/:id', controller.delete.bind(controller));
+router.patch('/soft/:id', controller.delete.bind(controller));
 
 export const weighInsRoutes = router;

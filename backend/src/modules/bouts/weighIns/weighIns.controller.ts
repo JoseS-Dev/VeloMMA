@@ -19,12 +19,11 @@ export class WeighInsController {
     // Controlador para obtener todos los pesajes oficiales
     @SendResponse('Pesaje oficial obtenido correctamente', 200)
     async findAll(req: Request, res: Response){
-        const { boutId } = req.params;
         const { page, limit } = req.query;
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const result = await this.weighInsService.findAll(Number(page), Number(limit));
+        const result = await this.weighInsService.findAll(Number(page) || 1, Number(limit) || 10);
         return {
             data: result.weighIns,
             meta: {

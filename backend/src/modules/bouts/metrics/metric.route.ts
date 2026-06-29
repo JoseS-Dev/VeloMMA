@@ -18,6 +18,6 @@ router.get('/:MetricId', controller.findById.bind(controller));
 // Ruta para actualizar una métrica por su ID
 router.patch('/:MetricId', controller.update.bind(controller));
 // Ruta para eliminar una métrica por su ID
-router.delete('/:MetricId', controller.delete.bind(controller));
+router.patch('/soft/:MetricId', controller.delete.bind(controller));
 
 export const metricRoutes = router;

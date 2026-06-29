@@ -33,7 +33,7 @@ export class MetricService {
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: BoutId }
+            where: { id: BoutId, deleted_at: null }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
         const skip = (page - 1) * limit;
@@ -43,7 +43,7 @@ export class MetricService {
         });
         // Se obtienen las métricas
         const metrics = await this.prisma.boutMetrics.findMany({
-            where: { bout_id: BoutId },
+            where: { bout_id: BoutId, deleted_at: null },
             skip: skip,
             take: limit,
             orderBy: {
@@ -87,7 +87,7 @@ export class MetricService {
         if(!MetricId) throw new BadRequestException('El id de la métrica es obligatorio');
         // Se verifica que exista la métrica
         const existingMetric = await this.prisma.boutMetrics.findUnique({
-            where: { id: MetricId }
+            where: { id: MetricId, deleted_at: null }
         });
         if(!existingMetric) throw new NotFoundException('No existe la métrica');
         return existingMetric;
@@ -116,8 +116,9 @@ export class MetricService {
         const existingMetric = await this.findById(MetricId);
         if(!existingMetric) throw new NotFoundException('No existe la métrica');
         // Se elimina la métrica
-        const deletedMetric = await this.prisma.boutMetrics.delete({
-            where: { id: MetricId }
+        const deletedMetric = await this.prisma.boutMetrics.update({
+            where: { id: MetricId },
+            data: {deleted_at: new Date()}
         });
         if(!deletedMetric) throw new BadRequestException('No se pudo eliminar la métrica');
         return deletedMetric;
