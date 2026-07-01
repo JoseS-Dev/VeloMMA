@@ -5,11 +5,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
+import { globalCacheMiddleware } from './src/middlewares/cache/global-cache.middleware.js';
 import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './config/docs.js';
+import { swaggerSpec } from './config/swagger/docs.js';
+import { connectRedis } from './config/cache/redis.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -24,13 +26,17 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(errorsMiddleware);
+app.use(globalCacheMiddleware);
 
 // Rate Limit de peticiones
 app.use(rateLimit(settings.rateLimit));
 
 // Ruta de bienvenida
 app.get(`${settings.basePath}`, (req: Request, res: Response) => {
-    return res.send('Bienvenido a la API de VeloMMA');
+    return res.json({
+        message: 'Bienvenido a la API de VeloMMA',
+        timestamp: new Date().toISOString()
+    })
 })
 
 // Ruta de health
@@ -65,6 +71,7 @@ app.use(apiRouter);
 
 // Escuchamos el servidor
 if(settings.nodeEnv === 'development'){
+    await connectRedis();
     app.listen(settings.port, () => {
         console.log(`Servidor corriendo en http://localhost:${settings.port}${settings.basePath}`);
     })
