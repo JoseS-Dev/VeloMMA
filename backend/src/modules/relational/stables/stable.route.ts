@@ -72,6 +72,8 @@ import { Router } from 'express';
 import { StableController } from './stable.controller.js';
 import { StableService } from './stable.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new StableController(new StableService(prisma));
@@ -106,7 +108,7 @@ const controller = new StableController(new StableService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Stable'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/stables`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -207,7 +209,7 @@ router.get('/:stableId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Stable'
  */
-router.patch('/:stableId', controller.update.bind(controller));
+router.patch('/:stableId',clearCacheMiddleware(`${settings.basePath}/stables/:stableId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -240,6 +242,6 @@ router.patch('/:stableId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Stable'
  */
-router.patch('/soft/:stableId', controller.delete.bind(controller));
+router.patch('/soft/:stableId', clearCacheMiddleware(`${settings.basePath}/stables/soft/:stableId`), controller.delete.bind(controller));
 
 export const stableRoutes = router;

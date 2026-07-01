@@ -85,8 +85,9 @@ export class JudgeService {
         const existingJudge = await this.findById(id);
         if(!existingJudge) throw new NotFoundException('No existe dicho juez');
         // Se elimina el juez
-        const deletedJudge = await this.prisma.boutJudges.delete({
-            where: {id: id}
+        const deletedJudge = await this.prisma.boutJudges.update({
+            where: {id: id},
+            data: {deleted_at: new Date()}
         });
         if(!deletedJudge) throw new BadRequestException('No se pudo eliminar el juez');
         return deletedJudge;

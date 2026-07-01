@@ -59,6 +59,8 @@ import { Router } from 'express';
 import { WeightController } from './weight.controller.js';
 import { WeightService } from './weight.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new WeightController(new WeightService(prisma));
@@ -93,7 +95,7 @@ const controller = new WeightController(new WeightService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Weight'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/weights`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -194,7 +196,7 @@ router.get('/:weightId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Weight'
  */
-router.patch('/:weightId', controller.update.bind(controller));
+router.patch('/:weightId',clearCacheMiddleware(`${settings.basePath}/weights/:weightId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -227,6 +229,6 @@ router.patch('/:weightId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Weight'
  */
-router.patch('/soft/:weightId', controller.delete.bind(controller));
+router.patch('/soft/:weightId',clearCacheMiddleware(`${settings.basePath}/weights/soft/:weightId`), controller.delete.bind(controller));
 
 export const weightRoutes = router;

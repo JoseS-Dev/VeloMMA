@@ -60,6 +60,8 @@ import { Router } from "express";
 import { RankingController } from "./rank.controller.js";
 import { RankingService } from "./rank.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new RankingController(new RankingService(prisma));
@@ -94,7 +96,7 @@ const controller = new RankingController(new RankingService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Ranking'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/rankings`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -222,7 +224,7 @@ router.get('/:RankingId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Ranking'
  */
-router.patch('/:RankingId', controller.update.bind(controller));
+router.patch('/:RankingId',clearCacheMiddleware(`${settings.basePath}/rankings/:RankingId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -255,6 +257,6 @@ router.patch('/:RankingId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Ranking'
  */
-router.patch('/soft/:RankingId', controller.delete.bind(controller));
+router.patch('/soft/:RankingId',clearCacheMiddleware(`${settings.basePath}/rankings/soft/:RankingId`), controller.delete.bind(controller));
 
 export const rankingRoutes = router;

@@ -56,6 +56,9 @@ import {Router} from 'express';
 import { WeighInsController } from './weighIns.controller.js';
 import { WeighInsService } from './weighIns.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
+import { clear } from 'node:console';
 
 const router: Router = Router();
 const controller = new WeighInsController(new WeighInsService(prisma));
@@ -90,7 +93,7 @@ const controller = new WeighInsController(new WeighInsService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/WeighIn'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/weighIns`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -218,7 +221,7 @@ router.get('/:id', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/WeighIn'
  */
-router.patch('/:id', controller.update.bind(controller));
+router.patch('/:id',clearCacheMiddleware(`${settings.basePath}/weighIns/:id`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -251,6 +254,6 @@ router.patch('/:id', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/WeighIn'
  */
-router.patch('/soft/:id', controller.delete.bind(controller));
+router.patch('/soft/:id',clearCacheMiddleware(`${settings.basePath}/weighIns/soft/:id`), controller.delete.bind(controller));
 
 export const weighInsRoutes = router;

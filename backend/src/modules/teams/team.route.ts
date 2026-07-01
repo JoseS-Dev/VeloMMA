@@ -77,6 +77,8 @@ import {Router} from 'express';
 import { TeamController } from './team.controller.js';
 import { TeamService } from './team.services.js';
 import { prisma } from '../../utils/prisma/prisma.js';
+import { settings } from '../../../config/settings.js';
+import { clearCacheMiddleware } from '../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new TeamController(new TeamService(prisma));
@@ -111,7 +113,7 @@ const controller = new TeamController(new TeamService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Team'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/teams`) ,controller.create.bind(controller));
 
 /**
  * @openapi
@@ -232,7 +234,7 @@ router.get('/:teamId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Team'
  */
-router.patch('/:teamId', controller.update.bind(controller));
+router.patch('/:teamId', clearCacheMiddleware(`${settings.basePath}/teams/:teamId`) ,controller.update.bind(controller));
 
 /**
  * @openapi
@@ -271,7 +273,7 @@ router.patch('/:teamId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Team'
  */
-router.patch('/:teamId/status', controller.changeStatus.bind(controller));
+router.patch('/:teamId/status', clearCacheMiddleware(`${settings.basePath}/teams/:teamId/status`) ,controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -304,6 +306,6 @@ router.patch('/:teamId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Team'
  */
-router.patch('/soft/:teamId', controller.delete.bind(controller));
+router.patch('/soft/:teamId', clearCacheMiddleware(`${settings.basePath}/teams/soft/:teamId`) ,controller.delete.bind(controller));
 
 export const teamRoutes = router;

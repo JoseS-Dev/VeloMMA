@@ -68,6 +68,8 @@ import {Router} from 'express';
 import { DivisionController } from './division.controller.js';
 import { DivisionService } from './division.services.js';
 import { prisma } from '../../utils/prisma/prisma.js';
+import { settings } from '../../../config/settings.js';
+import { clearCacheMiddleware } from '../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new DivisionController(new DivisionService(prisma));
@@ -102,7 +104,7 @@ const controller = new DivisionController(new DivisionService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Division'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/divisions`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -223,7 +225,7 @@ router.get('/:divisionId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Division'
  */
-router.patch('/:divisionId', controller.update.bind(controller));
+router.patch('/:divisionId', clearCacheMiddleware(`${settings.basePath}/divisions/:divisionId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -262,7 +264,7 @@ router.patch('/:divisionId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Division'
  */
-router.patch('/:divisionId/status', controller.changeStatus.bind(controller));
+router.patch('/:divisionId/status', clearCacheMiddleware(`${settings.basePath}/divisions/:divisionId/status`), controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -295,6 +297,6 @@ router.patch('/:divisionId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Division'
  */
-router.patch('/soft/:divisionId', controller.delete.bind(controller));
+router.patch('/soft/:divisionId', clearCacheMiddleware(`${settings.basePath}/divisions/soft/:divisionId`), controller.delete.bind(controller));
 
 export const divisionRoutes = router;

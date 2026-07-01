@@ -84,6 +84,8 @@ import {Router} from 'express';
 import { EventController } from './event.controller.js';
 import { EventService } from './event.services.js';
 import { prisma } from '../../utils/prisma/prisma.js';
+import { settings } from '../../../config/settings.js';
+import { clearCacheMiddleware } from '../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new EventController(new EventService(prisma));
@@ -118,7 +120,7 @@ const controller = new EventController(new EventService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Event'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/events`) , controller.create.bind(controller));
 
 /**
  * @openapi
@@ -272,7 +274,7 @@ router.get('/:eventId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Event'
  */
-router.patch('/:eventId', controller.update.bind(controller));
+router.patch('/:eventId', clearCacheMiddleware(`${settings.basePath}/events/:eventId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -311,7 +313,7 @@ router.patch('/:eventId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Event'
  */
-router.patch('/:eventId/status', controller.changeStatus.bind(controller));
+router.patch('/:eventId/status',clearCacheMiddleware(`${settings.basePath}/events/:eventId/status`), controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -344,6 +346,6 @@ router.patch('/:eventId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Event'
  */
-router.patch('/soft/:eventId', controller.delete.bind(controller));
+router.patch('/soft/:eventId',clearCacheMiddleware(`${settings.basePath}/event/soft/:eventId`), controller.delete.bind(controller));
 
 export const eventRoutes = router;

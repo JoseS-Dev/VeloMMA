@@ -138,6 +138,8 @@ import {Router} from "express";
 import {MetricController} from "./metric.controller.js";
 import { MetricService } from "./metric.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new MetricController(new MetricService(prisma));
@@ -172,7 +174,7 @@ const controller = new MetricController(new MetricService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Metric'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/metrics`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -315,7 +317,7 @@ router.get('/:MetricId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Metric'
  */
-router.patch('/:MetricId', controller.update.bind(controller));
+router.patch('/:MetricId', clearCacheMiddleware(`${settings.basePath}/metrics/:MetricId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -348,6 +350,6 @@ router.patch('/:MetricId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Metric'
  */
-router.patch('/soft/:MetricId', controller.delete.bind(controller));
+router.patch('/soft/:MetricId', clearCacheMiddleware(`${settings.basePath}/metrics/soft/:MetricId`), controller.delete.bind(controller));
 
 export const metricRoutes = router;

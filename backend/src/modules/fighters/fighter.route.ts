@@ -2,6 +2,8 @@ import {Router} from 'express';
 import { FighterController } from './fighter.controller.js';
 import { FighterService } from './fighter.services.js';
 import { prisma } from '../../utils/prisma/prisma.js';
+import { settings } from '../../../config/settings.js';
+import { clearCacheMiddleware } from '../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new FighterController(new FighterService(prisma));
@@ -36,7 +38,7 @@ const controller = new FighterController(new FighterService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Fighter'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/fighters`) ,controller.create.bind(controller));
 
 /**
  * @openapi
@@ -187,7 +189,7 @@ router.get('/slug/:slug', controller.findBySlug.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Fighter'
  */
-router.patch('/:fighterId', controller.update.bind(controller));
+router.patch('/:fighterId', clearCacheMiddleware(`${settings.basePath}/fighters/:fighterId`) ,controller.update.bind(controller));
 
 /**
  * @openapi
@@ -226,7 +228,7 @@ router.patch('/:fighterId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Fighter'
  */
-router.patch('/:fighterId/status', controller.changeStatus.bind(controller));
+router.patch('/:fighterId/status', clearCacheMiddleware(`${settings.basePath}/fighters/:fighterId/status`) ,controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -259,6 +261,6 @@ router.patch('/:fighterId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Fighter'
  */
-router.patch('/soft/:fighterId', controller.delete.bind(controller));
+router.patch('/soft/:fighterId', clearCacheMiddleware(`${settings.basePath}/fighters/soft/:fighterId`) ,controller.delete.bind(controller));
 
 export const fighterRoutes = router;

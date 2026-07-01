@@ -59,6 +59,8 @@ import {Router} from 'express';
 import { JudgeController } from './judge.controller.js';
 import { JudgeService } from './judge.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new JudgeController(new JudgeService(prisma));
@@ -93,7 +95,7 @@ const controller = new JudgeController(new JudgeService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Judge'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/judges`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -194,7 +196,7 @@ router.get('/:id', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Judge'
  */
-router.patch('/:id', controller.update.bind(controller));
+router.patch('/:id', clearCacheMiddleware(`${settings.basePath}/judges/:id`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -227,6 +229,6 @@ router.patch('/:id', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Judge'
  */
-router.delete('/:id', controller.delete.bind(controller));
+router.delete('/soft/:id', clearCacheMiddleware(`${settings.basePath}/judges/soft/:id`), controller.delete.bind(controller));
 
 export const judgeRoutes = router;

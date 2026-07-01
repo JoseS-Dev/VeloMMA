@@ -52,6 +52,8 @@ import {Router} from "express";
 import {BonusController} from "./bonus.controller.js";
 import { BonusService } from "./bonus.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new BonusController(new BonusService(prisma));
@@ -86,7 +88,7 @@ const controller = new BonusController(new BonusService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Bonus'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/bonuses`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -214,7 +216,7 @@ router.get('/:bonusId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Bonus'
  */
-router.patch('/:bonusId', controller.update.bind(controller));
+router.patch('/:bonusId', clearCacheMiddleware(`${settings.basePath}/bonuses/:bonusId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -247,6 +249,6 @@ router.patch('/:bonusId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Bonus'
  */
-router.patch('/soft/:bonusId', controller.delete.bind(controller));
+router.patch('/soft/:bonusId', clearCacheMiddleware(`${settings.basePath}/bonuses/soft/:bonusId`), controller.delete.bind(controller));
 
 export const bonusRoutes = router;

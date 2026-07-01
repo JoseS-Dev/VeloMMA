@@ -88,6 +88,8 @@ import {Router} from 'express';
 import { InjuryController } from './injuries.controller.js';
 import { InjuryService } from './injuries.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new InjuryController(new InjuryService(prisma));
@@ -122,7 +124,7 @@ const controller = new InjuryController(new InjuryService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Injury'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/injuries`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -263,7 +265,7 @@ router.get('/:injuryId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Injury'
  */
-router.patch('/:injuryId', controller.update.bind(controller));
+router.patch('/:injuryId',clearCacheMiddleware(`${settings.basePath}/injuries/:injuryId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -302,7 +304,7 @@ router.patch('/:injuryId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Injury'
  */
-router.patch('/:injuryId/status', controller.changeStatus.bind(controller));
+router.patch('/:injuryId/status',clearCacheMiddleware(`${settings.basePath}/injuries/:injuryId/status`), controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -335,6 +337,6 @@ router.patch('/:injuryId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Injury'
  */
-router.patch('/soft/:injuryId', controller.delete.bind(controller));
+router.patch('/soft/:injuryId',clearCacheMiddleware(`${settings.basePath}/injuries/soft/:injuryId`), controller.delete.bind(controller));
 
 export const injuryRoutes = router;

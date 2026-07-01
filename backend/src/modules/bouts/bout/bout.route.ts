@@ -123,6 +123,8 @@ import { Router } from "express";
 import { BoutController } from "./bout.controller.js";
 import { BoutService } from "./bout.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new BoutController(new BoutService(prisma));
@@ -157,7 +159,7 @@ const controller = new BoutController(new BoutService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Bout'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/bouts`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -318,7 +320,7 @@ router.get('/:BoutId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Bout'
  */
-router.patch('/:BoutId', controller.update.bind(controller));
+router.patch('/:BoutId', clearCacheMiddleware(`${settings.basePath}/bouts/:BoutId`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -357,7 +359,7 @@ router.patch('/:BoutId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Bout'
  */
-router.patch('/:BoutId/status', controller.changeStatus.bind(controller));
+router.patch('/:BoutId/status',clearCacheMiddleware(`${settings.basePath}/bouts/:BoutId/status`), controller.changeStatus.bind(controller));
 
 /**
  * @openapi
@@ -390,6 +392,6 @@ router.patch('/:BoutId/status', controller.changeStatus.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Bout'
  */
-router.patch('/soft/:BoutId', controller.delete.bind(controller));
+router.patch('/soft/:BoutId',clearCacheMiddleware(`${settings.basePath}/bouts/soft/:BoutId`), controller.delete.bind(controller));
 
 export const boutRoutes = router;
