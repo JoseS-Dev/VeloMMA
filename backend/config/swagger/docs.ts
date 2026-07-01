@@ -1,5 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
-import { settings } from "./settings.js";
+import { settings } from "../settings.js";
 
 // Configuración de swagger
 const config: swaggerJSDoc.Options = {
@@ -12,7 +12,7 @@ const config: swaggerJSDoc.Options = {
         },
         servers: [
             {
-                url: `http://localhost:3000${settings.basePath}`,
+                url: `http://localhost:5300${settings.basePath}`,
                 description: 'Servidor local'
             }
         ],
