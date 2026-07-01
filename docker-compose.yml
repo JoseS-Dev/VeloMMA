@@ -31,23 +31,38 @@ services:
     depends_on:
       - db
 
-  # 3. Backend
+  # 3. Redis
+  redis_velomma:
+    image: redis:7-alpine
+    container_name: velomma_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - velomma_network
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+  # 4. Backend
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    # Optimizamos el comando para asegurar que use el store-dir del contenedor si es necesario
-    command: >
-      sh -c "pnpm install --no-frozen-lockfile && pnpm prisma generate && pnpm dev"
     container_name: backend
     restart: unless-stopped
     environment:
       - PORT=${PORT:-5300}
       - NODE_ENV=${NODE_ENV:-development}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - BASE_PATH=${BASE_PATH:-/api}
+      - API_SECRET_KEY=${API_SECRET_KEY:-velomma}
+      - COOKIE_SECRET=${COOKIE_SECRET:-velomma}
+      - REDIS_URL=${REDIS_URL:-http://velomma_redis:6379}
+      - REDIS_ENV=${REDIS_ENV:-false}
       - DATABASE_URL=postgresql://${DB_USER-velomma}:${DB_PASSWORD-velomma}@db:5432/${DB_NAME-velomma}?schema=public
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - /app/generated
     ports:
       - "${PORT:-5300}:${PORT:-5300}"
     networks:
