@@ -6,7 +6,8 @@ import {
     injuryRoutes,
     stableRoutes,
     weightRoutes,
-    rankingRoutes
+    rankingRoutes,
+    titleRouter
 } from '../modules/relational/index.js';
 import {
     judgeRoutes,
@@ -30,4 +31,5 @@ export const routesConfig = [
   { path: '/metrics',  router: metricRoutes },
   { path: '/rankings', router: rankingRoutes },
   { path: '/bonuses',  router: bonusRoutes },
+  { path: '/titles',  router: titleRouter },
 ];
