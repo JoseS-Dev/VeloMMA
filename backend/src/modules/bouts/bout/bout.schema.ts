@@ -2,7 +2,8 @@ import type { BoutDTO, BoutUpdateDTO } from "../../../types/index.js";
 import { 
     BoutResult,
     WinMethod,
-    BoutStatus 
+    BoutStatus,
+    SubmissionType 
 } from "../../../../generated/prisma/index.js";
 import { z } from "zod";
 
@@ -14,10 +15,12 @@ const SchemaBoutDTO = z.object({
     blue_corner_id: z.number().int().positive(),
     result: z.enum(BoutResult).optional(),
     method: z.enum(WinMethod).optional(),
+    submission_type: z.enum(SubmissionType).optional(),
     rounded_ended: z.number().int().positive().optional(),
-    time_ended: z.string().optional(),
+    time_ended: z.number().optional(),
     referee: z.string().optional(),
     is_title_fight: z.boolean().optional(),
+    upset: z.boolean().optional(),
     status_bout: z.enum(BoutStatus).optional()
 });
 
