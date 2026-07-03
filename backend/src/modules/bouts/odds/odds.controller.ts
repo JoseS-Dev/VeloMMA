@@ -1,0 +1,82 @@
+import type { Request, Response } from 'express';
+import { OddsService } from './odds.services.js';
+import { validateCreateBoutOddsDTO, validateUpdateBoutOddsDTO } from './odds.schema.js';
+import { SendResponse } from '../../../common/decorator/decorator.js';
+
+// Controlador que maneja las rutas relacionadas con las casas de apuestas para una pelea
+export class OddsController {
+    constructor(private readonly oddsService: OddsService) {}
+
+    // Controlador para crear una casa de apuesta para una pelea
+    @SendResponse('Casa de apuesta creada exitosamente', 201)
+    async create(req: Request, res: Response) {
+        const validation = validateCreateBoutOddsDTO(req.body);
+        if(!validation.success) return res.status(400).json({ message: 'Los datos son inválidos', errors: validation.error });
+        const result = await this.oddsService.create(validation.data);
+        return result;
+    }
+
+    // Controlador para obtener todas las casas de apuestas para una pelea
+    @SendResponse('Casas de apuestas obtenidas exitosamente', 200)
+    async findAll(req: Request, res: Response){
+        const { boutId } = req.params;
+        const { page, limit } = req.query;
+        // se valida los parametros de paginación
+        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
+        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
+        const result = await this.oddsService.findAll(Number(boutId), Number(page) || 1, Number(limit) || 10);
+        return {
+            data: result.Odds,
+            meta: {
+                total: result.total,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10
+            }
+        };
+    }
+
+    // Controlador para obtener todas las casas de apuestas de un proveedor en común
+    @SendResponse('Casas de apuestas obtenidas exitosamente', 200)
+    async findAllByProvider(req: Request, res: Response){
+        const { provider } = req.params;
+        const { page, limit } = req.query;
+        // se valida los parametros de paginación
+        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
+        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
+        const result = await this.oddsService.findAllByProvider(String(provider), Number(page) || 1, Number(limit) || 10);
+        return {
+            data: result.Odds,
+            meta: {
+                total: result.total,
+                page: Number(page) || 1,
+                limit: Number(limit) || 10
+            }
+        };
+    }
+
+    // Controlador para obtener una casa de apuesta por su ID
+    @SendResponse('Casa de apuesta obtenida exitosamente', 200)
+    async findOne(req: Request, res: Response){
+        const { oddsId } = req.params;
+        const result = await this.oddsService.findById(Number(oddsId));
+        return result;
+    }
+
+    // Controlador para actualizar una casa de apuesta por su ID
+    @SendResponse('Casa de apuesta actualizada exitosamente', 200)
+    async update(req: Request, res: Response){
+        const { oddsId } = req.params;
+        const validation = validateUpdateBoutOddsDTO(req.body);
+        if(!validation.success) return res.status(400).json({ message: 'Los datos son inválidos', errors: validation.error });
+        const result = await this.oddsService.update(Number(oddsId), validation.data);
+        return result;
+    }
+
+    // Controlador para eliminar una casa de apuesta por su ID
+    @SendResponse('Casa de apuesta eliminada exitosamente', 200)
+    async delete(req: Request, res: Response){
+        const { oddsId } = req.params;
+        const result = await this.oddsService.delete(Number(oddsId));
+        return result;
+    }
+}

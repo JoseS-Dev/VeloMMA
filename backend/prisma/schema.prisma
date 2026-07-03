@@ -70,6 +70,28 @@ enum BoutStatus {
   Finalizada
 }
 
+// Enum para el tipo de Titulo
+enum TitleType {
+  Undisputed
+  Interino
+  Vacante
+}
+
+// Enum para el tipo de submissión
+enum SubmissionType {
+  Rear_Naked_Choke
+  Guillotine_Choke
+  Armbar
+  Triangle_Choke
+  Kimura
+  Americana
+  Ankle_Lock
+  Heel_Hook
+  Kneebar
+  Wrist_Lock
+  Other
+}
+
 // Tabla de los luchadores
 model fighters {
   id Int @id @default(autoincrement())
@@ -83,6 +105,7 @@ model fighters {
   height Float?
   weight Float?
   stance Stance?
+  reach Float?
   is_active Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -96,6 +119,9 @@ model fighters {
   bouts_blue bouts[] @relation("BlueCorner")
   rankings fighterRankings[]
   bonuses boutBonuses[]
+  titles fighterTitles[]
+  camps trainingCamps[]
+  stats fighterStats?
   @@map("fighters")
 }
 
@@ -128,6 +154,7 @@ model divisions {
   fighters fighterDivision[]
   bouts bouts[]
   rankings fighterRankings[]
+  titles fighterTitles[]
   @@map("divisions")
 }
 
@@ -158,6 +185,7 @@ model teams {
   updated_at DateTime @updatedAt
   deleted_at DateTime?
   fighters fighterTeams[]
+  camps trainingCamps[]
   @@map("teams")
 }
 
@@ -202,10 +230,12 @@ model bouts {
   blue_corner_id Int
   result BoutResult?
   method WinMethod?
+  submission_type SubmissionType?
   rounded_ended Int?
-  time_ended String?
+  time_ended Int?
   referee String?
   is_title_fight Boolean @default(false)
+  upset Boolean @default(false)
   status_bout BoutStatus @default(Programada)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -218,6 +248,8 @@ model bouts {
   metrics boutMetrics[]
   boutWeighIns boutWeighIns[]
   bonuses boutBonuses[]
+  odds boutOdds[]
+  camps trainingCamps[]
   @@map("bouts")
 }
 
@@ -237,6 +269,15 @@ model boutMetrics {
   takedowns_landed Int @default(0)
   takedowns_attempted Int @default(0)
   submissions_landed Int @default(0)
+  head_strikes_attempted Int @default(0)
+  body_strikes_attempted Int @default(0)
+  leg_strikes_attempted Int @default(0)
+  distance_strikes_landed Int @default(0)
+  clinch_strikes_landed Int @default(0)
+  ground_strikes_landed Int @default(0)
+  distance_strikes_attempted Int @default(0)
+  clinch_strikes_attempted Int @default(0)
+  ground_strikes_attempted Int @default(0)
   reversals Int @default(0)
   control_time Int @default(0)
   knockdowns Int @default(0)
@@ -307,4 +348,68 @@ model boutBonuses {
   bout bouts @relation(fields: [bout_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
   @@map("bout_bonuses")
+}
+
+// Modelo para el historial de los cinturones de un luchador
+model fighterTitles {
+  id Int @id @default(autoincrement())
+  division_id Int
+  fighter_id Int
+  title_type TitleType @default(Undisputed)
+  won_date DateTime
+  lost_date DateTime?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  division divisions @relation(fields: [division_id], references: [id])
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@map("fighter_titles")
+}
+
+// Modelo para las casas de las apuentas por la pelea
+model boutOdds {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  red_opening_odds Float
+  blue_opening_odds Float
+  red_closing_odds Float
+  blue_closing_odds Float
+  provider String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  @@map("bout_odds")
+}
+
+// Modelo para el historial de campamentos de entrenamiento de un luchador para una pelea
+model trainingCamps {
+  id Int @id @default(autoincrement())
+  bout_id Int
+  team_id Int
+  fighter_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  bout bouts @relation(fields: [bout_id], references: [id])
+  team teams @relation(fields: [team_id], references: [id])
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@unique([bout_id, fighter_id])
+  @@map("training_camps")
+}
+
+// Modelo para actaulización de las metricas de un luchador cada vez que termine un evento
+model fighterStats {
+  id Int @id @default(autoincrement())
+  fighter_id Int @unique
+  sig_strikes_accuracy Float
+  sig_strikes_absorbed_pm Float
+  takedown_accuracy Float
+  takedown_defense Float
+  average_fight_time Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+  fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@map("fighter_stats")
 }

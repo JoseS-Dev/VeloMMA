@@ -14,6 +14,15 @@ export interface MetricDTO {
     takedowns_landed?: number;
     takedowns_attempted?: number;
     submissions_landed?: number;
+    head_strikes_attempted?: number;
+    body_strikes_attempted?: number;
+    leg_strikes_attempted?: number;
+    distance_strikes_landed?: number;
+    distance_strikes_attempted?: number;
+    clinch_strikes_landed?: number;
+    clinch_strikes_attempted?: number;
+    ground_strikes_landed?: number;
+    ground_strikes_attempted?: number;
     reversals?: number;
     control_time?: number;
     knockdowns?: number;

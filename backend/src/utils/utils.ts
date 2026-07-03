@@ -6,14 +6,18 @@ import {
     injuryRoutes,
     stableRoutes,
     weightRoutes,
-    rankingRoutes
+    rankingRoutes,
+    titleRouter,
+    campRouter,
+    statsRouter
 } from '../modules/relational/index.js';
 import {
     judgeRoutes,
     weighInsRoutes,
     boutRoutes,
     metricRoutes,
-    bonusRoutes
+    bonusRoutes,
+    oddsRouter
 } from '../modules/bouts/index.js';
 
 export const routesConfig = [
@@ -30,4 +34,8 @@ export const routesConfig = [
   { path: '/metrics',  router: metricRoutes },
   { path: '/rankings', router: rankingRoutes },
   { path: '/bonuses',  router: bonusRoutes },
+  { path: '/titles',  router: titleRouter },
+  { path: '/odds',  router: oddsRouter },
+  { path: '/camps',  router: campRouter },
+  { path: '/stats',  router: statsRouter }
 ];
