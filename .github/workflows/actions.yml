@@ -41,10 +41,18 @@ jobs:
       - name: Instalar dependencias (frozen lockfile)
         run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
 
+      # ── Validación de esquema Prisma ─────────
+      - name: Validar esquema de Prisma
+        run: pnpm prisma:validate
+
       # ── Generación de Prisma ─────────────────
       - name: Generar cliente de Prisma
         run: pnpm prisma generate
 
+      # ── Type Check (sin emitir archivos) ─────
+      - name: TypeScript type check
+        run: pnpm typecheck
+
       # ── Compilación TypeScript ───────────────
       - name: Compilar TypeScript
-        run: pnpm build                        # Elimina la salida anterior y transpila
+        run: pnpm build
