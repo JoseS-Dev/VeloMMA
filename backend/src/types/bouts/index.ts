@@ -3,3 +3,4 @@ export * from './judges/judges.types.js';
 export * from './metrics/metric.types.js';
 export * from './weighIns/weighIns.types.js';
 export * from './bonus/bonus.types.js';
+export * from './odds/odds.types.js';
