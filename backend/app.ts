@@ -15,6 +15,7 @@ import { connectRedis } from './config/cache/redis.js';
 
 // Inició e servidor express
 const app: express.Application = express();
+const isTest = settings.nodeEnv === 'test';
 
 // Middlewares
 app.use(json());
@@ -23,13 +24,14 @@ app.use(cors({
     credentials: true
 }));
 app.use(helmet());
-app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(errorsMiddleware);
-app.use(globalCacheMiddleware);
 
-// Rate Limit de peticiones
-app.use(rateLimit(settings.rateLimit));
+if(!isTest){
+    app.use(morgan('dev'));
+    app.use(globalCacheMiddleware);
+    app.use(rateLimit(settings.rateLimit));
+}
 
 // Ruta de bienvenida
 app.get(`${settings.basePath}`, (req: Request, res: Response) => {
@@ -69,12 +71,12 @@ app.use(`${settings.basePath}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpe
 // Rutas
 app.use(apiRouter);
 
-// Escuchamos el servidor
-if(settings.nodeEnv === 'development'){
+if(!isTest){
     await connectRedis();
     app.listen(settings.port, () => {
         console.log(`Servidor corriendo en http://localhost:${settings.port}${settings.basePath}`);
-    })
+    });
 }
+
 
 export default app;

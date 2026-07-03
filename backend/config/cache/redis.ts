@@ -13,7 +13,7 @@ client.on('error', (err) => console.error('Redis error', err));
 
 // Función para inicializar la conexión
 export async function connectRedis(){
-    if(!client.isOpen){
+    if(settings.nodeEnv !== 'test'){
         await client.connect();
     }
 }
