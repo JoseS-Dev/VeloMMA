@@ -4,6 +4,7 @@ process.env.NODE_ENV = 'test';
 
 const config: Config = {
   testEnvironment: 'node',
+  setupFiles: ['<rootDir>/jest.setup.ts'], 
   transform: {
     '^.+\\.tsx?$': [
       '@swc/jest',

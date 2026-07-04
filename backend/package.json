@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
     "dev": "tsx watch app.ts",
     "prebuild": "rimraf dist",
     "build": "tsc",
