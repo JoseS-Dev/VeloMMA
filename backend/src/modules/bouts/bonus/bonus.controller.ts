@@ -11,7 +11,7 @@ export class BonusController {
     @SendResponse('Bono agregado exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateBonusData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.bonusService.create(validation.data);
         return result
     }
@@ -68,7 +68,7 @@ export class BonusController {
     async update(req: Request, res: Response){
         const {bonusId} = req.params;
         const validation = validateBonusUpdateData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.bonusService.update(Number(bonusId), validation.data);
         return result
     }

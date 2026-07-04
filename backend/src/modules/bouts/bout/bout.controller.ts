@@ -11,7 +11,7 @@ export class BoutController {
     @SendResponse('Pelea creada correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateBoutDTO(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.boutService.create(validation.data);
         return result
     }
@@ -87,7 +87,7 @@ export class BoutController {
     async update(req: Request, res: Response){
         const {BoutId} = req.params;
         const validation = validateBoutUpdateDTO(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.boutService.update(Number(BoutId), validation.data);
         return result
     }

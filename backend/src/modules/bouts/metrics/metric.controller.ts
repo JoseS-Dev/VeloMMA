@@ -11,7 +11,7 @@ export class MetricController {
     @SendResponse('Métrica agregada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateMetricData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.metricService.create(validation.data);
         return result
     }
@@ -62,7 +62,7 @@ export class MetricController {
     async update(req: Request, res: Response){
         const {MetricId} = req.params;
         const validation = validateMetricUpdateData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.metricService.update(Number(MetricId), validation.data);
         return result
     }
