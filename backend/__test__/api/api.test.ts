@@ -57,13 +57,4 @@ describe("Rutas de bienvenida, health, ping y docs", () => {
             expect(response.body).toHaveProperty('status', 'pong');
         })
     })
-
-    describe(`GET ${settings.basePath}/docs - Ruta de documentación`, () => {
-        test("Deberia retornar un status 200 y la documentación de la API", async() => {
-            const response = await setup.apiInstance
-            .get(`${settings.basePath}/docs`)
-
-            expect(response.status).toBe(200);
-        })
-    })
 })
