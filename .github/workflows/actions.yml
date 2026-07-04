@@ -6,15 +6,26 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  NODE_VERSION: 22.15            # Coincide con la imagen Docker del proyecto
-  PNPM_VERSION: 10.31.0          # Definido en backend/package.json > packageManager
-
 jobs:
   ci:
     name: Backend CI
     runs-on: ubuntu-latest
 
+    services:
+      postgres-test:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     # Todos los comandos se ejecutan dentro de ./backend
     defaults:
       run:
@@ -28,12 +39,12 @@ jobs:
       - name: Instalar pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
+          version: ${{ secrets.PNPM_VERSION }}
 
-      - name: Configurar Node.js ${{ env.NODE_VERSION }}
+      - name: Configurar Node.js ${{ secrets.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ secrets.NODE_VERSION }}
           cache: pnpm                           # Cachea la pnpm store global
           cache-dependency-path: ./backend/pnpm-lock.yaml
 
@@ -48,6 +59,21 @@ jobs:
       # ── Generación de Prisma ─────────────────
       - name: Generar cliente de Prisma
         run: pnpm prisma generate
+
+      # ── Sincronizar Base de Datos de Pruebas ─
+      - name: Sincronizar Base de Datos de Pruebas
+        run: pnpm prisma db push
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+      
+      # ── Ejecutar pruebas unitarias ─────────────
+      - name: Ejecutar pruebas unitarias
+        run: pnpm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          REDIS_ENV: "false"
 
       # ── Type Check (sin emitir archivos) ─────
       - name: TypeScript type check
