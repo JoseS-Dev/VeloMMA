@@ -11,7 +11,7 @@ export class WeightController {
     @SendResponse('Peso oficial creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateWeight(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const weight = await this.weightService.create(validation.data);
         return weight;
     }
@@ -48,7 +48,7 @@ export class WeightController {
     async update(req: Request, res: Response){
         const {weightId} = req.params;
         const validation = validateUpdateWeight(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const weight = await this.weightService.update(Number(weightId), validation.data);
         return weight;
     }

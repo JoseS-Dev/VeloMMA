@@ -12,7 +12,7 @@ export class InjuryController {
     @SendResponse('Lesión o inactividad creada correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateInjury(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const injury = await this.injuryService.create(validation.data);
         return injury;
     }
@@ -58,7 +58,7 @@ export class InjuryController {
     async update(req: Request, res: Response) {
         const {injuryId} = req.params;
         const validation = validateUpdateInjury(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const injury = await this.injuryService.update(Number(injuryId), validation.data);
         return injury;
     }
