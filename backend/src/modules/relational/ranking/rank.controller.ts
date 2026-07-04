@@ -11,7 +11,7 @@ export class RankingController {
     @SendResponse('Clasificación agregada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateRankingData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.rankingService.create(validation.data);
         return result
     }
@@ -69,7 +69,7 @@ export class RankingController {
     async update(req: Request, res: Response){
         const {RankingId} = req.params;
         const validation = validateRankingUpdateData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.rankingService.update(Number(RankingId), validation.data);
         return result
     }

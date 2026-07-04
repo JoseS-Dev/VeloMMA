@@ -6,11 +6,16 @@ export function clearCacheMiddleware(pattern: string){
     return async (req: Request, res: Response, next: NextFunction) => {
         const orginalJSON = res.json;
         res.json = function(body): Response {
+        
+            if(!client){
+                return orginalJSON.call(this, body);
+            }
+            
             if(res.statusCode === 200 || res.statusCode === 201){
-                client.keys(`cache:${pattern}*`)
+                client?.keys(`cache:${pattern}*`)
                 .then((keys) => {
                     if(keys.length > 0){
-                        client.del(keys)
+                        client?.del(keys)
                         .catch(err => console.error('Error al limpiar cache', err));
                     }
                 })

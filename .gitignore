@@ -142,8 +142,10 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+
 uploads/
 .claude/
 Claude.md
 test/
 CODE_DOCS.md
+pnpm-workspace.yaml

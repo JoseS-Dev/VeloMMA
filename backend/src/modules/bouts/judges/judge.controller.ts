@@ -11,7 +11,7 @@ export class JudgeController {
     @SendResponse('Juez creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateJudgeData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.judgeService.create(validation.data);
         return result;
     }
@@ -48,7 +48,7 @@ export class JudgeController {
     async update(req: Request, res: Response){
         const { id } = req.params;
         const validation = validateJudgeUpdateData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.judgeService.update(Number(id), validation.data);
         return result;
     }

@@ -13,6 +13,7 @@ export const fighterSchema = z.object({
     height: z.number().min(0).max(300).optional(),
     weight: z.number().min(0).max(300).optional(),
     stance: z.enum(Stance).optional(),
+    reach: z.number().min(0).max(300).optional(),
 });
 
 // Esquema de validación de los datos de actualización de un luchador

@@ -11,7 +11,7 @@ export class CampController {
     @SendResponse('Campamento creado exitosamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateCreateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Los datos son inválidos', errors: validation.error });
+        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
         const result = await this.campService.create(validation.data);
         return result;
     }
@@ -67,7 +67,7 @@ export class CampController {
     async update(req: Request, res: Response){
         const { campId } = req.params;
         const validation = validateUpdateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Los datos son inválidos', errors: validation.error });
+        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
         const result = await this.campService.update(Number(campId), validation.data);
         return result;
     }

@@ -11,7 +11,7 @@ export class StableController {
     @SendResponse('Relación equipo con luchador creada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateStable(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const stable = await this.stableService.create(validation.data);
         return stable;
     }
@@ -48,7 +48,7 @@ export class StableController {
     async update(req: Request, res: Response){
         const {stableId} = req.params;
         const validation = validateUpdateStable(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const stable = await this.stableService.update(Number(stableId), validation.data);
         return stable;
     }

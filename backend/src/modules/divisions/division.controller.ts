@@ -11,7 +11,7 @@ export class DivisionController {
     @SendResponse('Division creada correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateDivision(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const division = await this.divisionService.create(validation.data);
         return division;
     }
@@ -65,7 +65,7 @@ export class DivisionController {
     async update(req: Request, res: Response) {
         const {divisionId} = req.params;
         const validation = validateUpdateDivision(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const division = await this.divisionService.update(Number(divisionId), validation.data);
         return division;
     }

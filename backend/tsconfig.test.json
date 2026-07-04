@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "verbatimModuleSyntax": false,
+    "types": ["jest", "node"],
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*",
+    "__test__/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

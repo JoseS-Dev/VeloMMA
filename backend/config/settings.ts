@@ -1,6 +1,12 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({
+    path: process.env.NODE_ENV === 'test' ? 
+    path.resolve(process.cwd(), '.env.test') 
+    : path.resolve(process.cwd(), '.env'),
+    override: true
+});
 
 // Variables de entorno del servidor
 export const settings = {

@@ -11,7 +11,7 @@ export class WeighInsController {
     @SendResponse('Pesaje oficial creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateWeighInsData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.weighInsService.create(validation.data);
         return result;
     }
@@ -55,7 +55,7 @@ export class WeighInsController {
     async update(req: Request, res: Response){
         const { id } = req.params;
         const validation = validateWeighInsUpdateData(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.weighInsService.update(Number(id), validation.data);
         return result;
     }

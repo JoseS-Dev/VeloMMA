@@ -39,3 +39,29 @@ export const routesConfig = [
   { path: '/camps',  router: campRouter },
   { path: '/stats',  router: statsRouter }
 ];
+
+// Lista de los nombres de las tablas de la base de datos que se deben limpiar antes de cada test
+export const tablesToClear: string[] = [
+    // Tablas con dependencias (orden inverso)
+    'bout_metrics',           // Depende de bouts y fighters
+    'bout_judges',            // Depende de bouts
+    'bout_weigh_ins',         // Depende de bouts y fighters
+    'bout_bonuses',           // Depende de bouts y fighters
+    'bout_odds',              // Depende de bouts
+    'training_camps',         // Depende de bouts, teams y fighters
+    'fighter_titles',         // Depende de divisions y fighters
+    'fighter_rankings',       // Depende de fighters y divisions
+    'fighter_stats',          // Depende de fighters (unique)
+    'fighter_injuries',       // Depende de fighters
+    'fighter_teams',          // Depende de fighters y teams
+    'fighter_division',       // Depende de fighters y divisions
+    
+    // Tablas principales (dependen de otras pero no tienen dependientes)
+    'bouts',                  // Depende de events, divisions, fighters
+    'fighters',               // Depende de sí misma (relaciones)
+    
+    // Tablas base (independientes o con pocas dependencias)
+    'events',                 // Independiente
+    'divisions',              // Independiente
+    'teams',                  // Independiente
+]

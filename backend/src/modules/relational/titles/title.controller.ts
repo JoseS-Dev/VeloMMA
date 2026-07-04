@@ -12,7 +12,7 @@ export class TitleController {
     @SendResponse('Titulo creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateTitleDTO(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Datos inválidos', errors: validation.error});
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.titleService.create(validation.data);
         return result;
     }
@@ -89,7 +89,7 @@ export class TitleController {
     async update(req: Request, res: Response){
         const { titleId } = req.params;
         const validation = validateUpdateTitleDTO(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Datos inválidos', errors: validation.error});
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const result = await this.titleService.update(Number(titleId), validation.data);
         return result;
     }
