@@ -72,7 +72,7 @@ app.use(`${settings.basePath}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpe
 app.use(apiRouter);
 
 if(!isTest){
-    await connectRedis();
+    if(settings.redisEnv) await connectRedis();
     app.listen(settings.port, () => {
         console.log(`Servidor corriendo en http://localhost:${settings.port}${settings.basePath}`);
     });
