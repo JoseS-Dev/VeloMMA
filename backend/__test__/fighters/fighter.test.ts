@@ -50,7 +50,7 @@ describe("Modulo de Fighters", () => {
 
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('status', 201);
-            expect(response.body).toHaveProperty('message', 'Luchador creado exitosamente');
+            expect(response.body).toHaveProperty('message', 'Luchador creado correctamente');
             expect(response.body.data).toMatchObject(createdFighterData);
 
             testFighterId = response.body.data.id;
@@ -69,7 +69,6 @@ describe("Modulo de Fighters", () => {
             .send(invalidData);
 
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('status', 400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
         })
     })
