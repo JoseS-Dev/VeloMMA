@@ -10,6 +10,7 @@ export interface FighterDTO {
     height?: number;
     weight?: number;
     stance?: Stance;
+    reach?: number;
 }
 
 // Defino la interfaz pra actualizar los datos de un luchador
