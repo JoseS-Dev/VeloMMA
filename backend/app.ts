@@ -25,7 +25,7 @@ app.use(cors({
 }));
 app.use(helmet());
 app.use(cookieParser());
-app.use(errorsMiddleware);
+
 
 if(!isTest){
     app.use(morgan('dev'));
@@ -70,6 +70,8 @@ app.use(`${settings.basePath}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpe
 
 // Rutas
 app.use(apiRouter);
+
+app.use(errorsMiddleware);
 
 if(!isTest){
     if(settings.redisEnv) await connectRedis();
