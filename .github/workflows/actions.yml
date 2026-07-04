@@ -73,7 +73,9 @@ jobs:
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           REDIS_ENV: "false"
+          NODE_OPTIONS: --experimental-vm-modules
 
       # ── Type Check (sin emitir archivos) ─────
       - name: TypeScript type check
