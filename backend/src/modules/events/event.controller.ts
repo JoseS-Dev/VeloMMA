@@ -11,7 +11,7 @@ export class EventController {
     @SendResponse('Evento creado correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateEvent(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const event = await this.eventService.create(validation.data);
         return event;
     }
@@ -73,7 +73,7 @@ export class EventController {
     async update(req: Request, res: Response) {
         const {eventId} = req.params;
         const validation = validateUpdateEvent(req.body);
-        if(!validation.success) return res.status(400).json(validation.error);
+        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
         const event = await this.eventService.update(Number(eventId), validation.data);
         return event;
     }
