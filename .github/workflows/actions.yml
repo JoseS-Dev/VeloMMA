@@ -1,0 +1,58 @@
+name: VeloMMA CI
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: 22.15            # Coincide con la imagen Docker del proyecto
+  PNPM_VERSION: 10.31.0          # Definido en backend/package.json > packageManager
+
+jobs:
+  ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    # Todos los comandos se ejecutan dentro de ./backend
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # ── pnpm + Node ──────────────────────────
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Configurar Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm                           # Cachea la pnpm store global
+          cache-dependency-path: ./backend/pnpm-lock.yaml
+
+      # ── Instalación ──────────────────────────
+      - name: Instalar dependencias (frozen lockfile)
+        run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
+
+      # ── Validación de esquema Prisma ─────────
+      - name: Validar esquema de Prisma
+        run: pnpm prisma:validate
+
+      # ── Generación de Prisma ─────────────────
+      - name: Generar cliente de Prisma
+        run: pnpm prisma generate
+
+      # ── Type Check (sin emitir archivos) ─────
+      - name: TypeScript type check
+        run: pnpm typecheck
+
+      # ── Compilación TypeScript ───────────────
+      - name: Compilar TypeScript
+        run: pnpm build
