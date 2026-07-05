@@ -1,15 +1,140 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     FighterStats:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único de las estadísticas
+ *         fighter_id:
+ *           type: integer
+ *           description: ID del luchador
+ *         sig_strikes_accuracy:
+ *           type: number
+ *           description: Precisión de golpes significativos (porcentaje)
+ *         sig_strikes_absorbed_pm:
+ *           type: number
+ *           description: Golpes significativos absorbidos por minuto
+ *         takedown_accuracy:
+ *           type: number
+ *           description: Precisión de derribos (porcentaje)
+ *         takedown_defense:
+ *           type: number
+ *           description: Defensa de derribos (porcentaje)
+ *         average_fight_time:
+ *           type: number
+ *           description: Tiempo promedio de pelea (en minutos)
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización
+ *         deleted_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Fecha de eliminación (soft delete)
+ *     UpdateFighterStatsInput:
+ *       type: object
+ *       properties:
+ *         sig_strikes_accuracy:
+ *           type: number
+ *           description: Precisión de golpes significativos (porcentaje)
+ *         sig_strikes_absorbed_pm:
+ *           type: number
+ *           description: Golpes significativos absorbidos por minuto
+ *         takedown_accuracy:
+ *           type: number
+ *           description: Precisión de derribos (porcentaje)
+ *         takedown_defense:
+ *           type: number
+ *           description: Defensa de derribos (porcentaje)
+ *         average_fight_time:
+ *           type: number
+ *           description: Tiempo promedio de pelea (en minutos)
+ */
+
 import {Router} from "express";
 import { StatsController } from "./stats.controller.js";
 import { StatsService } from "./stats.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
 
-// Rutas relacionadas con las estadísticas de un luchador
 const router: Router = Router();
 const controller = new StatsController(new StatsService(prisma));
 
-// Rutas para actualizar las estadísticas de un luchador
+/**
+ * @openapi
+ * /stats/{fighterId}:
+ *   patch:
+ *     tags: [Estadísticas]
+ *     summary: Actualizar las estadísticas de un luchador
+ *     description: Actualiza las estadísticas de carrera de un luchador después de un evento
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: fighterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del luchador
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateFighterStatsInput'
+ *     responses:
+ *       '200':
+ *         description: Estadísticas actualizadas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/FighterStats'
+ */
 router.patch('/:fighterId', controller.updateFighterCareerStats.bind(controller));
-// Rutas para obtener las estadísticas de un luchador
+
+/**
+ * @openapi
+ * /stats/{fighterId}:
+ *   get:
+ *     tags: [Estadísticas]
+ *     summary: Obtener las estadísticas de un luchador
+ *     description: Retorna las estadísticas de carrera de un luchador
+ *     parameters:
+ *       - in: path
+ *         name: fighterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del luchador
+ *     responses:
+ *       '200':
+ *         description: Estadísticas del luchador obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/FighterStats'
+ */
 router.get('/:fighterId', controller.getFighterCareerStats.bind(controller));
 
 export const statsRouter = router;
