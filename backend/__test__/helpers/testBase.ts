@@ -16,13 +16,31 @@ export class TestBase {
     // Método para limpiar la base de datos antes de cada test
     public async clearDatabase(): Promise<void> {
         await this.prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SET CONSTRAINTS ALL DEFERRED;`;
             try{
                 for (const table of tablesToClear) {
                     await tx.$executeRawUnsafe(`TRUNCATE TABLE ${table} CASCADE;`);
                 }
             }
             finally{
-                await tx.$executeRawUnsafe(`SET CONSTRAINTS ALL IMMEDIATE;`);
+                await tx.$executeRaw`SET CONSTRAINTS ALL IMMEDIATE;`;
+            }
+        });
+    }
+
+    // Método para limpiar la base de datos pero con deleteMany
+    public async clearDatabaseDeleteMany(): Promise<void> {
+        await this.prisma.$transaction(async (tx) => {
+            try{
+                for (const table of tablesToClear) {
+                    const model = tx[table as keyof typeof tx] as any;
+                    if (model && typeof model.deleteMany === 'function') {
+                        await model.deleteMany({});
+                    }
+                }
+            }
+            catch(error){
+                console.error(`Error al limpiar`, error);
             }
         });
     }

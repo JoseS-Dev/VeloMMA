@@ -84,7 +84,7 @@ export class FighterController {
         const {fighterId} = req.params;
         const {status} = req.body;
         if(status && !Boolean(status)) return res.status(400).json({message: 'El estado es obligatorio'});
-        const fighter = await this.fighterService.changeStatus(Number(fighterId), Boolean(status));
+        const fighter = await this.fighterService.changeStatus(Number(fighterId), status);
         return fighter;
     }
 

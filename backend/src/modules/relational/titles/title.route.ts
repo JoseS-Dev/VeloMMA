@@ -1,25 +1,334 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Title:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único del título
+ *         division_id:
+ *           type: integer
+ *           description: ID de la división
+ *         fighter_id:
+ *           type: integer
+ *           description: ID del luchador
+ *         title_type:
+ *           type: string
+ *           enum: [Undisputed, Interim, Unified]
+ *           description: Tipo de título
+ *         won_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que ganó el título
+ *         lost_date:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Fecha en que perdió el título
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización
+ *         deleted_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Fecha de eliminación (soft delete)
+ *     CreateTitleInput:
+ *       type: object
+ *       required:
+ *         - division_id
+ *         - fighter_id
+ *         - title_type
+ *         - won_date
+ *       properties:
+ *         division_id:
+ *           type: integer
+ *           description: ID de la división
+ *         fighter_id:
+ *           type: integer
+ *           description: ID del luchador
+ *         title_type:
+ *           type: string
+ *           enum: [Undisputed, Interim, Unified]
+ *           description: Tipo de título
+ *         won_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que ganó el título
+ *         lost_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que perdió el título
+ *     UpdateTitleInput:
+ *       type: object
+ *       properties:
+ *         title_type:
+ *           type: string
+ *           enum: [Undisputed, Interim, Unified]
+ *           description: Tipo de título
+ *         won_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que ganó el título
+ *         lost_date:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que perdió el título
+ */
+
 import {Router} from 'express';
 import { TitleController } from './title.controller.js';
 import { TitleService } from './title.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
 
-// Rutas relacionadas con los titulos de un luchador en una división
 const router: Router = Router();
 const controller = new TitleController(new TitleService(prisma));
 
-// Ruta para crea un nuevo titulo de un luchador en una división
+/**
+ * @openapi
+ * /titles:
+ *   post:
+ *     tags: [Títulos]
+ *     summary: Crear un nuevo título
+ *     description: Registra un nuevo título de un luchador en una división
+ *     security:
+ *       - ApiKeyAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateTitleInput'
+ *     responses:
+ *       '201':
+ *         description: Título creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Title'
+ */
 router.post('/', controller.create.bind(controller));
-// Ruta para obtener todos los titulos de un luchador
+
+/**
+ * @openapi
+ * /titles/fighter/{fighterId}:
+ *   get:
+ *     tags: [Títulos]
+ *     summary: Obtener todos los títulos de un luchador
+ *     description: Retorna todos los títulos que ha tenido un luchador
+ *     parameters:
+ *       - in: path
+ *         name: fighterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del luchador
+ *     responses:
+ *       '200':
+ *         description: Lista de títulos del luchador obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Title'
+ */
 router.get('/fighter/:fighterId', controller.findAllByFighter.bind(controller));
-// Ruta para obtener todos los titulos de una división
+
+/**
+ * @openapi
+ * /titles/division/{divisionId}:
+ *   get:
+ *     tags: [Títulos]
+ *     summary: Obtener todos los títulos de una división
+ *     description: Retorna todos los títulos de una división específica
+ *     parameters:
+ *       - in: path
+ *         name: divisionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la división
+ *     responses:
+ *       '200':
+ *         description: Lista de títulos de la división obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Title'
+ */
 router.get('/division/:divisionId', controller.findAllByDivision.bind(controller));
-// Ruta para obtener todos los titulos de una división y tipo de titulo
+
+/**
+ * @openapi
+ * /titles/division/{divisionId}/title-type/{titleType}:
+ *   get:
+ *     tags: [Títulos]
+ *     summary: Obtener títulos por división y tipo
+ *     description: Retorna todos los títulos de una división específica y tipo de título
+ *     parameters:
+ *       - in: path
+ *         name: divisionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la división
+ *       - in: path
+ *         name: titleType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [Undisputed, Interim, Unified]
+ *         description: Tipo de título
+ *     responses:
+ *       '200':
+ *         description: Lista de títulos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Title'
+ */
 router.get('/division/:divisionId/title-type/:titleType', controller.findAllByDivisionAndTitleType.bind(controller));
-// Ruta para obtener un titulo por su id
+
+/**
+ * @openapi
+ * /titles/{titleId}:
+ *   get:
+ *     tags: [Títulos]
+ *     summary: Obtener un título por ID
+ *     parameters:
+ *       - in: path
+ *         name: titleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del título
+ *     responses:
+ *       '200':
+ *         description: Título obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Title'
+ */
 router.get('/:titleId', controller.findById.bind(controller));
-// Ruta para actualizar un titulo por su id
+
+/**
+ * @openapi
+ * /titles/{titleId}:
+ *   patch:
+ *     tags: [Títulos]
+ *     summary: Actualizar un título
+ *     description: Actualiza los datos de un título existente
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: titleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del título
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateTitleInput'
+ *     responses:
+ *       '200':
+ *         description: Título actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Title'
+ */
 router.patch('/:titleId', controller.update.bind(controller));
-// Ruta para eliminar un titulo por su id
+
+/**
+ * @openapi
+ * /titles/soft/{titleId}:
+ *   patch:
+ *     tags: [Títulos]
+ *     summary: Eliminar un título (soft delete)
+ *     description: Marca un título como eliminado sin borrarlo de la base de datos
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: titleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del título
+ *     responses:
+ *       '200':
+ *         description: Título eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Title'
+ */
 router.patch('/soft/:titleId', controller.delete.bind(controller));
 
 export const titleRouter = router;
