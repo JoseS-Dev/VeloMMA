@@ -1,0 +1,86 @@
+name: VeloMMA CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    services:
+      postgres-test:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    # Todos los comandos se ejecutan dentro de ./backend
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # ── pnpm + Node ──────────────────────────
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ secrets.PNPM_VERSION }}
+
+      - name: Configurar Node.js ${{ secrets.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ secrets.NODE_VERSION }}
+          cache: pnpm                           # Cachea la pnpm store global
+          cache-dependency-path: ./backend/pnpm-lock.yaml
+
+      # ── Instalación ──────────────────────────
+      - name: Instalar dependencias (frozen lockfile)
+        run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
+
+      # ── Validación de esquema Prisma ─────────
+      - name: Validar esquema de Prisma
+        run: pnpm prisma:validate
+
+      # ── Generación de Prisma ─────────────────
+      - name: Generar cliente de Prisma
+        run: pnpm prisma generate
+
+      # ── Sincronizar Base de Datos de Pruebas ─
+      - name: Sincronizar Base de Datos de Pruebas
+        run: pnpm prisma db push
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+      
+      # ── Ejecutar pruebas unitarias ─────────────
+      - name: Ejecutar pruebas unitarias
+        run: pnpm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+          REDIS_ENV: "false"
+          NODE_OPTIONS: --experimental-vm-modules
+
+      # ── Type Check (sin emitir archivos) ─────
+      - name: TypeScript type check
+        run: pnpm typecheck
+
+      # ── Compilación TypeScript ───────────────
+      - name: Compilar TypeScript
+        run: pnpm build
