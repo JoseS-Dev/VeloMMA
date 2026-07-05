@@ -15,6 +15,7 @@ describe("Modulo de Fighters", () => {
     // Antes de cada de esté modulo, se limpia la base de datos
     beforeEach(async () => {
         await setup.clearDatabase();
+        await setup.clearDatabaseDeleteMany();
     });
 
     // Al finalizar todos los tests, se cierra la conexión a la base de datos
@@ -97,21 +98,12 @@ describe("Modulo de Fighters", () => {
     })
 
     describe(`GET ${settings.basePath}/fighters - Obtener todos los luchadores`, () => {
-        // Nos aseguramos de que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            await setup.apiInstance
-            .post(`${settings.basePath}/fighters`)
-            .set('x-api-key', settings.apiKey)
-            .set('Content-Type', 'application/json')
-            .send(createdFighterData);
-        })
-        
         test("Deberia retornar un status 200 y un array de luchadores", async () => {
             const response = await setup.apiInstance
             .get(`${settings.basePath}/fighters`)
 
             expect(response.status).toBe(200);
-            expect(Array.isArray(response.body)).toBe(true);
+            expect(Array.isArray(response.body.data)).toBe(true);
             expect(response.body).toHaveProperty('status', 200);
         });
         
@@ -151,15 +143,6 @@ describe("Modulo de Fighters", () => {
     })
 
     describe(`GET ${settings.basePath}/fighters/active - Obtener luchadores activos`, () => {
-        // Nos aseguramos de que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            await setup.apiInstance
-            .post(`${settings.basePath}/fighters`)
-            .set('x-api-key', settings.apiKey)
-            .set('Content-Type', 'application/json')
-            .send(createdFighterData);
-        });
-
         test("Deberia retornar un status 200 y un array de luchadores activos", async () => {
             const response = await setup.apiInstance
             .get(`${settings.basePath}/fighters/active`)
@@ -181,16 +164,16 @@ describe("Modulo de Fighters", () => {
 
     describe(`GET ${settings.basePath}/fighters/:fighterId - Obtener un luchador por ID`, () => {
         let fighterId: number;
-        // Nos aseguramos que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            const response = await setup.apiInstance
+        let secondFighterId: number;
+        test("Deberia retornar un status 200 y el luchador correspondiente al ID", async () => {
+            // Se crea un luchador para este test
+            const created = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send(createdFighterData);
-            fighterId = response.body.data.id;
-        })
-        test("Deberia retornar un status 200 y el luchador correspondiente al ID", async () => {
+            fighterId = created.body.data.id;
+            
             const response = await setup.apiInstance
             .get(`${settings.basePath}/fighters/${fighterId}`)
 
@@ -213,16 +196,15 @@ describe("Modulo de Fighters", () => {
 
     describe(`GET ${settings.basePath}/fighters/slug/:slug - Obtener un luchador por slug`, () => {
         let fighterSlug: string;
-        // Nos aseguramos que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            const response = await setup.apiInstance
+        test("Deberia retornar un status 200 y el luchador correspondiente al slug", async () => {
+            // Se crea un luchador para este test
+            const created = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send(createdFighterData);
-            fighterSlug = response.body.data.slug;
-        })
-        test("Deberia retornar un status 200 y el luchador correspondiente al slug", async () => {
+            fighterSlug = created.body.data.slug;
+
             const response = await setup.apiInstance
             .get(`${settings.basePath}/fighters/slug/${fighterSlug}`)
 
@@ -245,21 +227,21 @@ describe("Modulo de Fighters", () => {
 
     describe(`PATCH ${settings.basePath}/fighters/:fighterId - Actualizar un luchador`, () => {
         let fighterId: number;
-        // Nos aseguramos que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            const response = await setup.apiInstance
+        let secondFighterId: number;
+        test("Deberia actualizar un luchador y retornar un status 200", async () => {
+            // Se crea un luchador para este test
+            const created = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send(createdFighterData);
-            fighterId = response.body.data.id;
-        })
-
-        test("Deberia actualizar un luchador y retornar un status 200", async () => {
+            fighterId = created.body.data.id;
+            
             const updatedData = {
                 nickname: 'The Prodigy',
                 height: 195
             }
+
             const response = await setup.apiInstance
             .patch(`${settings.basePath}/fighters/${fighterId}`)
             .set('x-api-key', settings.apiKey)
@@ -293,8 +275,16 @@ describe("Modulo de Fighters", () => {
         })
 
         test("Deberia retornar un status 409 si el slug ya existe al actualizar el nombre y apellido", async () => {
+            // Crear un primer luchador
+            const created = await setup.apiInstance
+                .post(`${settings.basePath}/fighters`)
+                .set('x-api-key', settings.apiKey)
+                .set('Content-Type', 'application/json')
+                .send(createdFighterData);
+            fighterId = created.body.data.id;
+
             // Crear un segundo luchador con un slug diferente
-            await setup.apiInstance
+            const secondFighter = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
@@ -302,8 +292,9 @@ describe("Modulo de Fighters", () => {
                 ...createdFighterData,
                 first_name: 'Daniel',
                 last_name: 'Cormier',
-                slug: 'daniel-cormier'
             });
+            secondFighterId = secondFighter.body.data.id;
+            
             const response = await setup.apiInstance
             .patch(`${settings.basePath}/fighters/${fighterId}`)
             .set('x-api-key', settings.apiKey)
@@ -321,17 +312,15 @@ describe("Modulo de Fighters", () => {
 
     describe(`PATCH ${settings.basePath}/fighters/:fighterId/status - Cambiar el estado de un luchador`, () => {
         let fighterId: number;
-        // Nos aseguramos que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            const response = await setup.apiInstance
+        test("Deberia cambiar el estado de un luchador y retornar un status 200", async () => {
+            // Se crea un luchador para este test
+            const created = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send(createdFighterData);
-            fighterId = response.body.data.id;
-        })
-
-        test("Deberia cambiar el estado de un luchador y retornar un status 200", async () => {
+            fighterId = created.body.data.id;
+            
             const response = await setup.apiInstance
             .patch(`${settings.basePath}/fighters/${fighterId}/status`)
             .set('x-api-key', settings.apiKey)
@@ -345,7 +334,13 @@ describe("Modulo de Fighters", () => {
         })
 
         test("Deberia activar el estado de un luchador y retornar un status 200", async () => {
-            // Primero desactivamos el luchador
+            const created = await setup.apiInstance
+                .post(`${settings.basePath}/fighters`)
+                .set('x-api-key', settings.apiKey)
+                .set('Content-Type', 'application/json')
+                .send(createdFighterData);
+            fighterId = created.body.data.id;
+
             await setup.apiInstance
             .patch(`${settings.basePath}/fighters/${fighterId}/status`)
             .set('x-api-key', settings.apiKey)
@@ -378,17 +373,17 @@ describe("Modulo de Fighters", () => {
 
     describe(`PATCH ${settings.basePath}/fighters/soft/:fighterId - Eliminar un luchador`, () => {
         let fighterId: number;
-        // Nos aseguramos que haya al menos un luchador en la base de datos antes de ejecutar este test
-        beforeEach(async () => {
-            const response = await setup.apiInstance
+        
+        test("Deberia hacer soft delete de un luchador y retornar un status 200", async() => {
+            
+            // Se crea un luchador para este test
+            const created = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send(createdFighterData);
-            fighterId = response.body.data.id;
-        })
-
-        test("Deberia hacer soft delete de un luchador y retornar un status 200", async() => {
+            fighterId = created.body.data.id;
+            
             const response = await setup.apiInstance
             .patch(`${settings.basePath}/fighters/soft/${fighterId}`)
             .set('x-api-key', settings.apiKey)

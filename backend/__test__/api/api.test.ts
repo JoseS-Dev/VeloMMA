@@ -13,11 +13,7 @@ const setup = new TestBase();
 
 // Definición de los tests para las rutas de bienvenida, health, ping y docs
 describe("Rutas de bienvenida, health, ping y docs", () => {
-    // Antes de cada test, se limpia la base de datos
-    beforeEach(async () => {
-        await setup.clearDatabase();
-    })
-
+    
     // Al finalizar todos los tests, se cierra la conexión a la base de datos
     afterAll(async () => {
         await setup.disconnect();
