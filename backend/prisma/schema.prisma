@@ -60,6 +60,7 @@ enum InjurySeverity {
   Menor
   Moderado
   Severo
+  Critica
 }
 
 // Enum del estado de la pelea
