@@ -69,7 +69,7 @@ export class StableService {
         const stable = await this.prisma.fighterTeams.findUnique({
             where: {id: stableId, deleted_at: null}
         });
-        if(!stable) throw new BadRequestException('No se encontró el equipo');
+        if(!stable) throw new NotFoundException('No se encontró el equipo');
         return stable;
     }
 
@@ -78,13 +78,13 @@ export class StableService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el equipo existe
         const existingStable = await this.findById(stableId);
-        if(!existingStable) throw new BadRequestException('No se encontró el equipo');
+        if(!existingStable) throw new NotFoundException('No se encontró el equipo');
         // Se verifica que no exista un equipo con el mismo nombre
         if(data.team_id && data.team_id !== existingStable.team_id){
             const existingTeamName = await this.prisma.teams.findFirst({
                 where: {id: data.team_id}
             });
-            if(existingTeamName) throw new BadRequestException('Ya existe un equipo con ese id');
+            if(existingTeamName) throw new ConflictException('Ya existe un equipo con ese id');
             // Si no existe, se actualiza el equipo
             const stable = await this.prisma.fighterTeams.update({
                 where: {id: stableId},
@@ -105,7 +105,7 @@ export class StableService {
     async delete(stableId: number){
         // Se verifica que el equipo existe
         const existingStable = await this.findById(stableId);
-        if(!existingStable) throw new BadRequestException('No se encontró el equipo');
+        if(!existingStable) throw new NotFoundException('No se encontró el equipo');
         // Se elimina el equipo
         const stable = await this.prisma.fighterTeams.update({
             where: {id: stableId},

@@ -2,7 +2,7 @@
 export interface StableDTO {
     fighter_id: number;
     team_id: number;
-    is_current: boolean;
+    is_current?: boolean;
     joined_date?: Date;
     left_date?: Date;
 }
