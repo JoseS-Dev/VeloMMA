@@ -29,6 +29,13 @@ export class InjuryService {
         page: number = 1,
         limit: number = 10,
     ){
+        if(!FighterId) throw new BadRequestException('El id del luchador es obligatorio');
+        // Se verifica que exista el luchador
+        const existingFighter = await this.prisma.fighters.findFirst({
+            where: {id: FighterId}
+        });
+        if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
+        // Se calcula el offset para la paginación
         const skip = (page - 1) * limit;
         // Se cuenta el total de registros
         const total = await this.prisma.fighterInjuries.count({
@@ -52,18 +59,23 @@ export class InjuryService {
         const injury = await this.prisma.fighterInjuries.findUnique({
             where: {id: injuryId, deleted_at: null}
         });
-        if(!injury) throw new BadRequestException('No se encontró la lesión o inactividad');
+        if(!injury) throw new NotFoundException('No se encontró la lesión o inactividad');
         return injury;
     }
 
     // Servicio para obtener una lesión dependiendo del grado de severidad
     async findBySeverity(fighterId: number, severity: InjurySeverity){
         if(!severity) throw new BadRequestException('Debe especificar la severidad de la lesión');
+        if(!fighterId) throw new BadRequestException('El id del luchador es obligatorio');
+        // Se verifica que exista el luchador
+        const existingFighter = await this.prisma.fighters.findFirst({
+            where: {id: fighterId}
+        });
+        if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
         // Se obtienen las lesiones o inactividades
         const injuries = await this.prisma.fighterInjuries.findMany({
             where: {fighter_id: fighterId, severity_injury: severity, deleted_at: null}
         });
-        if(!injuries) throw new BadRequestException('No se encontraron las lesiones o inactividades');
         return injuries;
     }
 
@@ -72,7 +84,7 @@ export class InjuryService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);
-        if(!existingInjury) throw new BadRequestException('No se encontró la lesión o inactividad');
+        if(!existingInjury) throw new NotFoundException('No se encontró la lesión o inactividad');
         // Si existe, se actualiza la lesión o inactividad
         const injury = await this.prisma.fighterInjuries.update({
             where: {id: injuryId},
@@ -88,7 +100,7 @@ export class InjuryService {
         if(typeof isActive !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);
-        if(!existingInjury) throw new BadRequestException('No se encontró la lesión o inactividad');
+        if(!existingInjury) throw new NotFoundException('No se encontró la lesión o inactividad');
         // Se actualiza el estado de la lesión o inactividad
         const injury = await this.prisma.fighterInjuries.update({
             where: {id: injuryId},
@@ -102,7 +114,7 @@ export class InjuryService {
     async delete(injuryId: number){
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);
-        if(!existingInjury) throw new BadRequestException('No se encontró la lesión o inactividad');
+        if(!existingInjury) throw new NotFoundException('No se encontró la lesión o inactividad');
         // Se elimina la lesión o inactividad
         const injury = await this.prisma.fighterInjuries.update({
             where: {id: injuryId},
