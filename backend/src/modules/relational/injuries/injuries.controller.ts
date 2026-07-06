@@ -68,7 +68,8 @@ export class InjuryController {
     async changeStatus(req: Request, res: Response) {
         const {injuryId} = req.params;
         const {isActive} = req.body;
-        const injury = await this.injuryService.changeStatus(Number(injuryId), Boolean(isActive));
+        if(isActive && !Boolean(isActive)) return res.status(400).json({message: 'El estado es obligatorio'});
+        const injury = await this.injuryService.changeStatus(Number(injuryId), isActive);
         return injury;
     }
 

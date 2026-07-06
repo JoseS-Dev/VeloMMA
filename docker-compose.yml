@@ -48,15 +48,9 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      - PORT=${PORT:-5300}
-      - NODE_ENV=${NODE_ENV:-development}
-      - CORS_ORIGIN=${CORS_ORIGIN:-*}
-      - BASE_PATH=${BASE_PATH:-/api}
-      - API_SECRET_KEY=${API_SECRET_KEY:-velomma}
-      - COOKIE_SECRET=${COOKIE_SECRET:-velomma}
-      - REDIS_URL=${REDIS_URL:-http://velomma_redis:6379}
-      - REDIS_ENV=${REDIS_ENV:-false}
       - DATABASE_URL=postgresql://${DB_USER-velomma}:${DB_PASSWORD-velomma}@db:5432/${DB_NAME-velomma}?schema=public
       - CHOKIDAR_USEPOLLING=true
     volumes:

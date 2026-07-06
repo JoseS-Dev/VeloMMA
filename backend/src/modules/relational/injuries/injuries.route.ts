@@ -160,7 +160,7 @@ router.get('/fighter/:fighterId', controller.findAll.bind(controller));
 
 /**
  * @openapi
- * /injuries/{fighterId}/severity:
+ * /injuries/fighter/{fighterId}/severity:
  *   get:
  *     tags: [Lesiones]
  *     summary: Obtener lesiones por severidad
@@ -196,7 +196,7 @@ router.get('/fighter/:fighterId', controller.findAll.bind(controller));
  *                   items:
  *                     $ref: '#/components/schemas/Injury'
  */
-router.get('/:fighterId/severity', controller.findBySeverity.bind(controller));
+router.get('/fighter/:fighterId/severity', controller.findBySeverity.bind(controller));
 
 /**
  * @openapi

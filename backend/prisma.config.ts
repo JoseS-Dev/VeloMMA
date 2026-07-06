@@ -2,12 +2,16 @@
 // npm install --save-dev prisma dotenv
 import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
+import { fileURLToPath } from "url";
 import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __currentDir = path.dirname(__filename);
 
 dotenv.config({
   path: process.env.NODE_ENV === 'test' ? 
-  path.resolve(process.cwd(), '.env.test') 
-  : path.resolve(process.cwd(), '.env'),
+  path.resolve(__currentDir, '.env.test') 
+  : path.resolve(__currentDir, '.env.local'),
   override: true
 })
 
