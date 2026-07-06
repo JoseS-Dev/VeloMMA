@@ -6,12 +6,12 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __currentDir = path.dirname(__filename);
 
 dotenv.config({
   path: process.env.NODE_ENV === 'test' ? 
-  path.resolve(__dirname, '.env.test') 
-  : path.resolve(__dirname, '.env.local'),
+  path.resolve(__currentDir, '.env.test') 
+  : path.resolve(__currentDir, '.env.local'),
   override: true
 })
 
