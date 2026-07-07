@@ -1,6 +1,10 @@
 // Clase base para todos los errores de la aplicación
 export class HttpException extends Error {
-    constructor(public readonly status: number, message: string){
+    constructor(
+        public readonly status: number,
+        message: string,
+        public readonly details?: unknown
+    ){
         super(message);
         Object.setPrototypeOf(this, this.constructor.prototype);
     }

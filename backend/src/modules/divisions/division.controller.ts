@@ -2,6 +2,7 @@ import type { Response, Request } from 'express';
 import { DivisionService } from './division.services.js';
 import { validateDivision, validateUpdateDivision } from './division.schema.js';
 import { SendResponse } from '../../common/decorator/decorator.js';
+import { BadRequestException } from '../../common/errors/error.js';
 
 // Controlador para las divisiones
 export class DivisionController {
@@ -21,8 +22,8 @@ export class DivisionController {
     async findAll(req: Request, res: Response) {
         const { page, limit } = req.query;
         // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
+        if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
+        if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
         const { divisions, total } = await this.divisionService.findAll(Number(page) || 1, Number(limit) || 10);
         return { 
             data: divisions,
@@ -39,8 +40,8 @@ export class DivisionController {
     async findAllActive(req: Request, res: Response) {
         const { page, limit } = req.query;
         // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
+        if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
+        if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
         const { divisions, total } = await this.divisionService.findAllActive(Number(page) || 1, Number(limit) || 10);
         return { 
             data: divisions,

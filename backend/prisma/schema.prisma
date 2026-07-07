@@ -328,7 +328,7 @@ model fighterRankings {
   fighter_id Int
   division_id Int
   rank Int
-  as_of_date DateTime
+  as_of_date DateTime?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?
