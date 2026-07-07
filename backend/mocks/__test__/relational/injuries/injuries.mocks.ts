@@ -1,0 +1,17 @@
+// Mock de datos de pruebas para las lesiones o inactividad de un luchador
+export const mockCreateInjuryOne = {
+    fighter_id: 0,
+    description_injury: 'Fractura de brazo',
+    severity_injury: 'Moderado',
+    injury_date: '2023-01-01',
+    recovery_date: '2023-02-01'
+}
+
+// Mock de datos de pruebas para las lesiones o inactividad de un luchador
+export const mockCreateInjuryTwo = {
+    fighter_id: 0,
+    description_injury: 'Esguince de tobillo',
+    severity_injury: 'Severo',
+    injury_date: '2023-03-01',
+    recovery_date: '2023-03-15'
+}
