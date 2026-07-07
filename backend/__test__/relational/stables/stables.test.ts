@@ -8,6 +8,12 @@ import {
     beforeAll
 } from "@jest/globals";
 import { settings } from "../../../config/settings.js";
+import {
+    mockCreateStable,
+    mockCreateTeamOne,
+    mockCreateTeamTwo,
+    mockCreateFighterOne
+} from '../../../mocks/__test__/index.js';
 
 const setup = new TestBase();
 
@@ -17,48 +23,6 @@ describe("Modulo de equipos de luchadores (stables)", () => {
     let testTeamIdTwo: number;
     let testStableId: number;
     let testStableIdTwo: number;
-
-    // Datos de prueba para crear un fighter
-    const createFighterData = {
-        first_name: 'Jon',
-        last_name: 'Jones',
-        nickname: 'Bones',
-        slug: 'jon-jones',
-        gender: 'Masculino',
-        nationality: 'USA',
-        height: 193,
-        weight: 93,
-        stance: 'Orthodox',
-        reach: 215,
-        is_active: true
-    };
-
-    // Datos de prueba para crear un equipo
-    const createTeamData = {
-        name_team: 'Jackson Wink MMA',
-        description_team: 'Equipo de MMA en Albuquerque, Nuevo México',
-        date_founded: '2005-01-01',
-        location: 'Albuquerque, Nuevo México',
-        is_active: true
-    };
-
-    // Datos de prueba para crear un segundo equipo
-    const createTeamData2 = {
-        name_team: 'American Top Team',
-        description_team: 'Equipo de MMA en Coconut Creek, Florida',
-        date_founded: '2002-01-01',
-        location: 'Coconut Creek, Florida',
-        is_active: true
-    };
-
-    // Datos de prueba para crear una asignación de equipo
-    const createStableData = {
-        fighter_id: 0, // Se asignará después
-        team_id: 0, // Se asignará después
-        is_current: true,
-        joined_date: '2023-01-01',
-        left_date: null
-    };
 
     // Antes de cada test, se limpia base de datos y se crea los datos de prueba necesarios
     beforeEach(async () => {
@@ -70,7 +34,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createFighterData);
+            .send(mockCreateFighterOne);
         testFighterId = fighterResponse.body.data.id;
 
         // Creamos el primer equipo de prueba
@@ -78,7 +42,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
             .post(`${settings.basePath}/teams`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createTeamData);
+            .send(mockCreateTeamOne);
         testTeamIdOne = teamResponseOne.body.data.id;
 
         // Creamos el segundo equipo de prueba
@@ -86,12 +50,12 @@ describe("Modulo de equipos de luchadores (stables)", () => {
             .post(`${settings.basePath}/teams`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createTeamData2);
+            .send(mockCreateTeamTwo);
         testTeamIdTwo = teamResponseTwo.body.data.id;
 
         // Actualizamos los datos de stable
-        createStableData.fighter_id = testFighterId;
-        createStableData.team_id = testTeamIdOne;
+        mockCreateStable.fighter_id = testFighterId;
+        mockCreateStable.team_id = testTeamIdOne;
     });
 
     // Después de todos los tests, cerramos la conexión a la base de datos
@@ -106,7 +70,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('status', 201);
@@ -165,14 +129,14 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             
             // Intentamos crear la misma asignación de equipo nuevamente
             const response = await setup.apiInstance
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             
             expect(response.status).toBe(409);
             expect(response.body).toHaveProperty('message', 'El luchador ya pertence a dicho equipo');
@@ -182,7 +146,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
             const response = await setup.apiInstance
                 .post(`${settings.basePath}/stables`)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             
             expect(response.status).toBe(401);
         })
@@ -195,11 +159,11 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             testStableId = stableResponseOne.body.data.id;
 
             // Creamos una segunda asignación de equipo para el mismo luchador
-            const createStableDataTwo = {
+            const mockCreateStableTwo = {
                 fighter_id: testFighterId,
                 team_id: testTeamIdTwo,
                 is_current: false,
@@ -210,7 +174,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableDataTwo);
+                .send(mockCreateStableTwo);
             testStableIdTwo = stableResponseTwo.body.data.id;
         });
 
@@ -243,7 +207,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
                 .send({
-                    ...createFighterData,
+                    ...mockCreateFighterOne,
                     first_name: 'New',
                     last_name: 'Fighter',
                 });
@@ -262,7 +226,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             testStableId = response.body.data.id;
         })
 
@@ -291,7 +255,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             testStableId = response.body.data.id;
         });
 
@@ -333,7 +297,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 .post(`${settings.basePath}/stables`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createStableData);
+                .send(mockCreateStable);
             testStableId = response.body.data.id;
         });
 
