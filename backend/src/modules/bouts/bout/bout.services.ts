@@ -1,4 +1,4 @@
-import type { BoutDTO, BoutUpdateDTO } from "../../../types/index.js";
+import type { BoutSchemaDTO, BoutUpdateSchemaDTO } from "./bout.schema.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
@@ -8,7 +8,7 @@ export class BoutService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Servicio para crear una pelea
-    async create(data: BoutDTO){
+    async create(data: BoutSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la división, el evento y los dos luchadores en cuestión
         const [existingDivision, existingEvent, existingRedFighter, existingBlueFighter] = await Promise.all([
@@ -129,7 +129,7 @@ export class BoutService {
     
 
     // Servicio para actualizar una pelea por su ID
-    async update(BoutId: number, data: BoutUpdateDTO){
+    async update(BoutId: number, data: BoutUpdateSchemaDTO){
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea

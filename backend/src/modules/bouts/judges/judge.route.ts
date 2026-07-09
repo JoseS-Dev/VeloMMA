@@ -229,6 +229,6 @@ router.patch('/:id', clearCacheMiddleware(`${settings.basePath}/judges/:id`), co
  *                 data:
  *                   $ref: '#/components/schemas/Judge'
  */
-router.delete('/soft/:id', clearCacheMiddleware(`${settings.basePath}/judges/soft/:id`), controller.delete.bind(controller));
+router.patch('/soft/:id', clearCacheMiddleware(`${settings.basePath}/judges/soft/:id`), controller.delete.bind(controller));
 
 export const judgeRoutes = router;

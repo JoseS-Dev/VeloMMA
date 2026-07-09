@@ -1,4 +1,4 @@
-import type { JudgesDTO, JudgesUpdateDTO } from '../../../types/bouts/judges/judges.types.js';
+import type { JudgeSchemaDTO, JudgeUpdateSchemaDTO } from './judge.schema.js';
 import type { PrismaClient } from '../../../../generated/prisma/index.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
 
@@ -7,7 +7,7 @@ export class JudgeService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Servicio para crear un juez a una pelea
-    async create(data: JudgesDTO){
+    async create(data: JudgeSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
@@ -64,7 +64,7 @@ export class JudgeService {
     }
 
     // Servicio para actualizar un juez de una pelea por su Id
-    async update(id: number, data: JudgesUpdateDTO){
+    async update(id: number, data: JudgeUpdateSchemaDTO){
         if(!id) throw new BadRequestException('El id del juez es obligatorio');
         // Se verifcia que exista el resultado del juez
         const existingJudge = await this.findById(id);
