@@ -1,4 +1,3 @@
-import type { BoutDTO, BoutUpdateDTO } from "../../../types/index.js";
 import { 
     BoutResult,
     WinMethod,
@@ -27,12 +26,15 @@ const SchemaBoutDTO = z.object({
 // Defino el esquema de validación para actualizar una pelea
 const SchemaBoutUpdateDTO = SchemaBoutDTO.partial();
 
+export type BoutSchemaDTO = z.infer<typeof SchemaBoutDTO>;
+export type BoutUpdateSchemaDTO = z.infer<typeof SchemaBoutUpdateDTO>;
+
 // Función que valida los datos a la hora de crear una pelea
-export function validateBoutDTO(data: BoutDTO){
+export function validateBoutDTO(data: BoutSchemaDTO){
     return SchemaBoutDTO.safeParse(data);
 }
 
 // Función que valida los datos a la hora de actualizar una pelea
-export function validateBoutUpdateDTO(data: BoutUpdateDTO){
+export function validateBoutUpdateDTO(data: BoutUpdateSchemaDTO){
     return SchemaBoutUpdateDTO.safeParse(data);
 }

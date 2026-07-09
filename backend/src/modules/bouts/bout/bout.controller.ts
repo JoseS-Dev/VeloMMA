@@ -3,6 +3,10 @@ import { BoutService } from "./bout.services.js";
 import { validateBoutDTO, validateBoutUpdateDTO } from "./bout.schema.js";
 import { SendResponse } from "../../../common/decorator/decorator.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
+import { prisma } from "../../../utils/prisma/prisma.js";
+import { statsEventEmitter } from "../../../utils/events/emitter.js";
+import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+
 // Controlador que interactua con la tabla de peleas
 export class BoutController {
     constructor(private readonly boutService: BoutService) {}
@@ -97,6 +101,18 @@ export class BoutController {
     async changeStatus(req: Request, res: Response){
         const {BoutId} = req.params;
         const {status} = req.body;
+        // Si el estado es finalizado se actauliza las estadisticas de los luchadores
+        if(status === BoutStatus.Finalizada){
+            // Se verifica que la pelea exista y tenga luchadores asignados
+            const bout = await this.boutService.findById(Number(BoutId));
+            if(!bout) throw new NotFoundException('La pelea no existe');
+            if(!bout.red_corner_id || !bout.blue_corner_id) throw new BadRequestException('La pelea no tiene luchadores asignados');
+            // Se emite el evento para actualizar las estadisticas de los luchadores
+            statsEventEmitter.emit('updateFighterStats', {
+                redFighterId: bout.red_corner_id,
+                blueFighterId: bout.blue_corner_id
+            });
+        }
         const result = await this.boutService.changeStatus(Number(BoutId), status as BoutStatus);
         return result
     }

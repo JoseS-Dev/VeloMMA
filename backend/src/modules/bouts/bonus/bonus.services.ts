@@ -1,4 +1,4 @@
-import type { BonusDTO, BonusUpdateDTO } from "../../../types/index.js";
+import type { BonusSchemaDTO, BonusUpdateSchemaDTO } from "./bonus.schema.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
@@ -7,7 +7,7 @@ export class BonusService {
     constructor(private prisma: PrismaClient) {}
 
     // Servicio para agregar un bono a una pelea
-    async create(data: BonusDTO){
+    async create(data: BonusSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador con sus bonos
         const [existingBout, existingFighter] = await Promise.all([
@@ -91,7 +91,7 @@ export class BonusService {
     }
 
     // Servicio para actualizar un bono por su ID
-    async update(bonusId: number, data: BonusUpdateDTO){
+    async update(bonusId: number, data: BonusUpdateSchemaDTO){
         if(!bonusId) throw new BadRequestException('El id del bono es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el bono
