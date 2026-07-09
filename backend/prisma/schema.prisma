@@ -408,6 +408,7 @@ model fighterStats {
   takedown_accuracy Float
   takedown_defense Float
   average_fight_time Float
+  data_hash String @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?
