@@ -5,7 +5,7 @@ import { z } from "zod";
 const SchemaCreateRanking = z.object({
     fighter_id: z.number(),
     division_id: z.number(),
-    rank: z.number(),
+    rank: z.number().positive(),
     as_of_date: z.coerce.date()
 });
 

@@ -5,7 +5,7 @@ import { z } from 'zod';
 const StableSchema = z.object({
     fighter_id: z.number().nonnegative().positive(),
     team_id: z.number().nonnegative().positive(),
-    is_current: z.boolean(),
+    is_current: z.boolean().optional(),
     joined_date: z.coerce.date().optional(),
     left_date: z.coerce.date().optional(),
 });

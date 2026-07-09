@@ -7,6 +7,11 @@ import {
     expect
 } from "@jest/globals";
 import { settings } from "../../../config/settings.js";
+import { 
+    mockCreateFighterOne,
+    mockCreateInjuryOne,
+    mockCreateInjuryTwo 
+} from "../../../mocks/index.js";
 
 const setup = new TestBase();
 
@@ -16,32 +21,12 @@ describe("Modulo de Lesiones de un luchador", () => {
     let testInjuryId: number;
     let testInjuryId2: number;
 
-    // Datos de prueba para crear un fighter
-    const testFighterData = {
-        first_name: 'Jon',
-        last_name: 'Jones',
-        nickname: 'Bones',
-        slug: 'jon-jones',
-        gender: 'Masculino',
-        nationality: 'USA',
-        height: 193,
-        weight: 93,
-        stance: 'Orthodox',
-        reach: 215,
-        is_active: true
-    }
+    
 
-    // Datos de prueba para crear una lesión
-    const testInjuryData = {
-        fighter_id: 0,
-        description_injury: 'Fractura de brazo',
-        severity_injury: 'Moderado',
-        injury_date: '2023-01-01',
-        recovery_date: '2023-02-01'
-    }
+    
 
     // Datos de prueba para crear una segunda lesión
-    const testInjuryData2 = {
+    const mockCreateInjuryTwo = {
         fighter_id: 0,
         description_injury: 'Esguince de tobillo',
         severity_injury: 'Severo',
@@ -59,11 +44,11 @@ describe("Modulo de Lesiones de un luchador", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(testFighterData);
+            .send(mockCreateFighterOne);
         
         testFighterId = response.body.data.id;
-        testInjuryData.fighter_id = testFighterId;
-        testInjuryData2.fighter_id = testFighterId;
+        mockCreateInjuryOne.fighter_id = testFighterId;
+        mockCreateInjuryTwo.fighter_id = testFighterId;
     });
 
     // Después de todos los tests, se cierra la conexión a la base de datos
@@ -78,7 +63,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('status', 201)
@@ -104,7 +89,7 @@ describe("Modulo de Lesiones de un luchador", () => {
 
         test("Deberia retornar un status 404 si el luchador no existe", async () => {
             const invalidData = {
-                ...testInjuryData,
+                ...mockCreateInjuryOne,
                 fighter_id: 9999
             }
             const response = await setup.apiInstance
@@ -121,7 +106,7 @@ describe("Modulo de Lesiones de un luchador", () => {
             const response = await setup.apiInstance
                 .post(`${settings.basePath}/injuries`)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             
             expect(response.status).toBe(401);
         })
@@ -134,14 +119,14 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             testInjuryId = injuryResponseOne.body.data.id;
 
             const injuryResponseTwo = await setup.apiInstance
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData2);
+                .send(mockCreateInjuryTwo);
             testInjuryId2 = injuryResponseTwo.body.data.id;
         })
 
@@ -156,8 +141,8 @@ describe("Modulo de Lesiones de un luchador", () => {
 
             // Se verifica que ambas lesiones creadas estén presentes en la respuesta
             const descriptions = response.body.data.map((injury: any) => injury.description_injury);
-            expect(descriptions).toContain(testInjuryData.description_injury);
-            expect(descriptions).toContain(testInjuryData2.description_injury);
+            expect(descriptions).toContain(mockCreateInjuryOne.description_injury);
+            expect(descriptions).toContain(mockCreateInjuryTwo.description_injury);
         });
 
         test("Deberia retornar un status 404 si el luchador no existe", async () => {
@@ -176,7 +161,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
                 .send({
-                    ...testFighterData,
+                    ...mockCreateFighterOne,
                     first_name: 'New',
                     last_name: 'Fighter'
                 });
@@ -199,20 +184,20 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             
             await setup.apiInstance
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData2);
+                .send(mockCreateInjuryTwo);
             
             await setup.apiInstance
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
                 .send({
-                    ...testInjuryData,
+                    ...mockCreateInjuryOne,
                     description_injury: 'Corte en la ceja',
                     severity_injury: 'Menor'
                 });
@@ -282,7 +267,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             testInjuryId = injuryResponse.body.data.id;
         });
 
@@ -313,7 +298,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             testInjuryId = injuryResponse.body.data.id;
         });
 
@@ -357,7 +342,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             testInjuryId = injuryResponse.body.data.id;
         });
 
@@ -426,7 +411,7 @@ describe("Modulo de Lesiones de un luchador", () => {
                 .post(`${settings.basePath}/injuries`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(testInjuryData);
+                .send(mockCreateInjuryOne);
             testInjuryId = injuryResponse.body.data.id;
         });
 

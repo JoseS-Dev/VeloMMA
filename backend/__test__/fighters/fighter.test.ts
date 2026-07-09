@@ -7,6 +7,7 @@ import {
     expect 
 } from "@jest/globals";
 import { settings } from "../../config/settings.js";
+import { mockCreateFighterOne } from "../../mocks/index.js";
 
 const setup = new TestBase();
 
@@ -23,20 +24,7 @@ describe("Modulo de Fighters", () => {
         await setup.disconnect();
     });
 
-    // Datos de prueba para crear un nuevo luchador
-    const createdFighterData = {
-        first_name: 'Jon',
-        last_name: 'Jones',
-        nickname: 'Bones',
-        slug: 'jon-jones',
-        gender: 'Masculino',
-        nationality: 'USA',
-        height: 193,
-        weight: 93,
-        stance: 'Orthodox',
-        reach: 215,
-        is_active: true
-    }
+    
 
     // Definición de los tests para el módulo de fighters
     describe(`POST ${settings.basePath}/fighters`, () => {
@@ -45,12 +33,12 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
 
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('status', 201);
             expect(response.body).toHaveProperty('message', 'Luchador creado correctamente');
-            expect(response.body.data).toMatchObject(createdFighterData);
+            expect(response.body.data).toMatchObject(mockCreateFighterOne);
 
         });
 
@@ -74,14 +62,14 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
 
             // Intentar crear un segundo fighter con el mismo slug
             const response = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
 
             expect(response.status).toBe(409);
             expect(response.body).toHaveProperty('message', 'El slug ya existe');
@@ -91,7 +79,7 @@ describe("Modulo de Fighters", () => {
             const response = await setup.apiInstance
             .post(`${settings.basePath}/fighters`)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
 
             expect(response.status).toBe(401);
         })
@@ -171,7 +159,7 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
             
             const response = await setup.apiInstance
@@ -180,7 +168,7 @@ describe("Modulo de Fighters", () => {
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('status', 200);
             expect(response.body).toHaveProperty('message', 'Luchador obtenido correctamente');
-            expect(response.body.data).toMatchObject(createdFighterData);
+            expect(response.body.data).toMatchObject(mockCreateFighterOne);
         })
 
         test("Deberia retornar un status 404 si el luchador no existe", async () => {
@@ -202,7 +190,7 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
             fighterSlug = created.body.data.slug;
 
             const response = await setup.apiInstance
@@ -211,7 +199,7 @@ describe("Modulo de Fighters", () => {
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('status', 200);
             expect(response.body).toHaveProperty('message', 'Luchador obtenido correctamente');
-            expect(response.body.data).toMatchObject(createdFighterData);
+            expect(response.body.data).toMatchObject(mockCreateFighterOne);
         })
 
         test("Deberia retornar un status 404 si el luchador no existe", async () => {
@@ -234,7 +222,7 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
             
             const updatedData = {
@@ -252,7 +240,7 @@ describe("Modulo de Fighters", () => {
             expect(response.body).toHaveProperty('status', 200);
             expect(response.body).toHaveProperty('message', 'Luchador actualizado correctamente');
             expect(response.body.data).toMatchObject({
-                ...createdFighterData,
+                ...mockCreateFighterOne,
                 ...updatedData
             });
         })
@@ -280,7 +268,7 @@ describe("Modulo de Fighters", () => {
                 .post(`${settings.basePath}/fighters`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createdFighterData);
+                .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
 
             // Crear un segundo luchador con un slug diferente
@@ -289,7 +277,7 @@ describe("Modulo de Fighters", () => {
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
             .send({
-                ...createdFighterData,
+                ...mockCreateFighterOne,
                 first_name: 'Daniel',
                 last_name: 'Cormier',
             });
@@ -318,7 +306,7 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
             
             const response = await setup.apiInstance
@@ -338,7 +326,7 @@ describe("Modulo de Fighters", () => {
                 .post(`${settings.basePath}/fighters`)
                 .set('x-api-key', settings.apiKey)
                 .set('Content-Type', 'application/json')
-                .send(createdFighterData);
+                .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
 
             await setup.apiInstance
@@ -381,7 +369,7 @@ describe("Modulo de Fighters", () => {
             .post(`${settings.basePath}/fighters`)
             .set('x-api-key', settings.apiKey)
             .set('Content-Type', 'application/json')
-            .send(createdFighterData);
+            .send(mockCreateFighterOne);
             fighterId = created.body.data.id;
             
             const response = await setup.apiInstance
