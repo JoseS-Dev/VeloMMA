@@ -1,4 +1,4 @@
-import type { CreateBoutOddsDTO, UpdateBoutOddsDTO } from "../../../types/index.js";
+import type { CreateBoutOddsSchemaDTO, UpdateBoutOddsSchemaDTO } from './odds.schema.js';
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
@@ -7,7 +7,7 @@ export class OddsService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Servicio para crear una casa de apuesta para una pelea
-    async create(data: CreateBoutOddsDTO){
+    async create(data: CreateBoutOddsSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
@@ -89,7 +89,7 @@ export class OddsService {
     }
 
     // Servicio para actualizar una casa de apuesta en común
-    async update(oddsId: number, data: UpdateBoutOddsDTO){
+    async update(oddsId: number, data: UpdateBoutOddsSchemaDTO){
         if(!oddsId) throw new BadRequestException('El ID de la casa de apuesta es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la casa de apuesta en cuestión

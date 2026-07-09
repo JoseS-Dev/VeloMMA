@@ -1,4 +1,4 @@
-import type { MetricDTO, MetricUpdateDTO } from "../../../types/index.js";
+import type { MetricSchemaDTO, MetricUpdateSchemaDTO } from './metric.schema.js';
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
@@ -7,7 +7,7 @@ export class MetricService {
     constructor(private prisma: PrismaClient) {}
 
     // Servicio para agregar una métrica a una pelea
-    async create(data: MetricDTO){
+    async create(data: MetricSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador con sus metricas
         const [existingBout, existingFighter] = await Promise.all([
@@ -94,7 +94,7 @@ export class MetricService {
     }
 
     // Servicio para actualizar una métrica por su ID
-    async update(MetricId: number, data: MetricUpdateDTO){
+    async update(MetricId: number, data: MetricUpdateSchemaDTO){
         if(!MetricId) throw new BadRequestException('El id de la métrica es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la métrica
