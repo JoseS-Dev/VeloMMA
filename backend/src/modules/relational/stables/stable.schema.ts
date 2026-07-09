@@ -1,4 +1,3 @@
-import type { StableDTO, UpdateStableDTO } from '../../../types/relational/stables/stable.types.js';
 import { z } from 'zod';
 
 // Defino el esquema de validación de los equipos de los luchadores
@@ -13,12 +12,15 @@ const StableSchema = z.object({
 // Defino el esquema de validación para actualizar los equipos de los luchadores
 const updateStableSchema = StableSchema.partial()
 
+export type StableSchemaDTO = z.infer<typeof StableSchema>;
+export type UpdateStableSchemaDTO = z.infer<typeof updateStableSchema>;
+
 // Validacion de los equipos de los luchadores
-export function validateStable(data: StableDTO){
+export function validateStable(data: StableSchemaDTO){
     return StableSchema.safeParse(data);
 }
 
 // Validacion para actualizar los equipos de los luchadores
-export function validateUpdateStable(data: UpdateStableDTO){
+export function validateUpdateStable(data: UpdateStableSchemaDTO){
     return updateStableSchema.safeParse(data);
 }

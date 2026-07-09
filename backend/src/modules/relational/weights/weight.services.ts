@@ -1,4 +1,4 @@
-import type { WeightDTO, UpdateWeightDTO } from '../../../types/relational/weights/weight.types.js';
+import type { WeightSchemaDTO, UpdateWeightSchemaDTO } from './weight.schema.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
@@ -7,7 +7,7 @@ export class WeightService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear un nuevo peso para un luchador
-    async create(data: WeightDTO){
+    async create(data: WeightSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador, la división y que no exista una relación
         const [existingFighter, existingDivision, existingWeight] = await Promise.all([
@@ -75,7 +75,7 @@ export class WeightService {
     }
 
     // Servicio para actualizar los pesos de los luchadores
-    async update(weightId: number, data: UpdateWeightDTO){
+    async update(weightId: number, data: UpdateWeightSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el peso existe
         const existingWeight = await this.findById(weightId);

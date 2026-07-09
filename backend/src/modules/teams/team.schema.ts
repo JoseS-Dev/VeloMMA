@@ -1,5 +1,4 @@
 import {z} from 'zod';
-import type { TeamDTO, UpdateTeamDTO } from '../../types/teams/team.types.js';
 
 // Defino el esquema de validación de los datos de un equipo
 const teamSchema = z.object({
@@ -14,12 +13,15 @@ const updateTeamSchema = teamSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 
+export type TeamSchemaDTO = z.infer<typeof teamSchema>;
+export type UpdateTeamSchemaDTO = z.infer<typeof updateTeamSchema>;
+
 // Defino la función que valida los datos de un equipo
-export function validateTeam(data: TeamDTO){
+export function validateTeam(data: TeamSchemaDTO){
     return teamSchema.safeParse(data);
 }
 
 // Defino la función que valida los datos para actualizar los datos de un equipo
-export function validateUpdateTeam(data: UpdateTeamDTO){
+export function validateUpdateTeam(data: UpdateTeamSchemaDTO){
     return updateTeamSchema.safeParse(data);
 }

@@ -1,4 +1,4 @@
-import type { TeamDTO, UpdateTeamDTO } from '../../types/teams/team.types.js';
+import type { TeamSchemaDTO, UpdateTeamSchemaDTO } from './team.schema.js';
 import type { PrismaClient } from '../../../generated/prisma/client.js';
 import { BadRequestException, ConflictException, NotFoundException } from '../../common/errors/error.js';
 
@@ -7,7 +7,7 @@ export class TeamService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear un nuevo equipo
-    async create(data: TeamDTO){
+    async create(data: TeamSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que no exista un equipo con el mismo nombre
         const existingTeam = await this.prisma.teams.findFirst({
@@ -73,7 +73,7 @@ export class TeamService {
     }
 
     // Servicio para actualizar los datos de un equipo
-    async update(teamId: number, data: UpdateTeamDTO){
+    async update(teamId: number, data: UpdateTeamSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el equipo existe
         const existingTeam = await this.findById(teamId);

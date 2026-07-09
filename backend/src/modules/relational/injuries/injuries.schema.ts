@@ -1,4 +1,3 @@
-import type { InjuryDTO, UpdateInjuryDTO } from '../../../types/relational/injuries/injuries.types.js';
 import { InjurySeverity } from '../../../../generated/prisma/index.js';
 import { z } from 'zod';
 
@@ -16,12 +15,15 @@ const updateInjurySchema = InjurySchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 
+export type InjurySchemaDTO = z.infer<typeof InjurySchema>;
+export type UpdateInjurySchemaDTO = z.infer<typeof updateInjurySchema>;
+
 // Validacion de las lesiones o inactividades de un luchador
-export function validateInjury(data: InjuryDTO){
+export function validateInjury(data: InjurySchemaDTO){
     return InjurySchema.safeParse(data);
 }
 
 // Validacion para actualizar las lesiones o inactividades de un luchador
-export function validateUpdateInjury(data: UpdateInjuryDTO){
+export function validateUpdateInjury(data: UpdateInjurySchemaDTO){
     return updateInjurySchema.safeParse(data);
 }

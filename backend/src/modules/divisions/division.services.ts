@@ -1,4 +1,4 @@
-import type { DivisionDTO, UpdateDivisionDTO } from '../../types/divisions/division.types.js';
+import type { DivisionSchemaDTO, UpdateDivisionSchemaDTO } from './division.schema.js';
 import type { PrismaClient } from '../../../generated/prisma/client.js';
 import { 
     BadRequestException,
@@ -10,7 +10,7 @@ export class DivisionService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear una nueva division
-    async create(data: DivisionDTO){
+    async create(data: DivisionSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que no exista una division con el mismo nombre
         const existingDivision = await this.prisma.divisions.findFirst({
@@ -75,7 +75,7 @@ export class DivisionService {
     }
 
     // Servicio para actualizar las divisiones
-    async update(divisionId: number, data: UpdateDivisionDTO){
+    async update(divisionId: number, data: UpdateDivisionSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la division existe
         const existingDivision = await this.findById(divisionId);

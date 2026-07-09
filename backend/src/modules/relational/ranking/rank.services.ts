@@ -1,4 +1,4 @@
-import type { RankingDTO, RankingUpdateDTO } from "../../../types/index.js";
+import type { RankingSchemaDTO, RankingUpdateSchemaDTO } from './rank.schema.js';
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException, ConflictException } from "../../../common/errors/error.js";
 
@@ -7,7 +7,7 @@ export class RankingService {
     constructor(private prisma: PrismaClient) {}
 
     // Servicio para agregar una clasificación de un luchador
-    async create(data: RankingDTO){
+    async create(data: RankingSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la división, el luchador en cuestión y que no exista una relación
         const [existingDivision, existingFighter, existingRanking] = await Promise.all([
@@ -98,7 +98,7 @@ export class RankingService {
     }
 
     // Servicio para actualizar una clasificación por su ID
-    async update(rankingId: number, data: RankingUpdateDTO){
+    async update(rankingId: number, data: RankingUpdateSchemaDTO){
         if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la clasificación

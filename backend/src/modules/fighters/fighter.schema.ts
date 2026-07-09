@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { FighterDTO, FighterUpdateDTO } from '../../types/index.js';
 import { Gender, Stance } from '../../../generated/prisma/index.js';
 
 // Esquema de validación de los datos de un luchador
@@ -21,12 +20,11 @@ export const fighterUpdateSchema = fighterSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 
+export type FighterSchemaDTO = z.infer<typeof fighterSchema>;
+export type FighterUpdateSchemaDTO = z.infer<typeof fighterUpdateSchema>;
+
 // Función para validar los datos de un luchador
-export function validateFighter(fighter: FighterDTO) {
-    return fighterSchema.safeParse(fighter)
-}
+export function validateFighter(fighter: FighterSchemaDTO) {return fighterSchema.safeParse(fighter)}
 
 // Función para validar los datos de actualización de un luchador
-export function validateFighterUpdate(fighter: FighterUpdateDTO) {
-    return fighterUpdateSchema.safeParse(fighter)
-}
+export function validateFighterUpdate(fighter: FighterUpdateSchemaDTO) {return fighterUpdateSchema.safeParse(fighter)}

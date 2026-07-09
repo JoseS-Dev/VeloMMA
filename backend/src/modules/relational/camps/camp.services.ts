@@ -1,4 +1,4 @@
-import type { CreateCampDTO, UpdateCampDTO } from '../../../types/index.js';
+import type { CreateCampSchemaDTO, UpdateCampSchemaDTO } from './camp.schema.js';
 import type { PrismaClient } from '../../../../generated/prisma/index.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
@@ -7,7 +7,7 @@ export class CampService {
     constructor(private readonly prisma: PrismaClient) {}
     
     // Servicio para crear un campamento donde entreno un luchador para una pelea
-    async create(data: CreateCampDTO){
+    async create(data: CreateCampSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea, equipo y luchador en cuestión
         const [existingBout, existingTeam, existingFighter, existingCamp] = await Promise.all([
@@ -112,7 +112,7 @@ export class CampService {
     }
 
     // Servicio para actualizar un campamento donde entreno un luchador para una pelea
-    async update(campId: number, data: UpdateCampDTO){
+    async update(campId: number, data: UpdateCampSchemaDTO){
         if(!campId) throw new BadRequestException('El ID del campamento es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el campamento en cuestión

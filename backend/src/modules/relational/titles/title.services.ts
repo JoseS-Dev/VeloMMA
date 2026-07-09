@@ -1,4 +1,4 @@
-import type { TitleDTO, UpdateTitleDTO } from "../../../types/index.js";
+import type { TitleSchemaDTO, UpdateTitleSchemaDTO } from "./title.schema.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { TitleType } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
@@ -8,7 +8,7 @@ export class TitleService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Servicio para crear un nuevo titulo de un luchador en una división
-    async create(data: TitleDTO){
+    async create(data: TitleSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador y la división
         const [existingFighter, existingDivision] = await Promise.all([
@@ -137,7 +137,7 @@ export class TitleService {
     }
 
     // Servicio para actualizar un titulo por su ID
-    async update(titleId: number, data: UpdateTitleDTO){
+    async update(titleId: number, data: UpdateTitleSchemaDTO){
         if(!titleId) throw new BadRequestException('El id del titulo es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el titulo

@@ -1,4 +1,4 @@
-import type { InjuryDTO, UpdateInjuryDTO } from '../../../types/relational/injuries/injuries.types.js';
+import type { InjurySchemaDTO, UpdateInjurySchemaDTO } from './injuries.schema.js';
 import { InjurySeverity } from '../../../../generated/prisma/index.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
@@ -8,7 +8,7 @@ export class InjuryService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear una nueva lesión o inactividad de un luchador
-    async create(data: InjuryDTO){
+    async create(data: InjurySchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador
         const existingFighter = await this.prisma.fighters.findFirst({
@@ -80,7 +80,7 @@ export class InjuryService {
     }
 
     // Servicio para actualizar las lesiones o inactividades de un luchador
-    async update(injuryId: number, data: UpdateInjuryDTO){
+    async update(injuryId: number, data: UpdateInjurySchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);

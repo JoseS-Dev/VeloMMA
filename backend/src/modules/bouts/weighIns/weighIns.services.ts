@@ -1,4 +1,4 @@
-import type { UpdateWeightDTO, WeighInsDTO, WeighInsUpdateDTO } from "../../../types/index.js";
+import type { WeighInsSchemaDTO, WeighInsUpdateSchemaDTO } from "./weighIns.schema.js";
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
@@ -7,7 +7,7 @@ export class WeighInsService {
     constructor(private readonly prisma: PrismaClient) {}
 
     // Servicio para agregar un pesaje oficial de un luchador para una pelea
-    async create(data: WeighInsDTO){
+    async create(data: WeighInsSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador antes de crear el pesaje
         const [existingBout, existingFighter] = await Promise.all([
@@ -76,7 +76,7 @@ export class WeighInsService {
     }
 
     // Servicio para actualizar un pesaje oficial de una pelea
-    async update(id: number, data: UpdateWeightDTO){
+    async update(id: number, data: WeighInsUpdateSchemaDTO){
         if(!id) throw new BadRequestException('El id del pesaje es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el pesaje en cuestión

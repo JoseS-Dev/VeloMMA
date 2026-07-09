@@ -1,4 +1,4 @@
-import type { FighterDTO, FighterUpdateDTO } from '../../types/index.js';
+import type { FighterSchemaDTO, FighterUpdateSchemaDTO } from './fighter.schema.js';
 import type { PrismaClient } from '../../../generated/prisma/client.js';
 import { 
     BadRequestException, 
@@ -11,7 +11,7 @@ export class FighterService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear un nuevo luchador
-    async create(data: FighterDTO){
+    async create(data: FighterSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Hacemos el slug del luchador
         const slugFighter = `${data.first_name.toLowerCase()}-${data.last_name.toLowerCase()}`;
@@ -85,7 +85,7 @@ export class FighterService {
     }
 
     // Servicio para actualizar un luchador
-    async update(id: number, data: FighterUpdateDTO){
+    async update(id: number, data: FighterUpdateSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el luchador exista
         const fighter = await this.findById(id);

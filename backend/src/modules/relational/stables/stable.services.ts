@@ -1,4 +1,4 @@
-import type { StableDTO, UpdateStableDTO } from '../../../types/relational/stables/stable.types.js';
+import type { StableSchemaDTO, UpdateStableSchemaDTO } from './stable.schema.js';
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
@@ -7,7 +7,7 @@ export class StableService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear un nuevo equipo de un luchador
-    async create(data: StableDTO){
+    async create(data: StableSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador, el equipo y que ya existe una relación
         const [existingFighter, existingTeam, existingStable] = await Promise.all([
@@ -74,7 +74,7 @@ export class StableService {
     }
 
     // Servicio para actualizar los equipos de los luchadores
-    async update(stableId: number, data: UpdateStableDTO){
+    async update(stableId: number, data: UpdateStableSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el equipo existe
         const existingStable = await this.findById(stableId);

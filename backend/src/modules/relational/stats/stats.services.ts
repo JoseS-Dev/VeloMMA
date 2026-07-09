@@ -1,5 +1,6 @@
 import type { PrismaClient } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { generateHash } from "../../../utils/functions/function.js";
 // Servicio para manejar las estadisticas de un luchador
 export class StatsService {
     constructor(private readonly prisma: PrismaClient) {}
@@ -30,7 +31,19 @@ export class StatsService {
             }
         });
 
-        if(fighterMetrics.length === 0) return null;
+        const dataHash = generateHash(JSON.stringify({fighterMetrics, opponentMetrics}));
+
+        // Verificamos si ya existen estadisticas claculadas previamente para este luchador con los mismos datos
+        const existingStats = await this.prisma.fighterStats.findUnique({
+            where: { fighter_id: fighterId }
+        });
+
+        if(existingStats && existingStats.data_hash === dataHash) {
+            // Si las estadisticas ya existen y el hash de los datos es el mismo, no se hace nada
+            return existingStats;
+        }
+
+        if(fighterMetrics.length === 0) throw new BadRequestException('El luchador no tiene metricas registradas, no se puede calcular estadisticas');
 
         // Defino las variables para almacenar las estatdisticas del luchador
         let totalSigLanded = 0;
@@ -110,6 +123,7 @@ export class StatsService {
                 takedown_accuracy: parseFloat(takedownAccuracy.toFixed(2)),
                 takedown_defense: parseFloat(takedownDefense.toFixed(2)),
                 average_fight_time: parseFloat(averageFightTime.toFixed(2)),
+                data_hash: dataHash
             }
         });
         if(!updatedStats) throw new BadRequestException('No se pudo actualizar las estadisticas del luchador');

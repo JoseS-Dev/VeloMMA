@@ -1,4 +1,4 @@
-import type { EventDTO, UpdateEventDTO } from '../../types/events/event.types.js';
+import type { EventSchemaDTO, UpdateEventSchemaDTO } from './event.schema.js';
 import type { PrismaClient } from '../../../generated/prisma/client.js';
 import { BadRequestException, ConflictException } from '../../common/errors/error.js';
 // Servicio para obtener todos los eventos
@@ -6,7 +6,7 @@ export class EventService {
     constructor(private prisma: PrismaClient) {}
 
     // Crear un nuevo evento
-    async create(data: EventDTO){
+    async create(data: EventSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que no exista un evento con el mismo nombre
         const existingEvent = await this.prisma.events.findFirst({
@@ -81,7 +81,7 @@ export class EventService {
     }
 
     // Servicio para actualizar los datos de un evento
-    async update(eventId: number, data: UpdateEventDTO){
+    async update(eventId: number, data: UpdateEventSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el evento existe
         const existingEvent = await this.findById(eventId);
