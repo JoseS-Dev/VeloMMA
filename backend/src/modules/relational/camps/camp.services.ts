@@ -1,6 +1,7 @@
 import type { CreateCampSchemaDTO, UpdateCampSchemaDTO } from './camp.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio que interactua con la tabla de campamentos donde entreno un luchador para una pelea
 export class CampService {
@@ -43,7 +44,7 @@ export class CampService {
     // Servicio para obtener todos los campamentos donde ha estado un luchador
     async findAllByFighter(
         fighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!fighterId) throw new BadRequestException('El ID del luchador es obligatorio');
@@ -53,17 +54,12 @@ export class CampService {
         });
         if(!existingFighter) throw new NotFoundException('No existe el luchador en cuestión');
         // Se obtienen todos los campamentos donde ha estado el luchador
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: fighterId } });
         // Se cuenta el total de registros para el luchador
         const total = await this.prisma.trainingCamps.count({
             where: { fighter_id: fighterId }
         });
-        const camps = await this.prisma.trainingCamps.findMany({
-            where: { fighter_id: fighterId },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const camps = await this.prisma.trainingCamps.findMany(queryOptions);
         return {
             total,
             camps
@@ -73,7 +69,7 @@ export class CampService {
     // Servicio para obtener todos los campamentos de un equipo
     async findAllByTeam(
         teamId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!teamId) throw new BadRequestException('El ID del equipo es obligatorio');
@@ -83,17 +79,12 @@ export class CampService {
         });
         if(!existingTeam) throw new NotFoundException('No existe el equipo en cuestión');
         // Se obtienen todos los campamentos del equipo
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { team_id: teamId } });
         // Se cuenta el total de registros para el equipo
         const total = await this.prisma.trainingCamps.count({
             where: { team_id: teamId }
         });
-        const camps = await this.prisma.trainingCamps.findMany({
-            where: { team_id: teamId },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const camps = await this.prisma.trainingCamps.findMany(queryOptions);
         return {
             total,
             camps

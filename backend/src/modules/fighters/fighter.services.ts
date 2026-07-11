@@ -5,6 +5,7 @@ import {
     ConflictException, 
     NotFoundException 
 } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 
 // Servicio para obtener los datos de un luchador
 export class FighterService {
@@ -33,33 +34,29 @@ export class FighterService {
 
     // Servicio para obtener todos los luchadores
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // se obtiene todos los luchadores
-        const fighters = await this.prisma.fighters.findMany({
-            skip: skip,
-            take: limit,
-        });
+        const fighters = await this.prisma.fighters.findMany(queryOptions);
+        // Se obtiene el proximo cursor
+        const nextCursor = fighters.length > 0 ? fighters.at(-1)?.id : null;
         return {
             fighters,
+            nextCursor,
             total: await this.prisma.fighters.count(),
         }
     }
 
     // Servicio para obtener todos los luchadores activos
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // se obtiene todos los luchadores activos
-        const fighters = await this.prisma.fighters.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true},
-        });
+        const fighters = await this.prisma.fighters.findMany(queryOptions);
         return {
             fighters,
             total: await this.prisma.fighters.count(),
