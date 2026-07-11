@@ -100,7 +100,7 @@ model fighters {
   last_name String
   nickname String?
   slug String @unique
-  birth_date DateTime?
+  birth_date DateTime? @db.Timestamptz(6)
   gender Gender?
   nationality String?
   height Float?
@@ -132,8 +132,8 @@ model fighterInjuries {
   fighter_id Int
   description_injury String
   severity_injury InjurySeverity
-  injury_date DateTime?
-  recovery_date DateTime?
+  injury_date DateTime? @db.Timestamptz(6)
+  recovery_date DateTime? @db.Timestamptz(6)
   is_active Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -180,7 +180,7 @@ model teams {
   id Int @id @default(autoincrement())
   name_team String
   description_team String?
-  date_founded DateTime?
+  date_founded DateTime? @db.Timestamptz(6)
   location String
   is_active Boolean @default(true)
   created_at DateTime @default(now())
@@ -197,8 +197,8 @@ model fighterTeams {
   fighter_id Int
   team_id Int
   is_current Boolean @default(false)
-  joined_date DateTime?
-  left_date DateTime?
+  joined_date DateTime? @db.Timestamptz(6)
+  left_date DateTime? @db.Timestamptz(6)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?
@@ -212,7 +212,7 @@ model fighterTeams {
 model events {
   id Int @id @default(autoincrement())
   name_event String
-  date_event DateTime
+  date_event DateTime @db.Timestamptz(6)
   location_event String
   venue_event String?
   octagon_size Float?
@@ -333,7 +333,7 @@ model fighterRankings {
   fighter_id Int
   division_id Int
   rank Int
-  as_of_date DateTime?
+  as_of_date DateTime? @db.Timestamptz(6)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?
@@ -364,8 +364,8 @@ model fighterTitles {
   division_id Int
   fighter_id Int
   title_type TitleType @default(Undisputed)
-  won_date DateTime
-  lost_date DateTime?
+  won_date DateTime @db.Timestamptz(6)
+  lost_date DateTime? @db.Timestamptz(6)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted_at DateTime?
