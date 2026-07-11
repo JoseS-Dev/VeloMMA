@@ -12,7 +12,6 @@ import { apiRouter } from './src/api/routes.js';
 import { swaggerSpec } from './config/swagger/docs.js';
 import { connectRedis } from './config/cache/redis.js';
 import { prisma } from './src/utils/prisma/prisma.js';
-import { readLimiter, writeLimiter } from './src/middlewares/ratedLimit/rate.middleware.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -53,7 +52,7 @@ app.get(`${settings.basePath}/health`, async (req: Request, res: Response) => {
             rss: process.memoryUsage().rss
         },
         version: process.version,
-        environment: process.env.NODE_ENV || 'development',
+        environment: settings.nodeEnv,
         database: {
             status: `${await prisma.$queryRaw`SELECT 1` ? 'OK' : 'ERROR'}`,
             timestamp: new Date().toISOString(),

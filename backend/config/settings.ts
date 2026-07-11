@@ -1,39 +1,26 @@
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __currentDir = path.dirname(__filename);
-
-
-dotenv.config({
-    path: process.env.NODE_ENV === 'test' ? 
-    path.resolve(__currentDir, '../.env.test') 
-    : path.resolve(__currentDir, '../.env.local'),
-    override: true
-});
+import { env } from './validation/env.js';
 
 // Variables de entorno del servidor
 export const settings = {
-    port: process.env.PORT || 3000,
-    secret: process.env.JWT_SECRET || 'secret',
-    databaseUrl: process.env.DATABASE_URL || '',
-    basePath: process.env.BASE_PATH || '',
-    nodeEnv: process.env.NODE_ENV || 'development',
-    corsOrigin: process.env.CORS_ORIGIN || '*',
-    apiKey: process.env.API_SECRET_KEY || '',
-    cookieSecret: process.env.COOKIE_SECRET || '',
-    redisUrl: process.env.REDIS_URL || '',
-    redisPort: process.env.REDIS_PORT || 6379,
-    redisEnv: process.env.REDIS_ENV !== undefined ? process.env.REDIS_ENV === 'true' : false,
+    port: env.PORT,
+    secret: env.JWT_SECRET,
+    databaseUrl: env.DATABASE_URL,
+    basePath: env.BASE_PATH,
+    nodeEnv: env.NODE_ENV,
+    corsOrigin: env.CORS_ORIGIN,
+    apiKey: env.API_SECRET_KEY,
+    cookieSecret: env.COOKIE_SECRET,
+    redisUrl: env.REDIS_URL,
+    redisPort: env.REDIS_PORT,
+    redisEnv: env.REDIS_ENV,
     readLimit: {
-        windowMs: parseInt(String(process.env.LIMIT_READ_WINDOW_MS)) || 5 * 60 * 1000, // 5 minutos
-        max: parseInt(String(process.env.LIMIT_READ_MAX)) || 100, // 100 peticiones
+        windowMs: env.LIMIT_READ_WINDOW_MS,
+        max: env.LIMIT_READ_MAX,
         message: 'Demasiados intentos de acceso, por favor espere cinco minutos y vuelva a intentarlo.',
     },
     writeLimit: {
-        windowMs: parseInt(String(process.env.LIMIT_WRITE_WINDOW_MS)) || 1 * 60 * 1000,
-        max: parseInt(String(process.env.LIMIT_WRITE_MAX)) || 10,
+        windowMs: env.LIMIT_WRITE_WINDOW_MS,
+        max: env.LIMIT_WRITE_MAX,
         message: 'Demasiadas peticiones de escritura, por favor espere un minuto y vuelva a intentarlo.',
     }
-}
+} as const;
