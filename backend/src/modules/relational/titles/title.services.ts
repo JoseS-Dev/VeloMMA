@@ -1,11 +1,11 @@
 import type { TitleSchemaDTO, UpdateTitleSchemaDTO } from "./title.schema.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { TitleType } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
 // Servicio para interactuar con la tabla fighterTitles de la base de datos
 export class TitleService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear un nuevo titulo de un luchador en una división
     async create(data: TitleSchemaDTO){

@@ -1,9 +1,9 @@
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { generateHash } from "../../../utils/functions/function.js";
 // Servicio para manejar las estadisticas de un luchador
 export class StatsService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear o actualizar las estadisticas de un luchador
     async updateFighterCareerStats(fighterId: number){

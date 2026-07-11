@@ -1,10 +1,10 @@
 import type { StableSchemaDTO, UpdateStableSchemaDTO } from './stable.schema.js';
-import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
 // Servicio para obtener todos los equipos de los luchadores
 export class StableService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo equipo de un luchador
     async create(data: StableSchemaDTO){

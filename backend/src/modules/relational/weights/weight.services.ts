@@ -1,10 +1,10 @@
 import type { WeightSchemaDTO, UpdateWeightSchemaDTO } from './weight.schema.js';
-import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
 // Servicio para obtener todos los pesos de los luchadores
 export class WeightService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo peso para un luchador
     async create(data: WeightSchemaDTO){
