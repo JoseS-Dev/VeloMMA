@@ -8,16 +8,20 @@
  *         id:
  *           type: integer
  *           description: ID único del bono
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         bonus_type:
  *           type: string
  *           enum: [Fight_of_the_night, Performance_of_the_night, Submission_of_the_night, Knockout_of_the_night]
  *           description: Tipo de bono
+ *           example: Performance_of_the_night
  *         created_at:
  *           type: string
  *           format: date-time
@@ -35,17 +39,21 @@
  *       properties:
  *         bout_id:
  *           type: integer
+ *           example: 1
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         bonus_type:
  *           type: string
  *           enum: [Fight_of_the_night, Performance_of_the_night, Submission_of_the_night, Knockout_of_the_night]
+ *           example: Performance_of_the_night
  *     UpdateBonusInput:
  *       type: object
  *       properties:
  *         bonus_type:
  *           type: string
  *           enum: [Fight_of_the_night, Performance_of_the_night, Submission_of_the_night, Knockout_of_the_night]
+ *           example: Performance_of_the_night
  */
 
 import {Router} from "express";

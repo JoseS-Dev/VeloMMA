@@ -1,4 +1,3 @@
-import type { MetricDTO, MetricUpdateDTO} from "../../../types/index.js";
 import { z } from "zod";
 
 // Defino el esquema de validación de los datos de una métrica
@@ -33,12 +32,15 @@ const SchemaMetric = z.object({
 // Defino el esquema de validación de los datos de una métrica
 const SchemaMetricUpdate = SchemaMetric.partial();
 
+export type MetricSchemaDTO = z.infer<typeof SchemaMetric>;
+export type MetricUpdateSchemaDTO = z.infer<typeof SchemaMetricUpdate>;
+
 // Función para validar los datos de una métrica
-export function validateMetricData(data: MetricDTO){
+export function validateMetricData(data: MetricSchemaDTO){
     return SchemaMetric.safeParse(data);
 }
 
 // Función para validar los datos de una métrica
-export function validateMetricUpdateData(data: MetricUpdateDTO){
+export function validateMetricUpdateData(data: MetricUpdateSchemaDTO){
     return SchemaMetricUpdate.safeParse(data);
 }

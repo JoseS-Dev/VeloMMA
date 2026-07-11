@@ -23,7 +23,8 @@ export class FighterController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { fighters, total } = await this.fighterService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { fighters, total } = await this.fighterService.findAll(cursor, Number(limit) || 10);
         return { 
             data: fighters,
             meta: {
@@ -41,7 +42,8 @@ export class FighterController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { fighters, total } = await this.fighterService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { fighters, total } = await this.fighterService.findAllActive(cursor, Number(limit) || 10);
         return { 
             data: fighters,
             meta: {

@@ -1,17 +1,18 @@
-import type { FighterDTO, FighterUpdateDTO } from '../../types/index.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { FighterSchemaDTO, FighterUpdateSchemaDTO } from './fighter.schema.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { 
     BadRequestException, 
     ConflictException, 
     NotFoundException 
 } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 
 // Servicio para obtener los datos de un luchador
 export class FighterService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo luchador
-    async create(data: FighterDTO){
+    async create(data: FighterSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Hacemos el slug del luchador
         const slugFighter = `${data.first_name.toLowerCase()}-${data.last_name.toLowerCase()}`;
@@ -33,33 +34,29 @@ export class FighterService {
 
     // Servicio para obtener todos los luchadores
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // se obtiene todos los luchadores
-        const fighters = await this.prisma.fighters.findMany({
-            skip: skip,
-            take: limit,
-        });
+        const fighters = await this.prisma.fighters.findMany(queryOptions);
+        // Se obtiene el proximo cursor
+        const nextCursor = fighters.length > 0 ? fighters.at(-1)?.id : null;
         return {
             fighters,
+            nextCursor,
             total: await this.prisma.fighters.count(),
         }
     }
 
     // Servicio para obtener todos los luchadores activos
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // se obtiene todos los luchadores activos
-        const fighters = await this.prisma.fighters.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true, deleted_at: null},
-        });
+        const fighters = await this.prisma.fighters.findMany(queryOptions);
         return {
             fighters,
             total: await this.prisma.fighters.count(),
@@ -69,7 +66,7 @@ export class FighterService {
     // Servicio para obtener un luchador por su slug
     async findBySlug(slug: string){
         const fighter = await this.prisma.fighters.findUnique({
-            where: {slug: slug, deleted_at: null},
+            where: {slug: slug},
         });
         if(!fighter) throw new NotFoundException('El luchador no existe');
         return fighter;
@@ -78,14 +75,14 @@ export class FighterService {
     // Servicio para obtener un luchador por su id
     async findById(id: number){
         const fighter = await this.prisma.fighters.findUnique({
-            where: {id: id, deleted_at: null},
+            where: {id: id},
         });
         if(!fighter) throw new NotFoundException('El luchador no existe');
         return fighter;
     }
 
     // Servicio para actualizar un luchador
-    async update(id: number, data: FighterUpdateDTO){
+    async update(id: number, data: FighterUpdateSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el luchador exista
         const fighter = await this.findById(id);

@@ -1,14 +1,15 @@
-import type { InjuryDTO, UpdateInjuryDTO } from '../../../types/relational/injuries/injuries.types.js';
+import type { InjurySchemaDTO, UpdateInjurySchemaDTO } from './injuries.schema.js';
 import { InjurySeverity } from '../../../../generated/prisma/index.js';
-import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio para obtener todas las lesiones o inactividades de un luchador
 export class InjuryService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear una nueva lesión o inactividad de un luchador
-    async create(data: InjuryDTO){
+    async create(data: InjurySchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador
         const existingFighter = await this.prisma.fighters.findFirst({
@@ -26,7 +27,7 @@ export class InjuryService {
     // Servicio para obtener todas las lesiones o inactividades de un luchador
     async findAll(
         FighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!FighterId) throw new BadRequestException('El id del luchador es obligatorio');
@@ -36,18 +37,13 @@ export class InjuryService {
         });
         if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
         // Se calcula el offset para la paginación
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: FighterId } });
         // Se cuenta el total de registros
         const total = await this.prisma.fighterInjuries.count({
             where: {fighter_id: FighterId}
         });
         // Se obtienen las lesiones o inactividades
-        const injuries = await this.prisma.fighterInjuries.findMany({
-            where: {fighter_id: FighterId, deleted_at: null},
-            skip: skip,
-            take: limit,
-            orderBy: {injury_date: 'asc'}
-        });
+        const injuries = await this.prisma.fighterInjuries.findMany(queryOptions);
         return {
             injuries, 
             total: total
@@ -57,7 +53,7 @@ export class InjuryService {
     // Servicio para obtener una lesión o inactividad de un luchador por su id
     async findById(injuryId: number){
         const injury = await this.prisma.fighterInjuries.findUnique({
-            where: {id: injuryId, deleted_at: null}
+            where: {id: injuryId}
         });
         if(!injury) throw new NotFoundException('No se encontró la lesión o inactividad');
         return injury;
@@ -80,7 +76,7 @@ export class InjuryService {
     }
 
     // Servicio para actualizar las lesiones o inactividades de un luchador
-    async update(injuryId: number, data: UpdateInjuryDTO){
+    async update(injuryId: number, data: UpdateInjurySchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la lesión o inactividad existe
         const existingInjury = await this.findById(injuryId);

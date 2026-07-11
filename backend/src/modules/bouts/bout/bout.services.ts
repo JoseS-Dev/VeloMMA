@@ -1,14 +1,16 @@
-import type { BoutDTO, BoutUpdateDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { BoutSchemaDTO, BoutUpdateSchemaDTO } from "./bout.schema.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
 import { BoutStatusRecord } from "../../../utils/functions/function.js";
+import { buildQueryOptions } from "../../../utils/functions/function.js";
+
 // Modelo que interactua con la tabla bouts de la base de datos
 export class BoutService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear una pelea
-    async create(data: BoutDTO){
+    async create(data: BoutSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la división, el evento y los dos luchadores en cuestión
         const [existingDivision, existingEvent, existingRedFighter, existingBlueFighter] = await Promise.all([
@@ -31,21 +33,14 @@ export class BoutService {
 
     // Servicio para obtener todas las peleas
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count();
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            where: {deleted_at: null},
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
@@ -55,29 +50,22 @@ export class BoutService {
     // Servicio para obtener todas las peleas de un evento
     async findAllByEvent(
         eventId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!eventId) throw new BadRequestException('El id del evento es obligatorio');
         // Se verifica que exista el evento
         const existingEvent = await this.prisma.events.findUnique({
-            where: { id: eventId, deleted_at: null }
+            where: { id: eventId }
         });
         if(!existingEvent) throw new NotFoundException('No existe el evento');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { event_id: eventId } });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
             where: { event_id: eventId }
         });
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            where: { event_id: eventId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
@@ -87,7 +75,7 @@ export class BoutService {
     // Servicio para obtener todas las peleas de una división de peso
     async findAllByDivision(
         divisionId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
@@ -96,20 +84,13 @@ export class BoutService {
             where: { id: divisionId }
         });
         if(!existingDivision) throw new NotFoundException('No existe la división');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { division_id: divisionId } });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
-            where: { division_id: divisionId, deleted_at: null }
+            where: { division_id: divisionId }
         });
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            where: { division_id: divisionId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
@@ -121,7 +102,7 @@ export class BoutService {
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: BoutId, deleted_at: null }
+            where: { id: BoutId }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
         return existingBout;
@@ -129,7 +110,7 @@ export class BoutService {
     
 
     // Servicio para actualizar una pelea por su ID
-    async update(BoutId: number, data: BoutUpdateDTO){
+    async update(BoutId: number, data: BoutUpdateSchemaDTO){
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea

@@ -8,19 +8,24 @@
  *         id:
  *           type: integer
  *           description: ID único del ranking
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         division_id:
  *           type: integer
  *           description: ID de la división
+ *           example: 1
  *         rank:
  *           type: integer
  *           description: Posición en el ranking
+ *           example: 1
  *         as_of_date:
  *           type: string
  *           format: date
  *           description: Fecha de vigencia del ranking
+ *           example: 2024-04-01
  *         created_at:
  *           type: string
  *           format: date-time
@@ -39,21 +44,27 @@
  *       properties:
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         division_id:
  *           type: integer
+ *           example: 1
  *         rank:
  *           type: integer
+ *           example: 1
  *         as_of_date:
  *           type: string
  *           format: date
+ *           example: 2024-04-01
  *     UpdateRankingInput:
  *       type: object
  *       properties:
  *         rank:
  *           type: integer
+ *           example: 1
  *         as_of_date:
  *           type: string
  *           format: date
+ *           example: 2024-04-01
  */
 
 import { Router } from "express";

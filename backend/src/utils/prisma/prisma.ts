@@ -8,6 +8,30 @@ const pool = new pg.Pool({
 })
 
 // Instancio la conexión a la base de datos
-export const prisma = new PrismaClient({
+const prismaRaw = new PrismaClient({
     adapter: new PrismaPg(pool),
 });
+
+export const prisma = prismaRaw.$extends({
+  query: {
+    $allModels: {
+      async findMany({ args, query }) {
+        args.where = args.where || {};
+        if (args.where.deleted_at === undefined) args.where.deleted_at = null;
+        return query(args);
+      },
+      async findFirst({ args, query }) {
+        args.where = args.where || {};
+        if (args.where.deleted_at === undefined) args.where.deleted_at = null;
+        return query(args);
+      },
+      async findUnique({ args, query }) {
+        args.where = args.where || {};
+        if (args.where.deleted_at === undefined) args.where.deleted_at = null;
+        return query(args);
+      },
+    },
+  },
+});
+
+export type ExtendedPrismaClient = typeof prisma;

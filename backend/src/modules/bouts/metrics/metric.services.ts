@@ -1,13 +1,13 @@
-import type { MetricDTO, MetricUpdateDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { MetricSchemaDTO, MetricUpdateSchemaDTO } from './metric.schema.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
-
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 // Modelo que interactua con la tabla de métricas de una pelea
 export class MetricService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar una métrica a una pelea
-    async create(data: MetricDTO){
+    async create(data: MetricSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador con sus metricas
         const [existingBout, existingFighter] = await Promise.all([
@@ -27,29 +27,22 @@ export class MetricService {
     // Servicio para obtener todas las métricas de una pelea
     async findAll(
         BoutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: BoutId, deleted_at: null }
+            where: { id: BoutId }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: BoutId } });
         // Se cuenta el total de métricas
         const total = await this.prisma.boutMetrics.count({
             where: { bout_id: BoutId }
         });
         // Se obtienen las métricas
-        const metrics = await this.prisma.boutMetrics.findMany({
-            where: { bout_id: BoutId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const metrics = await this.prisma.boutMetrics.findMany(queryOptions);
         return {
             metrics,
             total: total
@@ -87,14 +80,14 @@ export class MetricService {
         if(!MetricId) throw new BadRequestException('El id de la métrica es obligatorio');
         // Se verifica que exista la métrica
         const existingMetric = await this.prisma.boutMetrics.findUnique({
-            where: { id: MetricId, deleted_at: null }
+            where: { id: MetricId }
         });
         if(!existingMetric) throw new NotFoundException('No existe la métrica');
         return existingMetric;
     }
 
     // Servicio para actualizar una métrica por su ID
-    async update(MetricId: number, data: MetricUpdateDTO){
+    async update(MetricId: number, data: MetricUpdateSchemaDTO){
         if(!MetricId) throw new BadRequestException('El id de la métrica es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la métrica

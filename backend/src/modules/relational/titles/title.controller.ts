@@ -25,11 +25,12 @@ export class TitleController {
         // Se valida os parametros de paginación
         if(page && isNaN(Number(page))) return res.status(400).json({message: 'El parametro page debe ser un número'});
         if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
-        const result = await this.titleService.findAllByFighter(Number(fighterId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const {titles, total} = await this.titleService.findAllByFighter(Number(fighterId), cursor, Number(limit) || 10);
         return {
-            data: result.titles,
+            data: titles,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -44,11 +45,12 @@ export class TitleController {
         // Se valida os parametros de paginación
         if(page && isNaN(Number(page))) return res.status(400).json({message: 'El parametro page debe ser un número'});
         if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
-        const result = await this.titleService.findAllByDivision(Number(divisionId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const {titles, total} = await this.titleService.findAllByDivision(Number(divisionId), cursor, Number(limit) || 10);
         return {
-            data: result.titles,
+            data: titles,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -65,11 +67,12 @@ export class TitleController {
         if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
         // Se valida el tipo de titulo
         if(!Object.values(TitleType).includes(titleType as TitleType)) return res.status(400).json({message: 'El parametro titleType es inválido'});
-        const result = await this.titleService.findAllByDivisionAndTitleType(Number(divisionId), titleType as TitleType, Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const {titles, total} = await this.titleService.findAllByDivisionAndTitleType(Number(divisionId), titleType as TitleType, cursor, Number(limit) || 10);
         return {
-            data: result.titles,
+            data: titles,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

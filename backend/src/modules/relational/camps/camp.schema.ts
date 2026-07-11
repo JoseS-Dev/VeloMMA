@@ -1,4 +1,3 @@
-import type { CreateCampDTO, UpdateCampDTO } from "../../../types/index.js";
 import { z } from "zod";
 
 // Defino el esquema de validación para la creación de un campamento donde entreno un luchador para una pelea
@@ -11,12 +10,15 @@ const SchemaCreateCampDTO = z.object({
 // Defino el esquema de validación para la actualización de un campamento donde entreno un luchador para una pelea
 const SchemaUpdateCampDTO = SchemaCreateCampDTO.partial();
 
+export type CreateCampSchemaDTO = z.infer<typeof SchemaCreateCampDTO>;
+export type UpdateCampSchemaDTO = z.infer<typeof SchemaUpdateCampDTO>;
+
 // Función para validar los datos de creación de un campamento donde entreno un luchador para una pelea
-export function validateCreateCampDTO(data: CreateCampDTO) {
+export function validateCreateCampDTO(data: CreateCampSchemaDTO) {
     return SchemaCreateCampDTO.safeParse(data);
 }
 
 // Función para validar los datos de actualización de un campamento donde entreno un luchador para una pelea
-export function validateUpdateCampDTO(data: UpdateCampDTO) {
+export function validateUpdateCampDTO(data: UpdateCampSchemaDTO) {
     return SchemaUpdateCampDTO.safeParse(data);
 }

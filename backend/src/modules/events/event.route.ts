@@ -8,27 +8,34 @@
  *         id:
  *           type: integer
  *           description: ID único del evento
+ *           example: 1
  *         name_event:
  *           type: string
  *           description: Nombre del evento
+ *           example: UFC 300
  *         date_event:
  *           type: string
  *           format: date-time
  *           description: Fecha del evento
+ *           example: 2024-04-13T23:00:00.000Z
  *         location_event:
  *           type: string
  *           description: Ubicación del evento
+ *           example: Las Vegas, Nevada
  *         venue_event:
  *           type: string
  *           nullable: true
  *           description: Recinto del evento
+ *           example: T-Mobile Arena
  *         octagon_size:
  *           type: number
  *           nullable: true
  *           description: Tamaño del octágono en pies
+ *           example: 30
  *         is_active:
  *           type: boolean
  *           description: Indica si el evento está activo
+ *           example: true
  *         created_at:
  *           type: string
  *           format: date-time
@@ -46,31 +53,42 @@
  *       properties:
  *         name_event:
  *           type: string
+ *           example: UFC 300
  *         date_event:
  *           type: string
  *           format: date-time
+ *           example: 2024-04-13T23:00:00.000Z
  *         location_event:
  *           type: string
+ *           example: Las Vegas, Nevada
  *         venue_event:
  *           type: string
+ *           example: T-Mobile Arena
  *         octagon_size:
  *           type: number
+ *           example: 30
  *     UpdateEventInput:
  *       type: object
  *       properties:
  *         name_event:
  *           type: string
+ *           example: UFC 300
  *         date_event:
  *           type: string
  *           format: date-time
+ *           example: 2024-04-13T23:00:00.000Z
  *         location_event:
  *           type: string
+ *           example: Las Vegas, Nevada
  *         venue_event:
  *           type: string
+ *           example: T-Mobile Arena
  *         octagon_size:
  *           type: number
+ *           example: 30
  *         is_active:
  *           type: boolean
+ *           example: true
  *     ChangeStatusInput:
  *       type: object
  *       required:
@@ -78,6 +96,7 @@
  *       properties:
  *         is_active:
  *           type: boolean
+ *           example: true
  */
 
 import {Router} from 'express';

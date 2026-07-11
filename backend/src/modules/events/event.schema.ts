@@ -1,10 +1,9 @@
 import {z} from 'zod';
-import type { EventDTO, UpdateEventDTO } from '../../types/events/event.types.js';
 
 // Defino el esquema de validación de los datos de un evento
 const eventSchema = z.object({
     name_event: z.string().min(3).max(50).trim(),
-    date_event: z.coerce.date(),
+    date_event: z.string().regex(/Z$/).transform((val) => new Date(val)),
     location_event: z.string().min(3).max(50).trim(),
     venue_event: z.string().min(3).max(50).trim().optional(),
     octagon_size: z.number().min(1).max(100).optional(),
@@ -15,12 +14,15 @@ const updateEventSchema = eventSchema.partial().extend({
     is_active: z.boolean().optional(),
 });
 
+export type EventSchemaDTO = z.infer<typeof eventSchema>;
+export type UpdateEventSchemaDTO = z.infer<typeof updateEventSchema>;
+
 // Validacion de los eventos
-export function validateEvent(data: EventDTO){
+export function validateEvent(data: EventSchemaDTO){
     return eventSchema.safeParse(data);
 }
 
 // Validacion para actualizar los eventos
-export function validateUpdateEvent(data: UpdateEventDTO){
+export function validateUpdateEvent(data: UpdateEventSchemaDTO){
     return updateEventSchema.safeParse(data);
 }

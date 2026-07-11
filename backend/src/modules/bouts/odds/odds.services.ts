@@ -1,13 +1,14 @@
-import type { CreateBoutOddsDTO, UpdateBoutOddsDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { CreateBoutOddsSchemaDTO, UpdateBoutOddsSchemaDTO } from './odds.schema.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio que interactua con la tabla de casas de apuestas para una pelea
 export class OddsService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear una casa de apuesta para una pelea
-    async create(data: CreateBoutOddsDTO){
+    async create(data: CreateBoutOddsSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
@@ -25,27 +26,22 @@ export class OddsService {
     // Servicio para obtener todas las casas de apuestas para una pelea
     async findAll(
         boutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!boutId) throw new BadRequestException('El ID de la pelea es obligatorio');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: boutId, deleted_at: null }
+            where: { id: boutId }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea en cuestión');
         // Se obtienen todas las casas de apuestas para dicha pelea
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: boutId } });
         // Se cuenta el total de registros para la pelea
         const total = await this.prisma.boutOdds.count({
-            where: { bout_id: boutId, deleted_at: null }
+            where: { bout_id: boutId }
         });
-        const Odds = await this.prisma.boutOdds.findMany({
-            where: { bout_id: boutId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const Odds = await this.prisma.boutOdds.findMany(queryOptions);
         return {
             total,
             Odds
@@ -55,22 +51,17 @@ export class OddsService {
     // Servicio para obtener todas las casas de apuestas de un proveedor en común
     async findAllByProvider(
         provider: string,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!provider) throw new BadRequestException('El proveedor es obligatorio');
         // Se obtienen todas las casas de apuestas para dicho proveedor
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { provider: provider } });
         // Se cuenta el total de registros para el proveedor
         const total = await this.prisma.boutOdds.count({
-            where: { provider: provider, deleted_at: null }
+            where: { provider: provider }
         });
-        const Odds = await this.prisma.boutOdds.findMany({
-            where: { provider: provider, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const Odds = await this.prisma.boutOdds.findMany(queryOptions);
         return {
             total,
             Odds
@@ -82,14 +73,14 @@ export class OddsService {
         if(!oddsId) throw new BadRequestException('El ID de la casa de apuesta es obligatorio');
         // Se verifica que exista la casa de apuesta en cuestión
         const existingOdds = await this.prisma.boutOdds.findUnique({
-            where: { id: oddsId, deleted_at: null }
+            where: { id: oddsId }
         });
         if(!existingOdds) throw new NotFoundException('No existe la casa de apuesta en cuestión');
         return existingOdds;
     }
 
     // Servicio para actualizar una casa de apuesta en común
-    async update(oddsId: number, data: UpdateBoutOddsDTO){
+    async update(oddsId: number, data: UpdateBoutOddsSchemaDTO){
         if(!oddsId) throw new BadRequestException('El ID de la casa de apuesta es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la casa de apuesta en cuestión

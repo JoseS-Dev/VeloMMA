@@ -1,16 +1,17 @@
-import type { DivisionDTO, UpdateDivisionDTO } from '../../types/divisions/division.types.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { DivisionSchemaDTO, UpdateDivisionSchemaDTO } from './division.schema.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { 
     BadRequestException,
     ConflictException 
 } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 
 // Servicio para obtener todas las divisiones
 export class DivisionService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear una nueva division
-    async create(data: DivisionDTO){
+    async create(data: DivisionSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que no exista una division con el mismo nombre
         const existingDivision = await this.prisma.divisions.findFirst({
@@ -27,18 +28,14 @@ export class DivisionService {
 
     // Servicio para obtener todas las divisiones
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de registros
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
-        const divisions = await this.prisma.divisions.findMany({
-            skip: skip,
-            take: limit,
-            orderBy: {name_division: 'asc'}
-        });
+        const divisions = await this.prisma.divisions.findMany(queryOptions);
         return {
             divisions, 
             total: total
@@ -46,19 +43,14 @@ export class DivisionService {
     }
 
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // Se cuenta el total de registros
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
-        const divisions = await this.prisma.divisions.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true, deleted_at: null},
-            orderBy: {name_division: 'asc'}
-        });
+        const divisions = await this.prisma.divisions.findMany(queryOptions);
         return {
             divisions, 
             total: total
@@ -68,14 +60,14 @@ export class DivisionService {
     // Servicio para obtener una division por su id
     async findById(divisionId: number){
         const division = await this.prisma.divisions.findUnique({
-            where: {id: divisionId, deleted_at: null}
+            where: {id: divisionId}
         });
         if(!division) throw new BadRequestException('No se encontró la division');
         return division;
     }
 
     // Servicio para actualizar las divisiones
-    async update(divisionId: number, data: UpdateDivisionDTO){
+    async update(divisionId: number, data: UpdateDivisionSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la division existe
         const existingDivision = await this.findById(divisionId);

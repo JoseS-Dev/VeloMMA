@@ -1,4 +1,3 @@
-import type { WeighInsDTO, WeighInsUpdateDTO } from "../../../types/index.js";
 import { z } from 'zod';
 
 // Defino el esquema de validación de los pesajes oficiales de los luchadores para la pelea
@@ -12,12 +11,15 @@ const SchemaWeighIns = z.object({
 // Defino el esquema de validación de los pesajes oficiales de los luchadores para la pelea a la hora de ser actaulizadas
 const SchemaWeighInsUpdate = SchemaWeighIns.partial();
 
+export type WeighInsSchemaDTO = z.infer<typeof SchemaWeighIns>;
+export type WeighInsUpdateSchemaDTO = z.infer<typeof SchemaWeighInsUpdate>;
+
 // Defino la función que valida los datos de los pesajes oficiales de los luchadores para la pelea
-export function validateWeighInsData(data: WeighInsDTO){
+export function validateWeighInsData(data: WeighInsSchemaDTO){
     return SchemaWeighIns.safeParse(data);
 }
 
 // Defino la función que valida los datos de los pesajes oficiales de los luchadores para la pelea a la hora de ser actaulizadas
-export function validateWeighInsUpdateData(data: WeighInsUpdateDTO){
+export function validateWeighInsUpdateData(data: WeighInsUpdateSchemaDTO){
     return SchemaWeighInsUpdate.safeParse(data);
 }

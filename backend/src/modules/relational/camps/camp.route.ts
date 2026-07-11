@@ -8,15 +8,19 @@
  *         id:
  *           type: integer
  *           description: ID único del campamento
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         team_id:
  *           type: integer
  *           description: ID del equipo
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         created_at:
  *           type: string
  *           format: date-time
@@ -40,24 +44,30 @@
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         team_id:
  *           type: integer
  *           description: ID del equipo
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *     UpdateCampInput:
  *       type: object
  *       properties:
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         team_id:
  *           type: integer
  *           description: ID del equipo
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  */
 
 import {Router} from 'express';

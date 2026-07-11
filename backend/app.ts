@@ -4,7 +4,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { globalCacheMiddleware } from './src/middlewares/cache/global-cache.middleware.js';
@@ -12,6 +11,7 @@ import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
 import { swaggerSpec } from './config/swagger/docs.js';
 import { connectRedis } from './config/cache/redis.js';
+import { prisma } from './src/utils/prisma/prisma.js';
 
 // Inició e servidor express
 const app: express.Application = express();
@@ -30,7 +30,6 @@ app.use(cookieParser());
 if(!isTest){
     app.use(morgan('dev'));
     app.use(globalCacheMiddleware);
-    app.use(rateLimit(settings.rateLimit));
 }
 
 // Ruta de bienvenida
@@ -53,7 +52,27 @@ app.get(`${settings.basePath}/health`, async (req: Request, res: Response) => {
             rss: process.memoryUsage().rss
         },
         version: process.version,
-        environment: process.env.NODE_ENV || 'development'
+        environment: settings.nodeEnv,
+        database: {
+            status: `${await prisma.$queryRaw`SELECT 1` ? 'OK' : 'ERROR'}`,
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: {
+                total: process.memoryUsage().heapTotal,
+                used: process.memoryUsage().heapUsed,
+                rss: process.memoryUsage().rss
+            }
+        },
+        redis: {
+            status: settings.redisEnv ? 'OK' : 'DISABLED',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            memory: {
+                total: process.memoryUsage().heapTotal,
+                used: process.memoryUsage().heapUsed,
+                rss: process.memoryUsage().rss
+            }
+        }
     })
 });
 

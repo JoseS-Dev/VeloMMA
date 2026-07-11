@@ -24,7 +24,8 @@ export class TeamController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { teams, total } = await this.teamService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { teams, total } = await this.teamService.findAll(cursor, Number(limit) || 10);
         return { 
             data: teams,
             meta: {
@@ -42,7 +43,8 @@ export class TeamController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { teams, total } = await this.teamService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { teams, total } = await this.teamService.findAllActive(cursor, Number(limit) || 10);
         return { 
             data: teams,
             meta: {

@@ -8,54 +8,71 @@
  *         id:
  *           type: integer
  *           description: ID único de la métrica
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         round:
  *           type: integer
  *           description: Número de ronda
+ *           example: 1
  *         sig_strikes_landed:
  *           type: integer
  *           description: Golpes significativos conectados
+ *           example: 25
  *         sig_strikes_attempted:
  *           type: integer
  *           description: Golpes significativos intentados
+ *           example: 40
  *         total_strikes_landed:
  *           type: integer
  *           description: Golpes totales conectados
+ *           example: 45
  *         total_strikes_attempted:
  *           type: integer
  *           description: Golpes totales intentados
+ *           example: 60
  *         head_strikes_landed:
  *           type: integer
  *           description: Golpes a la cabeza conectados
+ *           example: 12
  *         body_strikes_landed:
  *           type: integer
  *           description: Golpes al cuerpo conectados
+ *           example: 8
  *         leg_strikes_landed:
  *           type: integer
  *           description: Golpes a las piernas conectados
+ *           example: 5
  *         takedowns_landed:
  *           type: integer
  *           description: Derribos conectados
+ *           example: 2
  *         takedowns_attempted:
  *           type: integer
  *           description: Derribos intentados
+ *           example: 4
  *         submissions_landed:
  *           type: integer
  *           description: Sumisiones conectadas
+ *           example: 1
  *         reversals:
  *           type: integer
  *           description: Reversales
+ *           example: 0
  *         control_time:
  *           type: integer
  *           description: Tiempo de control en segundos
+ *           example: 120
  *         knockdowns:
  *           type: integer
  *           description: Derribos (knockdowns)
+ *           example: 1
  *         created_at:
  *           type: string
  *           format: date-time
@@ -73,65 +90,94 @@
  *       properties:
  *         bout_id:
  *           type: integer
+ *           example: 1
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         round:
  *           type: integer
+ *           example: 1
  *         sig_strikes_landed:
  *           type: integer
+ *           example: 25
  *         sig_strikes_attempted:
  *           type: integer
+ *           example: 40
  *         total_strikes_landed:
  *           type: integer
+ *           example: 45
  *         total_strikes_attempted:
  *           type: integer
+ *           example: 60
  *         head_strikes_landed:
  *           type: integer
+ *           example: 12
  *         body_strikes_landed:
  *           type: integer
+ *           example: 8
  *         leg_strikes_landed:
  *           type: integer
+ *           example: 5
  *         takedowns_landed:
  *           type: integer
+ *           example: 2
  *         takedowns_attempted:
  *           type: integer
+ *           example: 4
  *         submissions_landed:
  *           type: integer
+ *           example: 1
  *         reversals:
  *           type: integer
+ *           example: 0
  *         control_time:
  *           type: integer
+ *           example: 120
  *         knockdowns:
  *           type: integer
+ *           example: 1
  *     UpdateMetricInput:
  *       type: object
  *       properties:
  *         sig_strikes_landed:
  *           type: integer
+ *           example: 25
  *         sig_strikes_attempted:
  *           type: integer
+ *           example: 40
  *         total_strikes_landed:
  *           type: integer
+ *           example: 45
  *         total_strikes_attempted:
  *           type: integer
+ *           example: 60
  *         head_strikes_landed:
  *           type: integer
+ *           example: 12
  *         body_strikes_landed:
  *           type: integer
+ *           example: 8
  *         leg_strikes_landed:
  *           type: integer
+ *           example: 5
  *         takedowns_landed:
  *           type: integer
+ *           example: 2
  *         takedowns_attempted:
  *           type: integer
+ *           example: 4
  *         submissions_landed:
  *           type: integer
+ *           example: 1
  *         reversals:
  *           type: integer
+ *           example: 0
  *         control_time:
  *           type: integer
+ *           example: 120
  *         knockdowns:
  *           type: integer
+ *           example: 1
  */
 
 import {Router} from "express";

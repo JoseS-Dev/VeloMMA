@@ -8,25 +8,31 @@
  *         id:
  *           type: integer
  *           description: ID único del registro de equipo
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         team_id:
  *           type: integer
  *           description: ID del equipo
+ *           example: 1
  *         is_current:
  *           type: boolean
  *           description: Indica si es el equipo actual del luchador
+ *           example: true
  *         joined_date:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha de ingreso al equipo
+ *           example: 2024-01-01
  *         left_date:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha de salida del equipo
+ *           example: 2024-06-01
  *         created_at:
  *           type: string
  *           format: date-time
@@ -43,29 +49,38 @@
  *       properties:
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         team_id:
  *           type: integer
+ *           example: 1
  *         is_current:
  *           type: boolean
+ *           example: true
  *         joined_date:
  *           type: string
  *           format: date
+ *           example: 2024-01-01
  *         left_date:
  *           type: string
  *           format: date
+ *           example: 2024-06-01
  *     UpdateStableInput:
  *       type: object
  *       properties:
  *         team_id:
  *           type: integer
+ *           example: 1
  *         is_current:
  *           type: boolean
+ *           example: true
  *         joined_date:
  *           type: string
  *           format: date
+ *           example: 2024-01-01
  *         left_date:
  *           type: string
  *           format: date
+ *           example: 2024-06-01
  */
 
 import { Router } from 'express';

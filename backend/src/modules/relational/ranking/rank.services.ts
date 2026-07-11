@@ -1,13 +1,14 @@
-import type { RankingDTO, RankingUpdateDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { RankingSchemaDTO, RankingUpdateSchemaDTO } from './rank.schema.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from "../../../common/errors/error.js";
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Modelo que interactua con la tabla de clasificaciones de los luchadores
 export class RankingService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar una clasificación de un luchador
-    async create(data: RankingDTO){
+    async create(data: RankingSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la división, el luchador en cuestión y que no exista una relación
         const [existingDivision, existingFighter, existingRanking] = await Promise.all([
@@ -33,21 +34,14 @@ export class RankingService {
 
     // Servicio para obtener todas las clasificaciones
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de clasificaciones
         const total = await this.prisma.fighterRankings.count();
         // Se obtienen las clasificaciones
-        const rankings = await this.prisma.fighterRankings.findMany({
-            where: {deleted_at: null},
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const rankings = await this.prisma.fighterRankings.findMany(queryOptions);
         return {
             rankings,
             total: total
@@ -57,7 +51,7 @@ export class RankingService {
     // Servicio para obtener todas las clasificaciones de una división
     async findAllByDivision(
         divisionId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
@@ -66,20 +60,13 @@ export class RankingService {
             where: { id: divisionId }
         });
         if(!existingDivision) throw new NotFoundException('No existe la división');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { division_id: divisionId } });
         // Se cuenta el total de clasificaciones
         const total = await this.prisma.fighterRankings.count({
             where: { division_id: divisionId }
         });
         // Se obtienen las clasificaciones
-        const rankings = await this.prisma.fighterRankings.findMany({
-            where: { division_id: divisionId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const rankings = await this.prisma.fighterRankings.findMany(queryOptions);
         return {
             rankings,
             total: total
@@ -91,14 +78,14 @@ export class RankingService {
         if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
         // Se verifica que exista la clasificación
         const existingRanking = await this.prisma.fighterRankings.findUnique({
-            where: { id: rankingId, deleted_at: null }
+            where: { id: rankingId }
         });
         if(!existingRanking) throw new NotFoundException('No existe la clasificación');
         return existingRanking;
     }
 
     // Servicio para actualizar una clasificación por su ID
-    async update(rankingId: number, data: RankingUpdateDTO){
+    async update(rankingId: number, data: RankingUpdateSchemaDTO){
         if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la clasificación

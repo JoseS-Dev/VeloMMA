@@ -8,18 +8,23 @@
  *         id:
  *           type: integer
  *           description: ID único del juez
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         judge_name:
  *           type: string
  *           description: Nombre del juez
+ *           example: Mike Bell
  *         red_score:
  *           type: integer
  *           description: Puntaje del luchador en esquina roja
+ *           example: 29
  *         blue_score:
  *           type: integer
  *           description: Puntaje del luchador en esquina azul
+ *           example: 28
  *         created_at:
  *           type: string
  *           format: date-time
@@ -38,21 +43,28 @@
  *       properties:
  *         bout_id:
  *           type: integer
+ *           example: 1
  *         judge_name:
  *           type: string
+ *           example: Mike Bell
  *         red_score:
  *           type: integer
+ *           example: 29
  *         blue_score:
  *           type: integer
+ *           example: 28
  *     UpdateJudgeInput:
  *       type: object
  *       properties:
  *         judge_name:
  *           type: string
+ *           example: Mike Bell
  *         red_score:
  *           type: integer
+ *           example: 29
  *         blue_score:
  *           type: integer
+ *           example: 28
  */
 
 import {Router} from 'express';
@@ -229,6 +241,6 @@ router.patch('/:id', clearCacheMiddleware(`${settings.basePath}/judges/:id`), co
  *                 data:
  *                   $ref: '#/components/schemas/Judge'
  */
-router.delete('/soft/:id', clearCacheMiddleware(`${settings.basePath}/judges/soft/:id`), controller.delete.bind(controller));
+router.patch('/soft/:id', clearCacheMiddleware(`${settings.basePath}/judges/soft/:id`), controller.delete.bind(controller));
 
 export const judgeRoutes = router;

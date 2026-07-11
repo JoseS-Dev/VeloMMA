@@ -1,4 +1,3 @@
-import type { CreateBoutOddsDTO, UpdateBoutOddsDTO } from '../../../types/index.js';
 import { z } from 'zod';
 
 // Defino el esquema de validación para la creación de una casa de apuesta para una pelea
@@ -14,12 +13,15 @@ const SchemaCreateBoutOddsDTO = z.object({
 // Defino el esquema de validación para la actualización de una casa de apuesta para una pelea
 const SchemaUpdateBoutOddsDTO = SchemaCreateBoutOddsDTO.partial();
 
+export type CreateBoutOddsSchemaDTO = z.infer<typeof SchemaCreateBoutOddsDTO>;
+export type UpdateBoutOddsSchemaDTO = z.infer<typeof SchemaUpdateBoutOddsDTO>;
+
 // Función para validar los datos de creación de una casa de apuesta para una pelea
-export function validateCreateBoutOddsDTO(data: CreateBoutOddsDTO) {
+export function validateCreateBoutOddsDTO(data: CreateBoutOddsSchemaDTO) {
     return SchemaCreateBoutOddsDTO.safeParse(data);
 }
 
 // Función para validar los datos de actualización de una casa de apuesta para una pelea
-export function validateUpdateBoutOddsDTO(data: UpdateBoutOddsDTO) {
+export function validateUpdateBoutOddsDTO(data: UpdateBoutOddsSchemaDTO) {
     return SchemaUpdateBoutOddsDTO.safeParse(data);
 }

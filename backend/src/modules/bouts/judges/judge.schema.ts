@@ -1,4 +1,3 @@
-import type { JudgesDTO, JudgesUpdateDTO } from "../../../types/index.js";
 import {  z } from 'zod';
 
 // Defino el esquema de los jueces de una pelea
@@ -12,12 +11,15 @@ const SchemaJudge = z.object({
 // Defino el esquema de los jueces de una pelea a la hora de ser actaulizadas
 const SchemaJudgeUpdate = SchemaJudge.partial();
 
+export type JudgeSchemaDTO = z.infer<typeof SchemaJudge>;
+export type JudgeUpdateSchemaDTO = z.infer<typeof SchemaJudgeUpdate>;
+
 // Defino la función que valida los datos del jueces de la pelea
-export function validateJudgeData(data: JudgesDTO){
+export function validateJudgeData(data: JudgeSchemaDTO){
     return SchemaJudge.safeParse(data);
 }
 
 // Defino la función que valida los datos del jueces de la pelea a la hora de ser actaulizadas
-export function validateJudgeUpdateData(data: JudgesUpdateDTO){
+export function validateJudgeUpdateData(data: JudgeUpdateSchemaDTO){
     return SchemaJudgeUpdate.safeParse(data);
 }

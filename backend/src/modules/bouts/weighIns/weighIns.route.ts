@@ -8,18 +8,23 @@
  *         id:
  *           type: integer
  *           description: ID único del pesaje
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         weight_recorded:
  *           type: number
  *           description: Peso registrado en kg
+ *           example: 70.3
  *         missed_weight:
  *           type: boolean
  *           description: Indica si el luchador no dio el peso
+ *           example: false
  *         created_at:
  *           type: string
  *           format: date-time
@@ -37,19 +42,25 @@
  *       properties:
  *         bout_id:
  *           type: integer
+ *           example: 1
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         weight_recorded:
  *           type: number
+ *           example: 70.3
  *         missed_weight:
  *           type: boolean
+ *           example: false
  *     UpdateWeighInInput:
  *       type: object
  *       properties:
  *         weight_recorded:
  *           type: number
+ *           example: 70.3
  *         missed_weight:
  *           type: boolean
+ *           example: false
  */
 
 import {Router} from 'express';

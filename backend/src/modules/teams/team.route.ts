@@ -8,24 +8,30 @@
  *         id:
  *           type: integer
  *           description: ID único del equipo
+ *           example: 1
  *         name_team:
  *           type: string
  *           description: Nombre del equipo
+ *           example: American Top Team
  *         description_team:
  *           type: string
  *           nullable: true
  *           description: Descripción del equipo
+ *           example: Uno de los mejores gimnasios de MMA del mundo
  *         date_founded:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha de fundación
+ *           example: 2001-01-01
  *         location:
  *           type: string
  *           description: Ubicación del equipo
+ *           example: Coconut Creek, Florida
  *         is_active:
  *           type: boolean
  *           description: Indica si el equipo está activo
+ *           example: true
  *         created_at:
  *           type: string
  *           format: date-time
@@ -42,27 +48,36 @@
  *       properties:
  *         name_team:
  *           type: string
+ *           example: American Top Team
  *         description_team:
  *           type: string
+ *           example: Uno de los mejores gimnasios de MMA del mundo
  *         date_founded:
  *           type: string
  *           format: date
+ *           example: 2001-01-01
  *         location:
  *           type: string
+ *           example: Coconut Creek, Florida
  *     UpdateTeamInput:
  *       type: object
  *       properties:
  *         name_team:
  *           type: string
+ *           example: American Top Team
  *         description_team:
  *           type: string
+ *           example: Uno de los mejores gimnasios de MMA del mundo
  *         date_founded:
  *           type: string
  *           format: date
+ *           example: 2001-01-01
  *         location:
  *           type: string
+ *           example: Coconut Creek, Florida
  *         is_active:
  *           type: boolean
+ *           example: true
  *     ChangeStatusInput:
  *       type: object
  *       required:
@@ -71,6 +86,7 @@
  *         is_active:
  *           type: boolean
  *           description: Nuevo estado del registro
+ *           example: true
  */
 
 import {Router} from 'express';

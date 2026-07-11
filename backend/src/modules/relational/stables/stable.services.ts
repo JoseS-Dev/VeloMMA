@@ -1,20 +1,21 @@
-import type { StableDTO, UpdateStableDTO } from '../../../types/relational/stables/stable.types.js';
-import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import type { StableSchemaDTO, UpdateStableSchemaDTO } from './stable.schema.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio para obtener todos los equipos de los luchadores
 export class StableService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo equipo de un luchador
-    async create(data: StableDTO){
+    async create(data: StableSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador, el equipo y que ya existe una relación
         const [existingFighter, existingTeam, existingStable] = await Promise.all([
-            this.prisma.fighters.findFirst({
+            this.prisma.fighters.findUnique({
                 where: {id: data.fighter_id}
             }),
-            this.prisma.teams.findFirst({
+            this.prisma.teams.findUnique({
                 where: {id: data.team_id}
             }),
             this.prisma.fighterTeams.findFirst({
@@ -38,7 +39,7 @@ export class StableService {
     // Servicio para obtener todos los equipos de los luchadores
     async findAll(
         FighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!FighterId) throw new BadRequestException('El id es obligatorio');
@@ -47,18 +48,13 @@ export class StableService {
             where: {id: FighterId}
         });
         if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: FighterId } });
         // Se cuenta el total de registros
         const total = await this.prisma.fighterTeams.count({
             where: {fighter_id: FighterId}
         });
         // Se obtienen los equipos
-        const stables = await this.prisma.fighterTeams.findMany({
-            where: {fighter_id: FighterId, deleted_at: null},
-            skip: skip,
-            take: limit,
-            orderBy: {created_at: 'asc'}
-        });
+        const stables = await this.prisma.fighterTeams.findMany(queryOptions);
         return {
             stables, 
             total: total
@@ -67,14 +63,14 @@ export class StableService {
 
     async findById(stableId: number){
         const stable = await this.prisma.fighterTeams.findUnique({
-            where: {id: stableId, deleted_at: null}
+            where: {id: stableId}
         });
         if(!stable) throw new NotFoundException('No se encontró el equipo');
         return stable;
     }
 
     // Servicio para actualizar los equipos de los luchadores
-    async update(stableId: number, data: UpdateStableDTO){
+    async update(stableId: number, data: UpdateStableSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el equipo existe
         const existingStable = await this.findById(stableId);

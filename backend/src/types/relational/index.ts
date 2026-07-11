@@ -1,6 +1,0 @@
-export * from './injuries/injuries.types.js';
-export * from './stables/stable.types.js';
-export * from './weights/weight.types.js';
-export * from './ranking/rank.types.js';
-export * from './titles/title.types.js';
-export * from './camps/camp.types.js';

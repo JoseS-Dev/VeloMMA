@@ -1,13 +1,13 @@
-import type { BonusDTO, BonusUpdateDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { BonusSchemaDTO, BonusUpdateSchemaDTO } from "./bonus.schema.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
-
+import { buildQueryOptions } from "../../../utils/functions/function.js";
 // Modelo que interactua con la tabla de bonos de una pelea
 export class BonusService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar un bono a una pelea
-    async create(data: BonusDTO){
+    async create(data: BonusSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador con sus bonos
         const [existingBout, existingFighter] = await Promise.all([
@@ -26,21 +26,14 @@ export class BonusService {
 
     // Servicio para obtener todos los bonos recibidos
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de bonos
         const total = await this.prisma.boutBonuses.count();
         // Se obtienen los bonos
-        const bonuses = await this.prisma.boutBonuses.findMany({
-            where: {deleted_at: null},
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bonuses = await this.prisma.boutBonuses.findMany(queryOptions);
         return {
             bonuses,
             total: total
@@ -50,7 +43,7 @@ export class BonusService {
     // Servicio para obtener todos los bonos recibidos por un luchador
     async findAllByFighter(
         fighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!fighterId) throw new BadRequestException('El id del luchador es obligatorio');
@@ -59,20 +52,13 @@ export class BonusService {
             where: { id: fighterId }
         });
         if(!existingFighter) throw new NotFoundException('No existe el luchador');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: fighterId } });
         // Se cuenta el total de bonos
         const total = await this.prisma.boutBonuses.count({
             where: { fighter_id: fighterId }
         });
         // Se obtienen los bonos
-        const bonuses = await this.prisma.boutBonuses.findMany({
-            where: { fighter_id: fighterId, deleted_at: null },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bonuses = await this.prisma.boutBonuses.findMany(queryOptions);
         return {
             bonuses,
             total: total
@@ -84,14 +70,14 @@ export class BonusService {
         if(!bonusId) throw new BadRequestException('El id del bono es obligatorio');
         // Se verifica que exista el bono
         const existingBonus = await this.prisma.boutBonuses.findUnique({
-            where: { id: bonusId, deleted_at: null }
+            where: { id: bonusId }
         });
         if(!existingBonus) throw new NotFoundException('No existe el bono');
         return existingBonus;
     }
 
     // Servicio para actualizar un bono por su ID
-    async update(bonusId: number, data: BonusUpdateDTO){
+    async update(bonusId: number, data: BonusUpdateSchemaDTO){
         if(!bonusId) throw new BadRequestException('El id del bono es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el bono

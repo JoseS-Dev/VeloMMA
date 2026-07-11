@@ -1,13 +1,13 @@
-import type { UpdateWeightDTO, WeighInsDTO, WeighInsUpdateDTO } from "../../../types/index.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { WeighInsSchemaDTO, WeighInsUpdateSchemaDTO } from "./weighIns.schema.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
-
+import { buildQueryOptions } from "../../../utils/functions/function.js";
 // Modelo que interactua con la tabla weighIns de la base de datos
 export class WeighInsService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar un pesaje oficial de un luchador para una pelea
-    async create(data: WeighInsDTO){
+    async create(data: WeighInsSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea y el luchador antes de crear el pesaje
         const [existingBout, existingFighter] = await Promise.all([
@@ -30,19 +30,14 @@ export class WeighInsService {
 
     // Servicio para obtener todos los pesajes oficiales
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
-        // Se obtiene todos los pesajes
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el numero el total de pesajes
         const total = await this.prisma.boutWeighIns.count();
         // Se Obtiene los pesajes
-        const weighIns = await this.prisma.boutWeighIns.findMany({
-            where: {deleted_at: null},
-            skip: skip,
-            take: limit
-        });
+        const weighIns = await this.prisma.boutWeighIns.findMany(queryOptions);
         return {
             weighIns,
             total: total
@@ -54,12 +49,12 @@ export class WeighInsService {
         if(!boutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
-            where: {id: boutId, deleted_at: null}
+            where: {id: boutId}
         });
         if(!existingBout) throw new NotFoundException('No existe dicha pelea');
         // Si existe, se obtiene todos los pesajes
         const weighIns = await this.prisma.boutWeighIns.findMany({
-            where: {bout_id: boutId, deleted_at: null},
+            where: {bout_id: boutId},
             orderBy: {created_at: 'asc'}
         });
         return weighIns;
@@ -69,14 +64,14 @@ export class WeighInsService {
     async findById(id: number){
         if(!id) throw new BadRequestException('El id del pesaje es obligatorio');
         const weighIn = await this.prisma.boutWeighIns.findUnique({
-            where: {id: id, deleted_at: null}
+            where: {id: id}
         });
         if(!weighIn) throw new NotFoundException('No existe dicho pesaje');
         return weighIn;
     }
 
     // Servicio para actualizar un pesaje oficial de una pelea
-    async update(id: number, data: UpdateWeightDTO){
+    async update(id: number, data: WeighInsUpdateSchemaDTO){
         if(!id) throw new BadRequestException('El id del pesaje es obligatorio');
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el pesaje en cuestión

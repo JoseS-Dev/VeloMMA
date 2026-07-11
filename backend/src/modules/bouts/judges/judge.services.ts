@@ -1,13 +1,13 @@
-import type { JudgesDTO, JudgesUpdateDTO } from '../../../types/bouts/judges/judges.types.js';
-import type { PrismaClient } from '../../../../generated/prisma/index.js';
+import type { JudgeSchemaDTO, JudgeUpdateSchemaDTO } from './judge.schema.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
-
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 // Modelo que interactua con la tabla judges de la base de datos
 export class JudgeService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear un juez a una pelea
-    async create(data: JudgesDTO){
+    async create(data: JudgeSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
@@ -25,28 +25,23 @@ export class JudgeService {
     // Servicio para obtener todos los jueces de una pelea
     async findAll(
         boutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!boutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
-            where: {id: boutId, deleted_at: null}
+            where: {id: boutId}
         });
         if(!existingBout) throw new NotFoundException('No existe dicha pelea');
         // Si existe, se obtiene todos los jueces
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: boutId } });
         // Se cuenta el numero el total de jueces de esa pelea
         const total = await this.prisma.boutJudges.count({
             where: {bout_id: boutId}
         });
         // Se Obtiene los jueces
-        const judges = await this.prisma.boutJudges.findMany({
-            skip: skip,
-            take: limit,
-            where: {bout_id: boutId, deleted_at: null},
-            orderBy: {created_at: 'asc'}
-        });
+        const judges = await this.prisma.boutJudges.findMany(queryOptions);
         return {
             judges,
             total: total
@@ -64,7 +59,7 @@ export class JudgeService {
     }
 
     // Servicio para actualizar un juez de una pelea por su Id
-    async update(id: number, data: JudgesUpdateDTO){
+    async update(id: number, data: JudgeUpdateSchemaDTO){
         if(!id) throw new BadRequestException('El id del juez es obligatorio');
         // Se verifcia que exista el resultado del juez
         const existingJudge = await this.findById(id);

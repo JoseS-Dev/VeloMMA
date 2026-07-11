@@ -8,19 +8,24 @@
  *         id:
  *           type: integer
  *           description: ID único de la división
+ *           example: 1
  *         name_division:
  *           type: string
  *           description: Nombre de la división
+ *           example: Peso Ligero
  *         weight_class:
  *           type: string
  *           description: Clase de peso
+ *           example: 155 lbs
  *         gender:
  *           type: string
  *           enum: [Masculino, Femenino, Otro]
  *           description: Género de la división
+ *           example: Masculino
  *         is_active:
  *           type: boolean
  *           description: Indica si la división está activa
+ *           example: true
  *         created_at:
  *           type: string
  *           format: date-time
@@ -38,23 +43,30 @@
  *       properties:
  *         name_division:
  *           type: string
+ *           example: Peso Ligero
  *         weight_class:
  *           type: string
+ *           example: 155 lbs
  *         gender:
  *           type: string
  *           enum: [Masculino, Femenino, Otro]
+ *           example: Masculino
  *     UpdateDivisionInput:
  *       type: object
  *       properties:
  *         name_division:
  *           type: string
+ *           example: Peso Ligero
  *         weight_class:
  *           type: string
+ *           example: 155 lbs
  *         gender:
  *           type: string
  *           enum: [Masculino, Femenino, Otro]
+ *           example: Masculino
  *         is_active:
  *           type: boolean
+ *           example: true
  *     ChangeStatusInput:
  *       type: object
  *       required:
@@ -62,6 +74,7 @@
  *       properties:
  *         is_active:
  *           type: boolean
+ *           example: true
  */
 
 import {Router} from 'express';
