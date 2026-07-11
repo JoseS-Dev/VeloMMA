@@ -11,10 +11,10 @@ export class StableService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador, el equipo y que ya existe una relación
         const [existingFighter, existingTeam, existingStable] = await Promise.all([
-            this.prisma.fighters.findFirst({
+            this.prisma.fighters.findUnique({
                 where: {id: data.fighter_id}
             }),
-            this.prisma.teams.findFirst({
+            this.prisma.teams.findUnique({
                 where: {id: data.team_id}
             }),
             this.prisma.fighterTeams.findFirst({

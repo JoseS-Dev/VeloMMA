@@ -11,10 +11,10 @@ export class WeightService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista el luchador, la división y que no exista una relación
         const [existingFighter, existingDivision, existingWeight] = await Promise.all([
-            this.prisma.fighters.findFirst({
+            this.prisma.fighters.findUnique({
                 where: {id: data.fighter_id}
             }),
-            this.prisma.divisions.findFirst({
+            this.prisma.divisions.findUnique({
                 where: {id: data.division_id}
             }),
             this.prisma.fighterDivision.findFirst({

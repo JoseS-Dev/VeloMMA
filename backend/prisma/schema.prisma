@@ -171,6 +171,7 @@ model fighterDivision {
   fighter fighters @relation(fields: [fighter_id], references: [id])
   division divisions @relation(fields: [division_id], references: [id])
   @@unique([fighter_id, division_id])
+  @@index([fighter_id, division_id])
   @@map("fighter_division")
 }
 
@@ -203,6 +204,7 @@ model fighterTeams {
   deleted_at DateTime?
   fighter fighters @relation(fields: [fighter_id], references: [id])
   team teams @relation(fields: [team_id], references: [id])
+  @@index([fighter_id, team_id])
   @@map("fighter_teams")
 }
 
@@ -251,6 +253,7 @@ model bouts {
   bonuses boutBonuses[]
   odds boutOdds[]
   camps trainingCamps[]
+  @@index([event_id, division_id])
   @@map("bouts")
 }
 
@@ -288,6 +291,7 @@ model boutMetrics {
   bout bouts @relation(fields: [bout_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
   @@unique([bout_id, fighter_id, round])
+  @@index([bout_id, fighter_id])
   @@map("bout_metrics")
 }
 
@@ -319,6 +323,7 @@ model boutWeighIns {
   bout bouts @relation(fields: [bout_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
   @@unique([bout_id, fighter_id])
+  @@index([bout_id, fighter_id])
   @@map("bout_weigh_ins")
 }
 
@@ -334,6 +339,7 @@ model fighterRankings {
   deleted_at DateTime?
   fighter fighters @relation(fields: [fighter_id], references: [id])
   division divisions @relation(fields: [division_id], references: [id])
+  @@index([fighter_id, division_id])
   @@map("fighter_rankings")
 }
 
@@ -348,6 +354,7 @@ model boutBonuses {
   deleted_at DateTime?
   bout bouts @relation(fields: [bout_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@index([bout_id, fighter_id])
   @@map("bout_bonuses")
 }
 
@@ -364,6 +371,7 @@ model fighterTitles {
   deleted_at DateTime?
   division divisions @relation(fields: [division_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
+  @@index([division_id, fighter_id])
   @@map("fighter_titles")
 }
 
@@ -396,6 +404,7 @@ model trainingCamps {
   team teams @relation(fields: [team_id], references: [id])
   fighter fighters @relation(fields: [fighter_id], references: [id])
   @@unique([bout_id, fighter_id])
+  @@index([bout_id, fighter_id, team_id])
   @@map("training_camps")
 }
 
