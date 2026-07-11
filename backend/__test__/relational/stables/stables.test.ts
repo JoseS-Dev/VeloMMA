@@ -167,8 +167,8 @@ describe("Modulo de equipos de luchadores (stables)", () => {
                 fighter_id: testFighterId,
                 team_id: testTeamIdTwo,
                 is_current: false,
-                joined_date: '2020-01-01',
-                left_date: '2022-01-01'
+                joined_date: '2020-01-01T00:00:00.000Z',
+                left_date: '2022-01-01T00:00:00.000Z'
             };
             const stableResponseTwo = await setup.apiInstance
                 .post(`${settings.basePath}/stables`)
@@ -262,7 +262,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
         test("Deberia retornar un status 200 y actualizar la asignación de equipo exitosamente", async () => {
             const updateData = {
                 is_current: false,
-                left_date: '2024-01-01'
+                left_date: '2024-01-01T00:00:00.000Z'
             };
             const response = await setup.apiInstance
                 .patch(`${settings.basePath}/stables/${testStableId}`)
@@ -278,7 +278,7 @@ describe("Modulo de equipos de luchadores (stables)", () => {
             const nonExistentStableId = 9999; // ID de asignación que no existe
             const updateData = {
                 is_current: false,
-                left_date: '2024-01-01'
+                left_date: '2024-01-01T00:00:00.000Z'
             };
             const response = await setup.apiInstance
                 .patch(`${settings.basePath}/stables/${nonExistentStableId}`)

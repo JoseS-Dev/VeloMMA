@@ -21,17 +21,13 @@ describe("Modulo de Lesiones de un luchador", () => {
     let testInjuryId: number;
     let testInjuryId2: number;
 
-    
-
-    
-
     // Datos de prueba para crear una segunda lesión
     const mockCreateInjuryTwo = {
         fighter_id: 0,
         description_injury: 'Esguince de tobillo',
         severity_injury: 'Severo',
-        injury_date: '2023-03-01',
-        recovery_date: '2023-03-15'
+        injury_date: '2023-03-01T00:00:00.000Z',
+        recovery_date: '2023-03-15T00:00:00.000Z'
     }
 
     // Antes de cada test, se limpia la base de datos y se crean un luchador
@@ -306,8 +302,8 @@ describe("Modulo de Lesiones de un luchador", () => {
             const updatedInjuryData = {
                 description_injury: 'Fractura de brazo actualizada',
                 severity_injury: 'Severo',
-                injury_date: '2023-01-15',
-                recovery_date: '2023-02-15'
+                injury_date: '2023-01-15T00:00:00.000Z',
+                recovery_date: '2023-02-15T00:00:00.000Z'
             }
             const response = await setup.apiInstance
                 .patch(`${settings.basePath}/injuries/${testInjuryId}`)
