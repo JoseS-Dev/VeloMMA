@@ -1,6 +1,7 @@
 import type { WeightSchemaDTO, UpdateWeightSchemaDTO } from './weight.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio para obtener todos los pesos de los luchadores
 export class WeightService {
@@ -38,7 +39,7 @@ export class WeightService {
     // Servicio para obtener todos los pesos de los luchadores
     async findAll(
         FighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ) {
         if(!FighterId) throw new BadRequestException('El ID del luchador es obligatorio')
@@ -47,18 +48,13 @@ export class WeightService {
             where: {id: FighterId}
         });
         if(!existingFighter) throw new NotFoundException('El luchador no existen')
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: FighterId } });
         // Se cuenta el total de registros
         const total = await this.prisma.fighterDivision.count({
             where: {fighter_id: FighterId}
         });
         // Se obtienen los pesos
-        const weights = await this.prisma.fighterDivision.findMany({
-            where: {fighter_id: FighterId},
-            skip: skip,
-            take: limit,
-            orderBy: {created_at: 'asc'}
-        });
+        const weights = await this.prisma.fighterDivision.findMany(queryOptions);
         return {
             weights, 
             total: total

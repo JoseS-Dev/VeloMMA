@@ -1,6 +1,7 @@
 import type { StableSchemaDTO, UpdateStableSchemaDTO } from './stable.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio para obtener todos los equipos de los luchadores
 export class StableService {
@@ -38,7 +39,7 @@ export class StableService {
     // Servicio para obtener todos los equipos de los luchadores
     async findAll(
         FighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!FighterId) throw new BadRequestException('El id es obligatorio');
@@ -47,18 +48,13 @@ export class StableService {
             where: {id: FighterId}
         });
         if(!existingFighter) throw new NotFoundException('No se encontró el luchador');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: FighterId } });
         // Se cuenta el total de registros
         const total = await this.prisma.fighterTeams.count({
             where: {fighter_id: FighterId}
         });
         // Se obtienen los equipos
-        const stables = await this.prisma.fighterTeams.findMany({
-            where: {fighter_id: FighterId},
-            skip: skip,
-            take: limit,
-            orderBy: {created_at: 'asc'}
-        });
+        const stables = await this.prisma.fighterTeams.findMany(queryOptions);
         return {
             stables, 
             total: total

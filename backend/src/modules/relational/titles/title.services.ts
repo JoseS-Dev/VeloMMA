@@ -2,6 +2,7 @@ import type { TitleSchemaDTO, UpdateTitleSchemaDTO } from "./title.schema.js";
 import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { TitleType } from "../../../../generated/prisma/index.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { buildQueryOptions } from "../../../utils/functions/function.js";
 
 // Servicio para interactuar con la tabla fighterTitles de la base de datos
 export class TitleService {
@@ -32,7 +33,7 @@ export class TitleService {
     // Servicio para obtener todos los titulos de un luchador
     async findAllByFighter(
         fighterId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!fighterId) throw new BadRequestException('El id del luchador es obligatorio');
@@ -42,19 +43,13 @@ export class TitleService {
         });
         if(!existingFighter) throw new NotFoundException('El luchador no existe');
         // Se obtienen los titulos del luchador
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: fighterId } });
         // Se cuenta el total de titulos del luchador
         const total = await this.prisma.fighterTitles.count({
             where: { fighter_id: fighterId }
         });
         // Se obtienen los titulos del luchador
-        const titles = await this.prisma.fighterTitles.findMany({
-            where: { fighter_id: fighterId },
-            skip: skip,
-            take: limit,
-
-            orderBy: {created_at: 'desc'}
-        });
+        const titles = await this.prisma.fighterTitles.findMany(queryOptions);
         return {
             titles,
             total
@@ -64,7 +59,7 @@ export class TitleService {
     // Servicio para obtener el registro de todos los campeones de una división
     async findAllByDivision(
         divisionId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
@@ -74,18 +69,13 @@ export class TitleService {
         });
         if(!existingDivision) throw new NotFoundException('La división no existe');
         // Se obtienen los titulos de la división
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { division_id: divisionId } });
         // Se cuenta el total de titulos de la división
         const total = await this.prisma.fighterTitles.count({
             where: { division_id: divisionId }
         });
         // Se obtienen los titulos de la división
-        const titles = await this.prisma.fighterTitles.findMany({
-            where: { division_id: divisionId },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const titles = await this.prisma.fighterTitles.findMany(queryOptions);
         return {
             titles,
             total
@@ -96,7 +86,7 @@ export class TitleService {
     async findAllByDivisionAndTitleType(
         divisionId: number,
         titleType: TitleType,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
@@ -107,18 +97,13 @@ export class TitleService {
         });
         if(!existingDivision) throw new NotFoundException('La división no existe');
         // Se obtienen los titulos de la división y tipo de titulo
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { division_id: divisionId, title_type: titleType } });
         // Se cuenta el total de titulos de la división y tipo de titulo
         const total = await this.prisma.fighterTitles.count({
             where: { division_id: divisionId, title_type: titleType }
         });
         // Se obtienen los titulos de la división y tipo de titulo
-        const titles = await this.prisma.fighterTitles.findMany({
-            where: { division_id: divisionId, title_type: titleType },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const titles = await this.prisma.fighterTitles.findMany(queryOptions);
         return {
             titles,
             total

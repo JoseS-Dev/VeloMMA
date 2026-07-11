@@ -1,6 +1,7 @@
 import type { TeamSchemaDTO, UpdateTeamSchemaDTO } from './team.schema.js';
 import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { BadRequestException, ConflictException, NotFoundException } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 
 // Servicio para obtener todos los datos de los equipos
 export class TeamService {
@@ -24,18 +25,14 @@ export class TeamService {
 
     // Servicio para obtener todos los datos de los equipos
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de registros
         const total = await this.prisma.teams.count();
         // Se obtienen los datos de los equipos
-        const teams = await this.prisma.teams.findMany({
-            skip: skip,
-            take: limit,
-            orderBy: {created_at: 'asc'}
-        });
+        const teams = await this.prisma.teams.findMany(queryOptions);
         return {
             teams, 
             total: total
@@ -44,19 +41,14 @@ export class TeamService {
 
     // Servicio para obtener todos los datos de los equipos activos
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
         // Se cuenta el total de registros
         const total = await this.prisma.teams.count();
         // Se obtienen los datos de los equipos activos
-        const teams = await this.prisma.teams.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true, deleted_at: null},
-            orderBy: {created_at: 'asc'}
-        });
+        const teams = await this.prisma.teams.findMany(queryOptions);
         return {
             teams, 
             total: total
