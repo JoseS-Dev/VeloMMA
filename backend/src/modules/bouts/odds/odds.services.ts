@@ -1,6 +1,7 @@
 import type { CreateBoutOddsSchemaDTO, UpdateBoutOddsSchemaDTO } from './odds.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 
 // Servicio que interactua con la tabla de casas de apuestas para una pelea
 export class OddsService {
@@ -25,7 +26,7 @@ export class OddsService {
     // Servicio para obtener todas las casas de apuestas para una pelea
     async findAll(
         boutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!boutId) throw new BadRequestException('El ID de la pelea es obligatorio');
@@ -35,17 +36,12 @@ export class OddsService {
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea en cuestión');
         // Se obtienen todas las casas de apuestas para dicha pelea
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: boutId } });
         // Se cuenta el total de registros para la pelea
         const total = await this.prisma.boutOdds.count({
             where: { bout_id: boutId }
         });
-        const Odds = await this.prisma.boutOdds.findMany({
-            where: { bout_id: boutId },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const Odds = await this.prisma.boutOdds.findMany(queryOptions);
         return {
             total,
             Odds
@@ -55,22 +51,17 @@ export class OddsService {
     // Servicio para obtener todas las casas de apuestas de un proveedor en común
     async findAllByProvider(
         provider: string,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!provider) throw new BadRequestException('El proveedor es obligatorio');
         // Se obtienen todas las casas de apuestas para dicho proveedor
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { provider: provider } });
         // Se cuenta el total de registros para el proveedor
         const total = await this.prisma.boutOdds.count({
             where: { provider: provider }
         });
-        const Odds = await this.prisma.boutOdds.findMany({
-            where: { provider: provider },
-            skip: skip,
-            take: limit,
-            orderBy: { created_at: 'desc' }
-        });
+        const Odds = await this.prisma.boutOdds.findMany(queryOptions);
         return {
             total,
             Odds

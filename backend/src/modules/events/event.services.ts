@@ -1,6 +1,7 @@
 import type { EventSchemaDTO, UpdateEventSchemaDTO } from './event.schema.js';
 import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { BadRequestException, ConflictException } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 // Servicio para obtener todos los eventos
 export class EventService {
     constructor(private prisma: ExtendedPrismaClient) {}
@@ -23,18 +24,14 @@ export class EventService {
 
     // Servicio para obtener todos los eventos
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de registros
         const total = await this.prisma.events.count();
         // Se obtienen los eventos
-        const events = await this.prisma.events.findMany({
-            skip: skip,
-            take: limit,
-            orderBy: {created_at: 'asc'}
-        });
+        const events = await this.prisma.events.findMany(queryOptions);
         return {
             events, 
             total: total
@@ -43,19 +40,14 @@ export class EventService {
 
     // Servicio para obtener todos los eventos activos
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // Se cuenta el total de registros
         const total = await this.prisma.events.count();
         // Se obtienen los eventos activos
-        const events = await this.prisma.events.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true},
-            orderBy: {name_event: 'asc'}
-        });
+        const events = await this.prisma.events.findMany(queryOptions);
         return {
             events, 
             total: total

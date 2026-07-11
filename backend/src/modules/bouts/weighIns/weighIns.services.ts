@@ -1,7 +1,7 @@
 import type { WeighInsSchemaDTO, WeighInsUpdateSchemaDTO } from "./weighIns.schema.js";
 import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
-
+import { buildQueryOptions } from "../../../utils/functions/function.js";
 // Modelo que interactua con la tabla weighIns de la base de datos
 export class WeighInsService {
     constructor(private readonly prisma: ExtendedPrismaClient) {}
@@ -30,18 +30,14 @@ export class WeighInsService {
 
     // Servicio para obtener todos los pesajes oficiales
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
-        // Se obtiene todos los pesajes
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el numero el total de pesajes
         const total = await this.prisma.boutWeighIns.count();
         // Se Obtiene los pesajes
-        const weighIns = await this.prisma.boutWeighIns.findMany({
-            skip: skip,
-            take: limit
-        });
+        const weighIns = await this.prisma.boutWeighIns.findMany(queryOptions);
         return {
             weighIns,
             total: total

@@ -4,6 +4,7 @@ import {
     BadRequestException,
     ConflictException 
 } from '../../common/errors/error.js';
+import { buildQueryOptions } from '../../utils/functions/function.js';
 
 // Servicio para obtener todas las divisiones
 export class DivisionService {
@@ -27,18 +28,14 @@ export class DivisionService {
 
     // Servicio para obtener todas las divisiones
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de registros
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
-        const divisions = await this.prisma.divisions.findMany({
-            skip: skip,
-            take: limit,
-            orderBy: {name_division: 'asc'}
-        });
+        const divisions = await this.prisma.divisions.findMany(queryOptions);
         return {
             divisions, 
             total: total
@@ -46,19 +43,14 @@ export class DivisionService {
     }
 
     async findAllActive(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // Se cuenta el total de registros
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
-        const divisions = await this.prisma.divisions.findMany({
-            skip: skip,
-            take: limit,
-            where: {is_active: true},
-            orderBy: {name_division: 'asc'}
-        });
+        const divisions = await this.prisma.divisions.findMany(queryOptions);
         return {
             divisions, 
             total: total
