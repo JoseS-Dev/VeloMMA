@@ -1,9 +1,9 @@
 import type { EventSchemaDTO, UpdateEventSchemaDTO } from './event.schema.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { BadRequestException, ConflictException } from '../../common/errors/error.js';
 // Servicio para obtener todos los eventos
 export class EventService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo evento
     async create(data: EventSchemaDTO){

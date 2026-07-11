@@ -1,10 +1,10 @@
 import type { CreateBoutOddsSchemaDTO, UpdateBoutOddsSchemaDTO } from './odds.schema.js';
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
 // Servicio que interactua con la tabla de casas de apuestas para una pelea
 export class OddsService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear una casa de apuesta para una pelea
     async create(data: CreateBoutOddsSchemaDTO){

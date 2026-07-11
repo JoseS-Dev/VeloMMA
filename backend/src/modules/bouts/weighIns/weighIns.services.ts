@@ -1,10 +1,10 @@
 import type { WeighInsSchemaDTO, WeighInsUpdateSchemaDTO } from "./weighIns.schema.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
 // Modelo que interactua con la tabla weighIns de la base de datos
 export class WeighInsService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar un pesaje oficial de un luchador para una pelea
     async create(data: WeighInsSchemaDTO){

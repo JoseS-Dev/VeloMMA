@@ -1,5 +1,5 @@
 import type { DivisionSchemaDTO, UpdateDivisionSchemaDTO } from './division.schema.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { 
     BadRequestException,
     ConflictException 
@@ -7,7 +7,7 @@ import {
 
 // Servicio para obtener todas las divisiones
 export class DivisionService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear una nueva division
     async create(data: DivisionSchemaDTO){
