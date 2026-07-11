@@ -19,6 +19,7 @@ import {
     bonusRoutes,
     oddsRouter
 } from '../modules/bouts/index.js';
+import { MonitorRouter } from '../modules/monitoring/monitor.route.js';
 
 export const routesConfig = [
   { path: '/fighters', router: fighterRoutes },
@@ -37,7 +38,8 @@ export const routesConfig = [
   { path: '/titles',  router: titleRouter },
   { path: '/odds',  router: oddsRouter },
   { path: '/camps',  router: campRouter },
-  { path: '/stats',  router: statsRouter }
+  { path: '/stats',  router: statsRouter },
+  { path: '/monitoring', router: MonitorRouter },
 ];
 
 // Lista de los nombres de las tablas de la base de datos que se deben limpiar antes de cada test
