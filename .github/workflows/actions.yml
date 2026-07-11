@@ -2,7 +2,7 @@ name: VeloMMA CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
     branches: [main]
 
@@ -52,6 +52,25 @@ jobs:
       - name: Instalar dependencias (frozen lockfile)
         run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
 
+      # Crear archivo .env.test dinámico
+      - name: Crear archivo .env.test
+        run: |
+          echo 'DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?schema=public"' > .env.test
+          echo 'PORT=2300' >> .env.test
+          echo 'NODE_ENV="test"' >> .env.test
+          echo 'BASE_PATH="/api/v1"' >> .env.test
+          echo 'JWT_SECRET="test-jwt-secret-min-32-characters-1234567890"' >> .env.test
+          echo 'API_SECRET_KEY="test-api-key-16chars"' >> .env.test
+          echo 'COOKIE_SECRET="test-cookie-secret-min-32-characters-123456789"' >> .env.test
+          echo 'CORS_ORIGIN="http://localhost:5173"' >> .env.test
+          echo 'REDIS_URL="redis://localhost:6379"' >> .env.test
+          echo 'REDIS_PORT=6379' >> .env.test
+          echo 'REDIS_ENV=false' >> .env.test
+          echo 'LIMIT_READ_WINDOW_MS=1' >> .env.test
+          echo 'LIMIT_READ_MAX=999999' >> .env.test
+          echo 'LIMIT_WRITE_WINDOW_MS=1' >> .env.test
+          echo 'LIMIT_WRITE_MAX=99999' >> .env.test
+          
       # ── Validación de esquema Prisma ─────────
       - name: Validar esquema de Prisma
         run: pnpm prisma:validate
@@ -71,10 +90,6 @@ jobs:
       - name: Ejecutar pruebas unitarias
         run: pnpm test
         env:
-          NODE_ENV: test
-          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
-          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
-          REDIS_ENV: "false"
           NODE_OPTIONS: --experimental-vm-modules
 
       # ── Type Check (sin emitir archivos) ─────
