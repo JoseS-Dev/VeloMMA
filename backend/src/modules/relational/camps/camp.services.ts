@@ -1,10 +1,10 @@
 import type { CreateCampSchemaDTO, UpdateCampSchemaDTO } from './camp.schema.js';
-import type { PrismaClient } from '../../../../generated/prisma/index.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from '../../../common/errors/error.js';
 
 // Servicio que interactua con la tabla de campamentos donde entreno un luchador para una pelea
 export class CampService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
     
     // Servicio para crear un campamento donde entreno un luchador para una pelea
     async create(data: CreateCampSchemaDTO){

@@ -1,11 +1,11 @@
 import type { InjurySchemaDTO, UpdateInjurySchemaDTO } from './injuries.schema.js';
 import { InjurySeverity } from '../../../../generated/prisma/index.js';
-import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
 
 // Servicio para obtener todas las lesiones o inactividades de un luchador
 export class InjuryService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear una nueva lesión o inactividad de un luchador
     async create(data: InjurySchemaDTO){

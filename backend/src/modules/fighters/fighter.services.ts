@@ -1,5 +1,5 @@
 import type { FighterSchemaDTO, FighterUpdateSchemaDTO } from './fighter.schema.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { 
     BadRequestException, 
     ConflictException, 
@@ -8,7 +8,7 @@ import {
 
 // Servicio para obtener los datos de un luchador
 export class FighterService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo luchador
     async create(data: FighterSchemaDTO){

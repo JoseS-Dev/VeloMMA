@@ -1,10 +1,10 @@
 import type { RankingSchemaDTO, RankingUpdateSchemaDTO } from './rank.schema.js';
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException, ConflictException } from "../../../common/errors/error.js";
 
 // Modelo que interactua con la tabla de clasificaciones de los luchadores
 export class RankingService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar una clasificación de un luchador
     async create(data: RankingSchemaDTO){
