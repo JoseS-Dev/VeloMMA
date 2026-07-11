@@ -23,7 +23,8 @@ export class EventController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { events, total } = await this.eventService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { events, total } = await this.eventService.findAll(cursor, Number(limit) || 10);
         return { 
             data: events,
             meta: {
@@ -41,7 +42,8 @@ export class EventController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const { events, total } = await this.eventService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { events, total } = await this.eventService.findAllActive(cursor, Number(limit) || 10);
         return { 
             data: events,
             meta: {

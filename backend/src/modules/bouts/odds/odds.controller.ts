@@ -24,11 +24,12 @@ export class OddsController {
         // se valida los parametros de paginación
         if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
         if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const result = await this.oddsService.findAll(Number(boutId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { Odds, total } = await this.oddsService.findAll(Number(boutId), cursor, Number(limit) || 10);
         return {
-            data: result.Odds,
+            data: Odds,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -43,11 +44,12 @@ export class OddsController {
         // se valida los parametros de paginación
         if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
         if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const result = await this.oddsService.findAllByProvider(String(provider), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { Odds, total } = await this.oddsService.findAllByProvider(String(provider), cursor, Number(limit) || 10);
         return {
-            data: result.Odds,
+            data: Odds,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

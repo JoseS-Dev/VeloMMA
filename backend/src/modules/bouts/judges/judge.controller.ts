@@ -24,11 +24,12 @@ export class JudgeController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const result = await this.judgeService.findAll(Number(boutId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { judges, total } = await this.judgeService.findAll(Number(boutId), cursor, Number(limit) || 10);
         return {
-            data: result.judges,
+            data: judges,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

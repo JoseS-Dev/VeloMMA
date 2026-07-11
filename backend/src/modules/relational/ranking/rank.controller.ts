@@ -23,11 +23,12 @@ export class RankingController {
         // Se valida los parametros
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const result = await this.rankingService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const {rankings, total} = await this.rankingService.findAll(cursor, Number(limit) || 10);
         return {
-            data: result.rankings,
+            data: rankings,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -43,11 +44,12 @@ export class RankingController {
         if(Number.isNaN(Number(DivisionId))) return res.status(400).json({message: 'El id de la división es obligatorio'});
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const result = await this.rankingService.findAllByDivision(Number(DivisionId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const {rankings, total} = await this.rankingService.findAllByDivision(Number(DivisionId), cursor, Number(limit) || 10);
         return {
-            data: result.rankings,
+            data: rankings,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

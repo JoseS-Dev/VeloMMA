@@ -23,11 +23,12 @@ export class BonusController {
         // Se valida los parametros
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const result = await this.bonusService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { bonuses, total } = await this.bonusService.findAll(cursor, Number(limit) || 10);
         return {
-            data: result.bonuses,
+            data: bonuses,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -42,11 +43,12 @@ export class BonusController {
         if(Number.isNaN(Number(fighterId))) return res.status(400).json({message: 'El id del luchador es obligatorio'});
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const result = await this.bonusService.findAllByFighter(Number(fighterId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { bonuses, total } = await this.bonusService.findAllByFighter(Number(fighterId), cursor, Number(limit) || 10);
         return {
-            data: result.bonuses,
+            data: bonuses,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

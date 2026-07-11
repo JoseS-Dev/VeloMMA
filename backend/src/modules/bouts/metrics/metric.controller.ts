@@ -24,11 +24,12 @@ export class MetricController {
         // Se valida los parametros
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const result = await this.metricService.findAll(Number(BoutId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { metrics, total } = await this.metricService.findAll(Number(BoutId), cursor, Number(limit) || 10);
         return {
-            data: result.metrics,
+            data: metrics,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

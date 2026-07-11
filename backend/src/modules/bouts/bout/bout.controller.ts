@@ -27,11 +27,12 @@ export class BoutController {
         // Se valida los parametros de la consulta
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'Page no es un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'Limit no es un número'});
-        const result = await this.boutService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { bouts, total } = await this.boutService.findAll(cursor, Number(limit) || 10);
         return {
-            data: result.bouts,
+            data: bouts,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -47,11 +48,12 @@ export class BoutController {
         // Se validan los parametros de la consulta
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'Page no es un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'Limit no es un número'});
-        const result = await this.boutService.findAllByEvent(Number(eventId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { bouts, total } = await this.boutService.findAllByEvent(Number(eventId), cursor, Number(limit) || 10);
         return {
-            data: result.bouts,
+            data: bouts,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }
@@ -67,11 +69,12 @@ export class BoutController {
         // Se validan los parametros de la consulta
         if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'Page no es un número'});
         if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'Limit no es un número'});
-        const result = await this.boutService.findAllByDivision(Number(divisionId), Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { bouts, total } = await this.boutService.findAllByDivision(Number(divisionId), cursor, Number(limit) || 10);
         return {
-            data: result.bouts,
+            data: bouts,
             meta: {
-                total: result.total,
+                total: total,
                 page: Number(page) || 1,
                 limit: Number(limit) || 10
             }

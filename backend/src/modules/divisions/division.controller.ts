@@ -24,7 +24,8 @@ export class DivisionController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
         if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
-        const { divisions, total } = await this.divisionService.findAll(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { divisions, total } = await this.divisionService.findAll(cursor, Number(limit) || 10);
         return { 
             data: divisions,
             meta: {
@@ -42,7 +43,8 @@ export class DivisionController {
         // Se valida el parámetro page y limit
         if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
         if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
-        const { divisions, total } = await this.divisionService.findAllActive(Number(page) || 1, Number(limit) || 10);
+        const cursor = page ? Number(page) : undefined;
+        const { divisions, total } = await this.divisionService.findAllActive(cursor, Number(limit) || 10);
         return { 
             data: divisions,
             meta: {
