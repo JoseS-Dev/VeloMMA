@@ -58,7 +58,7 @@ export class FighterService {
         const fighters = await this.prisma.fighters.findMany({
             skip: skip,
             take: limit,
-            where: {is_active: true, deleted_at: null},
+            where: {is_active: true},
         });
         return {
             fighters,
@@ -69,7 +69,7 @@ export class FighterService {
     // Servicio para obtener un luchador por su slug
     async findBySlug(slug: string){
         const fighter = await this.prisma.fighters.findUnique({
-            where: {slug: slug, deleted_at: null},
+            where: {slug: slug},
         });
         if(!fighter) throw new NotFoundException('El luchador no existe');
         return fighter;
@@ -78,7 +78,7 @@ export class FighterService {
     // Servicio para obtener un luchador por su id
     async findById(id: number){
         const fighter = await this.prisma.fighters.findUnique({
-            where: {id: id, deleted_at: null},
+            where: {id: id},
         });
         if(!fighter) throw new NotFoundException('El luchador no existe');
         return fighter;

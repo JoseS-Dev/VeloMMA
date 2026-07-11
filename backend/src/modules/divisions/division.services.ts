@@ -56,7 +56,7 @@ export class DivisionService {
         const divisions = await this.prisma.divisions.findMany({
             skip: skip,
             take: limit,
-            where: {is_active: true, deleted_at: null},
+            where: {is_active: true},
             orderBy: {name_division: 'asc'}
         });
         return {
@@ -68,7 +68,7 @@ export class DivisionService {
     // Servicio para obtener una division por su id
     async findById(divisionId: number){
         const division = await this.prisma.divisions.findUnique({
-            where: {id: divisionId, deleted_at: null}
+            where: {id: divisionId}
         });
         if(!division) throw new BadRequestException('No se encontró la division');
         return division;

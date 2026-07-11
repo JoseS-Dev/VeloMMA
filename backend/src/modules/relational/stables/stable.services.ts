@@ -54,7 +54,7 @@ export class StableService {
         });
         // Se obtienen los equipos
         const stables = await this.prisma.fighterTeams.findMany({
-            where: {fighter_id: FighterId, deleted_at: null},
+            where: {fighter_id: FighterId},
             skip: skip,
             take: limit,
             orderBy: {created_at: 'asc'}
@@ -67,7 +67,7 @@ export class StableService {
 
     async findById(stableId: number){
         const stable = await this.prisma.fighterTeams.findUnique({
-            where: {id: stableId, deleted_at: null}
+            where: {id: stableId}
         });
         if(!stable) throw new NotFoundException('No se encontró el equipo');
         return stable;

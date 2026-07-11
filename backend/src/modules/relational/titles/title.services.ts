@@ -49,7 +49,7 @@ export class TitleService {
         });
         // Se obtienen los titulos del luchador
         const titles = await this.prisma.fighterTitles.findMany({
-            where: { fighter_id: fighterId, deleted_at: null },
+            where: { fighter_id: fighterId },
             skip: skip,
             take: limit,
 
@@ -81,7 +81,7 @@ export class TitleService {
         });
         // Se obtienen los titulos de la división
         const titles = await this.prisma.fighterTitles.findMany({
-            where: { division_id: divisionId, deleted_at: null },
+            where: { division_id: divisionId },
             skip: skip,
             take: limit,
             orderBy: { created_at: 'desc' }
@@ -114,7 +114,7 @@ export class TitleService {
         });
         // Se obtienen los titulos de la división y tipo de titulo
         const titles = await this.prisma.fighterTitles.findMany({
-            where: { division_id: divisionId, title_type: titleType, deleted_at: null },
+            where: { division_id: divisionId, title_type: titleType },
             skip: skip,
             take: limit,
             orderBy: { created_at: 'desc' }
@@ -130,7 +130,7 @@ export class TitleService {
         if(!titleId) throw new BadRequestException('El id del titulo es obligatorio');
         // Se obtiene el titulo por su ID
         const title = await this.prisma.fighterTitles.findUnique({
-            where: { id: titleId, deleted_at: null }
+            where: { id: titleId }
         });
         if(!title) throw new NotFoundException('El titulo no existe');
         return title;

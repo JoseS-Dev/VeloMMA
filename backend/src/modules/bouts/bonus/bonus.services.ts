@@ -34,7 +34,6 @@ export class BonusService {
         const total = await this.prisma.boutBonuses.count();
         // Se obtienen los bonos
         const bonuses = await this.prisma.boutBonuses.findMany({
-            where: {deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {
@@ -66,7 +65,7 @@ export class BonusService {
         });
         // Se obtienen los bonos
         const bonuses = await this.prisma.boutBonuses.findMany({
-            where: { fighter_id: fighterId, deleted_at: null },
+            where: { fighter_id: fighterId },
             skip: skip,
             take: limit,
             orderBy: {
@@ -84,7 +83,7 @@ export class BonusService {
         if(!bonusId) throw new BadRequestException('El id del bono es obligatorio');
         // Se verifica que exista el bono
         const existingBonus = await this.prisma.boutBonuses.findUnique({
-            where: { id: bonusId, deleted_at: null }
+            where: { id: bonusId }
         });
         if(!existingBonus) throw new NotFoundException('No existe el bono');
         return existingBonus;

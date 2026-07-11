@@ -41,7 +41,6 @@ export class RankingService {
         const total = await this.prisma.fighterRankings.count();
         // Se obtienen las clasificaciones
         const rankings = await this.prisma.fighterRankings.findMany({
-            where: {deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {
@@ -73,7 +72,7 @@ export class RankingService {
         });
         // Se obtienen las clasificaciones
         const rankings = await this.prisma.fighterRankings.findMany({
-            where: { division_id: divisionId, deleted_at: null },
+            where: { division_id: divisionId },
             skip: skip,
             take: limit,
             orderBy: {
@@ -91,7 +90,7 @@ export class RankingService {
         if(!rankingId) throw new BadRequestException('El id de la clasificación es obligatorio');
         // Se verifica que exista la clasificación
         const existingRanking = await this.prisma.fighterRankings.findUnique({
-            where: { id: rankingId, deleted_at: null }
+            where: { id: rankingId }
         });
         if(!existingRanking) throw new NotFoundException('No existe la clasificación');
         return existingRanking;

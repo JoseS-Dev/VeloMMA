@@ -39,7 +39,6 @@ export class WeighInsService {
         const total = await this.prisma.boutWeighIns.count();
         // Se Obtiene los pesajes
         const weighIns = await this.prisma.boutWeighIns.findMany({
-            where: {deleted_at: null},
             skip: skip,
             take: limit
         });
@@ -54,12 +53,12 @@ export class WeighInsService {
         if(!boutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
-            where: {id: boutId, deleted_at: null}
+            where: {id: boutId}
         });
         if(!existingBout) throw new NotFoundException('No existe dicha pelea');
         // Si existe, se obtiene todos los pesajes
         const weighIns = await this.prisma.boutWeighIns.findMany({
-            where: {bout_id: boutId, deleted_at: null},
+            where: {bout_id: boutId},
             orderBy: {created_at: 'asc'}
         });
         return weighIns;
@@ -69,7 +68,7 @@ export class WeighInsService {
     async findById(id: number){
         if(!id) throw new BadRequestException('El id del pesaje es obligatorio');
         const weighIn = await this.prisma.boutWeighIns.findUnique({
-            where: {id: id, deleted_at: null}
+            where: {id: id}
         });
         if(!weighIn) throw new NotFoundException('No existe dicho pesaje');
         return weighIn;

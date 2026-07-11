@@ -39,7 +39,6 @@ export class BoutService {
         const total = await this.prisma.bouts.count();
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
-            where: {deleted_at: null},
             skip: skip,
             take: limit,
             orderBy: {
@@ -61,7 +60,7 @@ export class BoutService {
         if(!eventId) throw new BadRequestException('El id del evento es obligatorio');
         // Se verifica que exista el evento
         const existingEvent = await this.prisma.events.findUnique({
-            where: { id: eventId, deleted_at: null }
+            where: { id: eventId }
         });
         if(!existingEvent) throw new NotFoundException('No existe el evento');
         const skip = (page - 1) * limit;
@@ -71,7 +70,7 @@ export class BoutService {
         });
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
-            where: { event_id: eventId, deleted_at: null },
+            where: { event_id: eventId },
             skip: skip,
             take: limit,
             orderBy: {
@@ -99,11 +98,11 @@ export class BoutService {
         const skip = (page - 1) * limit;
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
-            where: { division_id: divisionId, deleted_at: null }
+            where: { division_id: divisionId }
         });
         // Se obtienen las peleas
         const bouts = await this.prisma.bouts.findMany({
-            where: { division_id: divisionId, deleted_at: null },
+            where: { division_id: divisionId },
             skip: skip,
             take: limit,
             orderBy: {
@@ -121,7 +120,7 @@ export class BoutService {
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea
         const existingBout = await this.prisma.bouts.findUnique({
-            where: { id: BoutId, deleted_at: null }
+            where: { id: BoutId }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
         return existingBout;

@@ -43,7 +43,7 @@ export class InjuryService {
         });
         // Se obtienen las lesiones o inactividades
         const injuries = await this.prisma.fighterInjuries.findMany({
-            where: {fighter_id: FighterId, deleted_at: null},
+            where: {fighter_id: FighterId},
             skip: skip,
             take: limit,
             orderBy: {injury_date: 'asc'}
@@ -57,7 +57,7 @@ export class InjuryService {
     // Servicio para obtener una lesión o inactividad de un luchador por su id
     async findById(injuryId: number){
         const injury = await this.prisma.fighterInjuries.findUnique({
-            where: {id: injuryId, deleted_at: null}
+            where: {id: injuryId}
         });
         if(!injury) throw new NotFoundException('No se encontró la lesión o inactividad');
         return injury;

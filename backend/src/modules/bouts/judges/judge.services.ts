@@ -31,7 +31,7 @@ export class JudgeService {
         if(!boutId) throw new BadRequestException('El id de la pelea es obligatorio');
         // Se verifica que exista la pelea en cuestión
         const existingBout = await this.prisma.bouts.findUnique({
-            where: {id: boutId, deleted_at: null}
+            where: {id: boutId}
         });
         if(!existingBout) throw new NotFoundException('No existe dicha pelea');
         // Si existe, se obtiene todos los jueces
@@ -44,7 +44,7 @@ export class JudgeService {
         const judges = await this.prisma.boutJudges.findMany({
             skip: skip,
             take: limit,
-            where: {bout_id: boutId, deleted_at: null},
+            where: {bout_id: boutId},
             orderBy: {created_at: 'asc'}
         });
         return {

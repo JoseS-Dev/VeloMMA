@@ -14,7 +14,7 @@ export class StatsService {
         if(!existingFighter) throw new NotFoundException('El luchador no existe');
         // Se obtienen todas las metricas del luchador (ofensivas)
         const fighterMetrics = await this.prisma.boutMetrics.findMany({
-            where: { fighter_id: fighterId, deleted_at: null },
+            where: { fighter_id: fighterId },
             include: {
                 bout: true
             }
