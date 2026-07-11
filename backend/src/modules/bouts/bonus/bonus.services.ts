@@ -1,10 +1,10 @@
 import type { BonusSchemaDTO, BonusUpdateSchemaDTO } from "./bonus.schema.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
 // Modelo que interactua con la tabla de bonos de una pelea
 export class BonusService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar un bono a una pelea
     async create(data: BonusSchemaDTO){

@@ -1,10 +1,10 @@
 import type { MetricSchemaDTO, MetricUpdateSchemaDTO } from './metric.schema.js';
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
 // Modelo que interactua con la tabla de métricas de una pelea
 export class MetricService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Servicio para agregar una métrica a una pelea
     async create(data: MetricSchemaDTO){

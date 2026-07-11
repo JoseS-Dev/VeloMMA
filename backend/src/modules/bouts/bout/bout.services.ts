@@ -1,11 +1,11 @@
 import type { BoutSchemaDTO, BoutUpdateSchemaDTO } from "./bout.schema.js";
-import type { PrismaClient } from "../../../../generated/prisma/index.js";
+import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
 import { BoutStatusRecord } from "../../../utils/functions/function.js";
 // Modelo que interactua con la tabla bouts de la base de datos
 export class BoutService {
-    constructor(private readonly prisma: PrismaClient) {}
+    constructor(private readonly prisma: ExtendedPrismaClient) {}
 
     // Servicio para crear una pelea
     async create(data: BoutSchemaDTO){
