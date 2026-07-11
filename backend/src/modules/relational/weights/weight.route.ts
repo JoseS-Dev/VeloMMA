@@ -8,20 +8,25 @@
  *         id:
  *           type: integer
  *           description: ID único del peso oficial
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         weight_recorded:
  *           type: number
  *           description: Peso registrado en kg
+ *           example: 70.3
  *         date_recorded:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha del pesaje
+ *           example: 2024-04-12
  *         is_active:
  *           type: boolean
  *           description: Indica si el registro está activo
+ *           example: true
  *         created_at:
  *           type: string
  *           format: date-time
@@ -38,21 +43,27 @@
  *       properties:
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         weight_recorded:
  *           type: number
+ *           example: 70.3
  *         date_recorded:
  *           type: string
  *           format: date
+ *           example: 2024-04-12
  *     UpdateWeightInput:
  *       type: object
  *       properties:
  *         weight_recorded:
  *           type: number
+ *           example: 70.3
  *         date_recorded:
  *           type: string
  *           format: date
+ *           example: 2024-04-12
  *         is_active:
  *           type: boolean
+ *           example: true
  */
 
 import { Router } from 'express';

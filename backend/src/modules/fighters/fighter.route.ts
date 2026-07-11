@@ -1,3 +1,186 @@
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Fighter:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único del luchador
+ *           example: 1
+ *         first_name:
+ *           type: string
+ *           description: Nombre del luchador
+ *           example: Conor
+ *         last_name:
+ *           type: string
+ *           description: Apellido del luchador
+ *           example: McGregor
+ *         nickname:
+ *           type: string
+ *           nullable: true
+ *           description: Apodo del luchador
+ *           example: The Notorious
+ *         birth_date:
+ *           type: string
+ *           format: date
+ *           nullable: true
+ *           description: Fecha de nacimiento
+ *           example: 1988-07-14
+ *         gender:
+ *           type: string
+ *           enum: [Masculino, Femenino, Otro]
+ *           description: Género del luchador
+ *           example: Masculino
+ *         nationality:
+ *           type: string
+ *           nullable: true
+ *           description: Nacionalidad
+ *           example: Irlandés
+ *         height:
+ *           type: number
+ *           nullable: true
+ *           description: Altura en cm
+ *           example: 175
+ *         weight:
+ *           type: number
+ *           nullable: true
+ *           description: Peso en kg
+ *           example: 70
+ *         stance:
+ *           type: string
+ *           enum: [Orthodox, Southpaw, Switch, Open_Stance]
+ *           nullable: true
+ *           description: Postura de pelea
+ *           example: Orthodox
+ *         reach:
+ *           type: number
+ *           nullable: true
+ *           description: Alcance en cm
+ *           example: 188
+ *         is_active:
+ *           type: boolean
+ *           description: Indica si el luchador está activo
+ *           example: true
+ *         slug:
+ *           type: string
+ *           description: Slug único del luchador
+ *           example: conor-mcgregor
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización
+ *     CreateFighterInput:
+ *       type: object
+ *       required:
+ *         - first_name
+ *         - last_name
+ *       properties:
+ *         first_name:
+ *           type: string
+ *           description: Nombre del luchador
+ *           example: Conor
+ *         last_name:
+ *           type: string
+ *           description: Apellido del luchador
+ *           example: McGregor
+ *         nickname:
+ *           type: string
+ *           description: Apodo del luchador
+ *           example: The Notorious
+ *         birth_date:
+ *           type: string
+ *           format: date
+ *           description: Fecha de nacimiento
+ *           example: 1988-07-14
+ *         gender:
+ *           type: string
+ *           enum: [Masculino, Femenino, Otro]
+ *           example: Masculino
+ *         nationality:
+ *           type: string
+ *           description: Nacionalidad
+ *           example: Irlandés
+ *         height:
+ *           type: number
+ *           description: Altura en cm
+ *           example: 175
+ *         weight:
+ *           type: number
+ *           description: Peso en kg
+ *           example: 70
+ *         stance:
+ *           type: string
+ *           enum: [Orthodox, Southpaw, Switch, Open_Stance]
+ *           example: Orthodox
+ *         reach:
+ *           type: number
+ *           description: Alcance en cm
+ *           example: 188
+ *     UpdateFighterInput:
+ *       type: object
+ *       properties:
+ *         first_name:
+ *           type: string
+ *           description: Nombre del luchador
+ *           example: Conor
+ *         last_name:
+ *           type: string
+ *           description: Apellido del luchador
+ *           example: McGregor
+ *         nickname:
+ *           type: string
+ *           description: Apodo del luchador
+ *           example: The Notorious
+ *         birth_date:
+ *           type: string
+ *           format: date
+ *           description: Fecha de nacimiento
+ *           example: 1988-07-14
+ *         gender:
+ *           type: string
+ *           enum: [Masculino, Femenino, Otro]
+ *           example: Masculino
+ *         nationality:
+ *           type: string
+ *           description: Nacionalidad
+ *           example: Irlandés
+ *         height:
+ *           type: number
+ *           description: Altura en cm
+ *           example: 175
+ *         weight:
+ *           type: number
+ *           description: Peso en kg
+ *           example: 70
+ *         stance:
+ *           type: string
+ *           enum: [Orthodox, Southpaw, Switch, Open_Stance]
+ *           example: Orthodox
+ *         reach:
+ *           type: number
+ *           description: Alcance en cm
+ *           example: 188
+ *         is_active:
+ *           type: boolean
+ *           description: Indica si el luchador está activo
+ *           example: true
+ *     ChangeStatusInput:
+ *       type: object
+ *       required:
+ *         - is_active
+ *       properties:
+ *         is_active:
+ *           type: boolean
+ *           description: Nuevo estado del luchador (activo/inactivo)
+ *           example: true
+ */
+
 import {Router} from 'express';
 import { FighterController } from './fighter.controller.js';
 import { FighterService } from './fighter.services.js';

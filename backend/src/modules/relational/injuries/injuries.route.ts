@@ -8,29 +8,36 @@
  *         id:
  *           type: integer
  *           description: ID único de la lesión
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         description_injury:
  *           type: string
  *           description: Descripción de la lesión
+ *           example: Fractura de mano derecha
  *         severity_injury:
  *           type: string
  *           enum: [Menor, Moderado, Severo]
  *           description: Severidad de la lesión
+ *           example: Moderado
  *         injury_date:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha de la lesión
+ *           example: 2024-01-15
  *         recovery_date:
  *           type: string
  *           format: date
  *           nullable: true
  *           description: Fecha de recuperación
+ *           example: 2024-03-15
  *         is_active:
  *           type: boolean
  *           description: Indica si el registro está activo
+ *           example: true
  *         created_at:
  *           type: string
  *           format: date-time
@@ -48,33 +55,43 @@
  *       properties:
  *         fighter_id:
  *           type: integer
+ *           example: 1
  *         description_injury:
  *           type: string
+ *           example: Fractura de mano derecha
  *         severity_injury:
  *           type: string
  *           enum: [Menor, Moderado, Severo]
+ *           example: Moderado
  *         injury_date:
  *           type: string
  *           format: date
+ *           example: 2024-01-15
  *         recovery_date:
  *           type: string
  *           format: date
+ *           example: 2024-03-15
  *     UpdateInjuryInput:
  *       type: object
  *       properties:
  *         description_injury:
  *           type: string
+ *           example: Fractura de mano derecha
  *         severity_injury:
  *           type: string
  *           enum: [Menor, Moderado, Severo]
+ *           example: Moderado
  *         injury_date:
  *           type: string
  *           format: date
+ *           example: 2024-01-15
  *         recovery_date:
  *           type: string
  *           format: date
+ *           example: 2024-03-15
  *         is_active:
  *           type: boolean
+ *           example: true
  *     ChangeStatusInput:
  *       type: object
  *       required:
@@ -82,6 +99,7 @@
  *       properties:
  *         is_active:
  *           type: boolean
+ *           example: true
  */
 
 import {Router} from 'express';

@@ -8,24 +8,31 @@
  *         id:
  *           type: integer
  *           description: ID único de las estadísticas
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         sig_strikes_accuracy:
  *           type: number
  *           description: Precisión de golpes significativos (porcentaje)
+ *           example: 54.2
  *         sig_strikes_absorbed_pm:
  *           type: number
  *           description: Golpes significativos absorbidos por minuto
+ *           example: 2.85
  *         takedown_accuracy:
  *           type: number
  *           description: Precisión de derribos (porcentaje)
+ *           example: 42.1
  *         takedown_defense:
  *           type: number
  *           description: Defensa de derribos (porcentaje)
+ *           example: 78.3
  *         average_fight_time:
  *           type: number
  *           description: Tiempo promedio de pelea (en minutos)
+ *           example: 14.5
  *         created_at:
  *           type: string
  *           format: date-time
@@ -45,18 +52,23 @@
  *         sig_strikes_accuracy:
  *           type: number
  *           description: Precisión de golpes significativos (porcentaje)
+ *           example: 54.2
  *         sig_strikes_absorbed_pm:
  *           type: number
  *           description: Golpes significativos absorbidos por minuto
+ *           example: 2.85
  *         takedown_accuracy:
  *           type: number
  *           description: Precisión de derribos (porcentaje)
+ *           example: 42.1
  *         takedown_defense:
  *           type: number
  *           description: Defensa de derribos (porcentaje)
+ *           example: 78.3
  *         average_fight_time:
  *           type: number
  *           description: Tiempo promedio de pelea (en minutos)
+ *           example: 14.5
  */
 
 import {Router} from "express";

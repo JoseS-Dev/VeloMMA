@@ -8,25 +8,31 @@
  *         id:
  *           type: integer
  *           description: ID único del título
+ *           example: 1
  *         division_id:
  *           type: integer
  *           description: ID de la división
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         title_type:
  *           type: string
  *           enum: [Undisputed, Interim, Unified]
  *           description: Tipo de título
+ *           example: Undisputed
  *         won_date:
  *           type: string
  *           format: date-time
  *           description: Fecha en que ganó el título
+ *           example: 2024-01-20T23:00:00.000Z
  *         lost_date:
  *           type: string
  *           format: date-time
  *           nullable: true
  *           description: Fecha en que perdió el título
+ *           example: 2024-06-15T23:00:00.000Z
  *         created_at:
  *           type: string
  *           format: date-time
@@ -51,21 +57,26 @@
  *         division_id:
  *           type: integer
  *           description: ID de la división
+ *           example: 1
  *         fighter_id:
  *           type: integer
  *           description: ID del luchador
+ *           example: 1
  *         title_type:
  *           type: string
  *           enum: [Undisputed, Interim, Unified]
  *           description: Tipo de título
+ *           example: Undisputed
  *         won_date:
  *           type: string
  *           format: date-time
  *           description: Fecha en que ganó el título
+ *           example: 2024-01-20T23:00:00.000Z
  *         lost_date:
  *           type: string
  *           format: date-time
  *           description: Fecha en que perdió el título
+ *           example: 2024-06-15T23:00:00.000Z
  *     UpdateTitleInput:
  *       type: object
  *       properties:
@@ -73,14 +84,17 @@
  *           type: string
  *           enum: [Undisputed, Interim, Unified]
  *           description: Tipo de título
+ *           example: Undisputed
  *         won_date:
  *           type: string
  *           format: date-time
  *           description: Fecha en que ganó el título
+ *           example: 2024-01-20T23:00:00.000Z
  *         lost_date:
  *           type: string
  *           format: date-time
  *           description: Fecha en que perdió el título
+ *           example: 2024-06-15T23:00:00.000Z
  */
 
 import {Router} from 'express';

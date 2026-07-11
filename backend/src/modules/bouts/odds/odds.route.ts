@@ -8,24 +8,31 @@
  *         id:
  *           type: integer
  *           description: ID único de la casa de apuestas
+ *           example: 1
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         red_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina roja
+ *           example: -150
  *         blue_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina azul
+ *           example: +130
  *         red_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina roja
+ *           example: -175
  *         blue_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina azul
+ *           example: +145
  *         provider:
  *           type: string
  *           description: Proveedor de la casa de apuestas
+ *           example: DraftKings
  *         created_at:
  *           type: string
  *           format: date-time
@@ -50,39 +57,50 @@
  *         bout_id:
  *           type: integer
  *           description: ID de la pelea
+ *           example: 1
  *         red_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina roja
+ *           example: -150
  *         blue_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina azul
+ *           example: +130
  *         red_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina roja
+ *           example: -175
  *         blue_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina azul
+ *           example: +145
  *         provider:
  *           type: string
  *           description: Proveedor de la casa de apuestas
+ *           example: DraftKings
  *     UpdateOddsInput:
  *       type: object
  *       properties:
  *         red_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina roja
+ *           example: -150
  *         blue_opening_odds:
  *           type: number
  *           description: Cuota de apertura para el luchador de esquina azul
+ *           example: +130
  *         red_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina roja
+ *           example: -175
  *         blue_closing_odds:
  *           type: number
  *           description: Cuota de cierre para el luchador de esquina azul
+ *           example: +145
  *         provider:
  *           type: string
  *           description: Proveedor de la casa de apuestas
+ *           example: DraftKings
  */
 
 import { Router } from 'express';

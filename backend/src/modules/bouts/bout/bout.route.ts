@@ -8,47 +8,59 @@
  *         id:
  *           type: integer
  *           description: ID único de la pelea
+ *           example: 1
  *         event_id:
  *           type: integer
  *           description: ID del evento
+ *           example: 1
  *         division_id:
  *           type: integer
  *           description: ID de la división de peso
+ *           example: 1
  *         red_corner_id:
  *           type: integer
  *           description: ID del luchador en esquina roja
+ *           example: 1
  *         blue_corner_id:
  *           type: integer
  *           description: ID del luchador en esquina azul
+ *           example: 2
  *         result:
  *           type: string
  *           enum: [Win_Red, Win_Blue, Draw, No_Contest]
  *           nullable: true
  *           description: Resultado de la pelea
+ *           example: Win_Red
  *         method:
  *           type: string
  *           enum: [KO, TKO, Submission, Unanimous_Decision, Split_Decision, Majority_Decision, Doctor_Stoppage, Disqualification]
  *           nullable: true
  *           description: Método de victoria
+ *           example: Submission
  *         rounded_ended:
  *           type: integer
  *           nullable: true
  *           description: Ronda en la que terminó la pelea
+ *           example: 2
  *         time_ended:
  *           type: string
  *           nullable: true
  *           description: Tiempo en el que terminó la pelea
+ *           example: 3:15
  *         referee:
  *           type: string
  *           nullable: true
  *           description: Árbitro de la pelea
+ *           example: Herb Dean
  *         is_title_fight:
  *           type: boolean
  *           description: Indica si es una pelea de título
+ *           example: false
  *         status_bout:
  *           type: string
  *           enum: [Programada, Cancelada, En_Proceso, Finalizada]
  *           description: Estado de la pelea
+ *           example: Programada
  *         created_at:
  *           type: string
  *           format: date-time
@@ -67,56 +79,82 @@
  *       properties:
  *         event_id:
  *           type: integer
+ *           example: 1
  *         division_id:
  *           type: integer
+ *           example: 1
  *         red_corner_id:
  *           type: integer
+ *           example: 1
  *         blue_corner_id:
  *           type: integer
+ *           example: 2
  *         result:
  *           type: string
  *           enum: [Win_Red, Win_Blue, Draw, No_Contest]
+ *           example: Win_Red
  *         method:
  *           type: string
  *           enum: [KO, TKO, Submission, Unanimous_Decision, Split_Decision, Majority_Decision, Doctor_Stoppage, Disqualification]
+ *           example: Submission
  *         rounded_ended:
  *           type: integer
+ *           example: 2
  *         time_ended:
  *           type: string
+ *           example: 3:15
  *         referee:
  *           type: string
+ *           example: Herb Dean
  *         is_title_fight:
  *           type: boolean
+ *           example: false
  *         status_bout:
  *           type: string
  *           enum: [Programada, Cancelada, En_Proceso, Finalizada]
+ *           example: Programada
  *     UpdateBoutInput:
  *       type: object
  *       properties:
  *         result:
  *           type: string
  *           enum: [Win_Red, Win_Blue, Draw, No_Contest]
+ *           example: Win_Red
  *         method:
  *           type: string
  *           enum: [KO, TKO, Submission, Unanimous_Decision, Split_Decision, Majority_Decision, Doctor_Stoppage, Disqualification]
+ *           example: Submission
  *         rounded_ended:
  *           type: integer
+ *           example: 2
  *         time_ended:
  *           type: string
+ *           example: 3:15
  *         referee:
  *           type: string
+ *           example: Herb Dean
  *         is_title_fight:
  *           type: boolean
+ *           example: false
  *         status_bout:
  *           type: string
  *           enum: [Programada, Cancelada, En_Proceso, Finalizada]
- *     ChangeStatusInput:
+ *           example: Programada
+ *     ChangeBoutStatusInput:
  *       type: object
  *       required:
- *         - is_active
+ *         - status_bout
  *       properties:
- *         is_active:
- *           type: boolean
+ *         status_bout:
+ *           type: string
+ *           enum: [Programada, Cancelada, En_Proceso, Finalizada]
+ *           description: >
+ *             Estado de la pelea. Transiciones válidas:
+ *               - Programada → Cancelada, En_Proceso, Finalizada
+ *               - Cancelada → Programada
+ *               - En_Proceso → Finalizada, Cancelada
+ *               - Finalizada → (ninguna, es terminal)
+ *           example: En_Proceso
  */
 
 import { Router } from "express";
@@ -343,7 +381,7 @@ router.patch('/:BoutId', clearCacheMiddleware(`${settings.basePath}/bouts/:BoutI
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ChangeStatusInput'
+ *             $ref: '#/components/schemas/ChangeBoutStatusInput'
  *     responses:
  *       '200':
  *         description: Estado de la pelea actualizado exitosamente
