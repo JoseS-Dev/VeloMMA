@@ -26,9 +26,14 @@ export const settings = {
     redisUrl: process.env.REDIS_URL || '',
     redisPort: process.env.REDIS_PORT || 6379,
     redisEnv: process.env.REDIS_ENV !== undefined ? process.env.REDIS_ENV === 'true' : false,
-    rateLimit: {
-        windowMs: 1 * 60 * 1000, // 5 minutos
-        max: 100, // 100 peticiones
-        message: 'Demasiados intentos de acceso, por favor espere un minuto y vuelva a intentarlo.',
+    readLimit: {
+        windowMs: parseInt(String(process.env.LIMIT_READ_WINDOW_MS)) || 5 * 60 * 1000, // 5 minutos
+        max: parseInt(String(process.env.LIMIT_READ_MAX)) || 100, // 100 peticiones
+        message: 'Demasiados intentos de acceso, por favor espere cinco minutos y vuelva a intentarlo.',
+    },
+    writeLimit: {
+        windowMs: parseInt(String(process.env.LIMIT_WRITE_WINDOW_MS)) || 1 * 60 * 1000,
+        max: parseInt(String(process.env.LIMIT_WRITE_MAX)) || 10,
+        message: 'Demasiadas peticiones de escritura, por favor espere un minuto y vuelva a intentarlo.',
     }
 }
