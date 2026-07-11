@@ -4,7 +4,7 @@ import {z} from 'zod';
 const teamSchema = z.object({
     name_team: z.string().min(3).max(50).trim(),
     description_team: z.string().min(3).max(500).trim().optional(),
-    date_founded: z.coerce.date().optional(),
+    date_founded: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
     location: z.string().min(3).max(50).trim(),
 });
 

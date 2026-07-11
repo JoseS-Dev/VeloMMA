@@ -3,7 +3,7 @@ import {z} from 'zod';
 // Defino el esquema de validación de los datos de un evento
 const eventSchema = z.object({
     name_event: z.string().min(3).max(50).trim(),
-    date_event: z.coerce.date(),
+    date_event: z.string().regex(/Z$/).transform((val) => new Date(val)),
     location_event: z.string().min(3).max(50).trim(),
     venue_event: z.string().min(3).max(50).trim().optional(),
     octagon_size: z.number().min(1).max(100).optional(),

@@ -6,7 +6,7 @@ export const fighterSchema = z.object({
     first_name: z.string().min(2).max(50),
     last_name: z.string().min(2).max(50),
     nickname: z.string().min(2).max(50).optional(),
-    birth_date: z.coerce.date().optional(),
+    birth_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
     gender: z.enum(Gender).optional(),
     nationality: z.string().min(2).max(50).optional(),
     height: z.number().min(0).max(300).optional(),

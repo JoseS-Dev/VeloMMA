@@ -5,7 +5,7 @@ const SchemaCreateRanking = z.object({
     fighter_id: z.number(),
     division_id: z.number(),
     rank: z.number().positive(),
-    as_of_date: z.coerce.date()
+    as_of_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional()
 });
 
 // Defino el esquema para actualizar una clasificación de un luchador

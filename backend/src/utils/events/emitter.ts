@@ -1,7 +1,11 @@
-import { EventEmitter } from "node:stream";
+import EventEmitter from "node:stream";
 import { prisma } from "../prisma/prisma.js";
-import type { UpdateFighterStatsEvent } from "../../types/index.js";
 import { StatsService } from "../../modules/relational/stats/stats.services.js";
+
+type UpdateFighterStatsEvent = {
+    redFighterId: number;
+    blueFighterId: number;
+};
 
 // Definimos el evento que se emitirá cuando se actualicen las estadísticas de los luchadores
 export const statsEventEmitter = new EventEmitter();

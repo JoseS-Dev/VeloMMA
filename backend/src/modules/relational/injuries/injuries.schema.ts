@@ -6,8 +6,8 @@ const InjurySchema = z.object({
     fighter_id: z.number().nonnegative().positive(),
     description_injury: z.string().min(3).max(500).trim(),
     severity_injury: z.enum(InjurySeverity),
-    injury_date: z.coerce.date().optional(),
-    recovery_date: z.coerce.date().optional(),
+    injury_date: z.string().regex(/Z$/).transform((val) => new Date(val)),
+    recovery_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
 });
 
 // Defino el esquema de validación para actualizar las lesiones o inactividades de un luchador

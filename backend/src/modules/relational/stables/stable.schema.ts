@@ -5,8 +5,8 @@ const StableSchema = z.object({
     fighter_id: z.number().nonnegative().positive(),
     team_id: z.number().nonnegative().positive(),
     is_current: z.boolean().optional(),
-    joined_date: z.coerce.date().optional(),
-    left_date: z.coerce.date().optional(),
+    joined_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
+    left_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
 });
 
 // Defino el esquema de validación para actualizar los equipos de los luchadores

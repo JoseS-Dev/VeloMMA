@@ -6,8 +6,8 @@ const SchemaTitle = z.object({
     division_id: z.number().int().positive(),
     fighter_id: z.number().int().positive(),
     title_type: z.enum(TitleType),
-    won_date: z.coerce.date(),
-    lost_date: z.coerce.date().optional(),
+    won_date: z.string().regex(/Z$/).transform((val) => new Date(val)),
+    lost_date: z.string().regex(/Z$/).transform((val) => new Date(val)).optional(),
 });
 
 // Defino el esquema de validación para actualizar un titulo de un luchador en una división
