@@ -1,7 +1,7 @@
 import type { MetricSchemaDTO, MetricUpdateSchemaDTO } from './metric.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
-
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 // Modelo que interactua con la tabla de métricas de una pelea
 export class MetricService {
     constructor(private prisma: ExtendedPrismaClient) {}
@@ -27,7 +27,7 @@ export class MetricService {
     // Servicio para obtener todas las métricas de una pelea
     async findAll(
         BoutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
@@ -36,20 +36,13 @@ export class MetricService {
             where: { id: BoutId }
         });
         if(!existingBout) throw new NotFoundException('No existe la pelea');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: BoutId } });
         // Se cuenta el total de métricas
         const total = await this.prisma.boutMetrics.count({
             where: { bout_id: BoutId }
         });
         // Se obtienen las métricas
-        const metrics = await this.prisma.boutMetrics.findMany({
-            where: { bout_id: BoutId },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const metrics = await this.prisma.boutMetrics.findMany(queryOptions);
         return {
             metrics,
             total: total

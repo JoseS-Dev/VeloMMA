@@ -1,7 +1,7 @@
 import type { JudgeSchemaDTO, JudgeUpdateSchemaDTO } from './judge.schema.js';
 import type { ExtendedPrismaClient } from '../../../utils/prisma/prisma.js';
 import { BadRequestException, NotFoundException } from '../../../common/errors/error.js';
-
+import { buildQueryOptions } from '../../../utils/functions/function.js';
 // Modelo que interactua con la tabla judges de la base de datos
 export class JudgeService {
     constructor(private readonly prisma: ExtendedPrismaClient) {}
@@ -25,7 +25,7 @@ export class JudgeService {
     // Servicio para obtener todos los jueces de una pelea
     async findAll(
         boutId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10
     ){
         if(!boutId) throw new BadRequestException('El id de la pelea es obligatorio');
@@ -35,18 +35,13 @@ export class JudgeService {
         });
         if(!existingBout) throw new NotFoundException('No existe dicha pelea');
         // Si existe, se obtiene todos los jueces
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { bout_id: boutId } });
         // Se cuenta el numero el total de jueces de esa pelea
         const total = await this.prisma.boutJudges.count({
             where: {bout_id: boutId}
         });
         // Se Obtiene los jueces
-        const judges = await this.prisma.boutJudges.findMany({
-            skip: skip,
-            take: limit,
-            where: {bout_id: boutId},
-            orderBy: {created_at: 'asc'}
-        });
+        const judges = await this.prisma.boutJudges.findMany(queryOptions);
         return {
             judges,
             total: total

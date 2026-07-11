@@ -3,6 +3,8 @@ import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
 import { BoutStatusRecord } from "../../../utils/functions/function.js";
+import { buildQueryOptions } from "../../../utils/functions/function.js";
+
 // Modelo que interactua con la tabla bouts de la base de datos
 export class BoutService {
     constructor(private readonly prisma: ExtendedPrismaClient) {}
@@ -31,20 +33,14 @@ export class BoutService {
 
     // Servicio para obtener todas las peleas
     async findAll(
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count();
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
@@ -54,7 +50,7 @@ export class BoutService {
     // Servicio para obtener todas las peleas de un evento
     async findAllByEvent(
         eventId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!eventId) throw new BadRequestException('El id del evento es obligatorio');
@@ -63,20 +59,13 @@ export class BoutService {
             where: { id: eventId }
         });
         if(!existingEvent) throw new NotFoundException('No existe el evento');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { event_id: eventId } });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
             where: { event_id: eventId }
         });
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            where: { event_id: eventId },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
@@ -86,7 +75,7 @@ export class BoutService {
     // Servicio para obtener todas las peleas de una división de peso
     async findAllByDivision(
         divisionId: number,
-        page: number = 1,
+        cursor?: number,
         limit: number = 10,
     ){
         if(!divisionId) throw new BadRequestException('El id de la división es obligatorio');
@@ -95,20 +84,13 @@ export class BoutService {
             where: { id: divisionId }
         });
         if(!existingDivision) throw new NotFoundException('No existe la división');
-        const skip = (page - 1) * limit;
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { division_id: divisionId } });
         // Se cuenta el total de peleas
         const total = await this.prisma.bouts.count({
             where: { division_id: divisionId }
         });
         // Se obtienen las peleas
-        const bouts = await this.prisma.bouts.findMany({
-            where: { division_id: divisionId },
-            skip: skip,
-            take: limit,
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        const bouts = await this.prisma.bouts.findMany(queryOptions);
         return {
             bouts,
             total: total
