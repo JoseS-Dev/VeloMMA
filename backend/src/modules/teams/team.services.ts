@@ -1,10 +1,10 @@
 import type { TeamSchemaDTO, UpdateTeamSchemaDTO } from './team.schema.js';
-import type { PrismaClient } from '../../../generated/prisma/client.js';
+import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { BadRequestException, ConflictException, NotFoundException } from '../../common/errors/error.js';
 
 // Servicio para obtener todos los datos de los equipos
 export class TeamService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: ExtendedPrismaClient) {}
 
     // Crear un nuevo equipo
     async create(data: TeamSchemaDTO){
