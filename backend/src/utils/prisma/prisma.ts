@@ -1,4 +1,5 @@
 import { PrismaClient } from "../../../generated/prisma/client.js";
+import { middlewarePrismaMetrics } from "../../middlewares/metrics/database/prisma.middleware.js";
 import { settings } from "../../../config/settings.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
@@ -8,11 +9,11 @@ const pool = new pg.Pool({
 })
 
 // Instancio la conexión a la base de datos
-const prismaRaw = new PrismaClient({
+export const prismaRaw = new PrismaClient({
     adapter: new PrismaPg(pool),
 });
 
-export const prisma = prismaRaw.$extends({
+const prismaWithSoftDelete = prismaRaw.$extends({
   query: {
     $allModels: {
       async findMany({ args, query }) {
@@ -34,4 +35,5 @@ export const prisma = prismaRaw.$extends({
   },
 });
 
-export type ExtendedPrismaClient = typeof prisma;
+export type ExtendedPrismaClient = typeof prismaWithSoftDelete;
+export const prisma = settings.nodeEnv === 'test' ? prismaRaw : middlewarePrismaMetrics(prismaWithSoftDelete);
