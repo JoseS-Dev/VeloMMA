@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { globalCacheMiddleware } from './src/middlewares/cache/global-cache.middleware.js';
+import { middlewareHttpMetrics } from './src/middlewares/metrics/http/http.middlewares.js';
 import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
 import { swaggerSpec } from './config/swagger/docs.js';
@@ -30,6 +31,7 @@ app.use(cookieParser());
 if(!isTest){
     app.use(morgan('dev'));
     app.use(globalCacheMiddleware);
+    app.use(middlewareHttpMetrics);
 }
 
 // Ruta de bienvenida
