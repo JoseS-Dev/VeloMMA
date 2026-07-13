@@ -43,7 +43,7 @@ export function generateHash(data: string) {
 
 // Función para la consulta base de los metodos findAll y findAllActive de los servicios de la API
 export const buildQueryOptions = (options: CursorOptions) => {
-    const { cursor, limit = 10, orderBy = { id: 'desc' }, where = {} } = options;
+    const { cursor, limit = 10, orderBy = { id: 'asc' }, where = {} } = options;
     const queryOptions: any = {
         take: limit,
         orderBy,
@@ -178,8 +178,6 @@ export function generateCreativeDivision(): typeof DIVISIONS_DATA[0] | null {
       name_division: `${namePrefix} ${nameSuffix}${gender === 'Femenino' ? ' Femenino' : 'Masculino'}`,
       weight_class: weightClass,
       gender: gender,
-      is_active: faker.datatype.boolean(0.7),
-      weight_min: weightMin,
-      weight_max: weightMax
+      is_active: faker.datatype.boolean(0.7)
     };
 }

@@ -133,65 +133,49 @@ export const DIVISIONS_DATA = [
     name_division: 'Peso Mosca',
     weight_class: '125 lb (56.7 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 115,
-    weight_max: 125
+    is_active: true
   },
   {
     name_division: 'Peso Gallo',
     weight_class: '135 lb (61.2 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 125,
-    weight_max: 135
+    is_active: true
   },
   {
     name_division: 'Peso Pluma',
     weight_class: '145 lb (65.8 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 135,
-    weight_max: 145
+    is_active: true
   },
   {
     name_division: 'Peso Ligero',
     weight_class: '155 lb (70.3 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 145,
-    weight_max: 155
+    is_active: true
   },
   {
     name_division: 'Peso Wélter',
     weight_class: '170 lb (77.1 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 155,
-    weight_max: 170
+    is_active: true
   },
   {
     name_division: 'Peso Medio',
     weight_class: '185 lb (83.9 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 170,
-    weight_max: 185
+    is_active: true
   },
   {
     name_division: 'Peso Semipesado',
     weight_class: '205 lb (93.0 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 185,
-    weight_max: 205
+    is_active: true
   },
   {
     name_division: 'Peso Pesado',
     weight_class: '265 lb (120.2 kg)',
     gender: Gender.Masculino,
-    is_active: true,
-    weight_min: 205,
-    weight_max: 265
+    is_active: true
   },
   
   // Femeninas
@@ -199,33 +183,25 @@ export const DIVISIONS_DATA = [
     name_division: 'Peso Paja Femenino',
     weight_class: '115 lb (52.2 kg)',
     gender: Gender.Femenino,
-    is_active: true,
-    weight_min: 105,
-    weight_max: 115
+    is_active: true
   },
   {
     name_division: 'Peso Mosca Femenino',
     weight_class: '125 lb (56.7 kg)',
     gender: Gender.Femenino,
-    is_active: true,
-    weight_min: 115,
-    weight_max: 125
+    is_active: true
   },
   {
     name_division: 'Peso Gallo Femenino',
     weight_class: '135 lb (61.2 kg)',
     gender: Gender.Femenino,
-    is_active: true,
-    weight_min: 125,
-    weight_max: 135
+    is_active: true
   },
   {
     name_division: 'Peso Pluma Femenino',
     weight_class: '145 lb (65.8 kg)',
     gender: Gender.Femenino,
-    is_active: true,
-    weight_min: 135,
-    weight_max: 145
+    is_active: true
   }
 ];
 
@@ -235,32 +211,24 @@ export const EXTRA_DIVISIONS = [
     name_division: 'Peso Átomo Femenino',
     weight_class: '105 lb (47.6 kg)',
     gender: Gender.Femenino,
-    is_active: true,
-    weight_min: 95,
-    weight_max: 105
+    is_active: true
   },
   {
     name_division: 'Peso Superpesado',
     weight_class: '265+ lb (120.2+ kg)',
     gender: Gender.Masculino,
-    is_active: false,
-    weight_min: 265,
-    weight_max: 350
+    is_active: false
   },
   {
     name_division: 'Peso Crucero',
     weight_class: '225 lb (102.1 kg)',
     gender: Gender.Masculino,
-    is_active: false,
-    weight_min: 205,
-    weight_max: 225
+    is_active: false
   },
   {
     name_division: 'Peso Pluma Femenino',
     weight_class: '145 lb (65.8 kg)',
     gender: Gender.Femenino,
-    is_active: false,
-    weight_min: 135,
-    weight_max: 145
+    is_active: false
   }
 ];

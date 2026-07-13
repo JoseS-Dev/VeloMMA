@@ -36,4 +36,4 @@ const prismaWithSoftDelete = prismaRaw.$extends({
 });
 
 export type ExtendedPrismaClient = typeof prismaWithSoftDelete;
-export const prisma = settings.nodeEnv === 'test' ? prismaRaw : middlewarePrismaMetrics(prismaWithSoftDelete);
+export const prisma = settings.nodeEnv === 'test' ? prismaWithSoftDelete : middlewarePrismaMetrics(prismaWithSoftDelete);
