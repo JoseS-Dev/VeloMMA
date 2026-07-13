@@ -78,7 +78,6 @@ export async function seedFighters(prisma: ExtendedPrismaClient, options: SeedFi
           team_id: team.id,
           joined_date: faker.date.past({ years: faker.number.int({ min: 1, max: 10 }) }),
           is_current: faker.datatype.boolean(0.7),
-          role: faker.helpers.arrayElement(['MEMBER', 'CAPTAIN', 'COACH']),
           created_at: new Date(),
           updated_at: new Date(),
         });

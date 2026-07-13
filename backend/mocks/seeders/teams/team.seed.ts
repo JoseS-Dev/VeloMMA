@@ -35,12 +35,8 @@ export async function seedTeams(prisma: ExtendedPrismaClient, total: number = 30
         const team = generateTeams();
         teams.push(team);
     }
-    // Se coloca en dichos equipos en la tabla de la base de datos
-    const createdTeams = await prisma.teams.createMany({
-        data: teams,
-        skipDuplicates: true
-    });
-    console.log(`   ✅ Creados ${createdTeams.count} equipos...`);
-    return createdTeams;
+    return await prisma.$transaction(
+        teams.map(team => prisma.teams.create({ data: team }))
+    );
 }
 
