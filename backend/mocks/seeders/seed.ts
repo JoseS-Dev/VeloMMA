@@ -1,10 +1,9 @@
 // prisma/seed.ts
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../src/utils/prisma/prisma.js';
 import { seedFighters } from './fighters/fighters.seed.js';
 import { seedTeams } from './teams/team.seed.js';
 import { seedDivisions } from './divisions/division.seed.js';
-
-const prisma = new PrismaClient();
+import type { ExtendedPrismaClient } from '../../src/utils/prisma/prisma.js';
 
 // Configuración global
 const CONFIG = {
@@ -84,7 +83,7 @@ async function main() {
   }
 }
 
-async function showFinalStats(prisma: PrismaClient) {
+async function showFinalStats(prisma: ExtendedPrismaClient) {
   console.log('📊 Estadísticas finales:');
   
   const stats = await prisma.$transaction([
