@@ -3,8 +3,7 @@ export const mockCreateTitleOne = {
     fighter_id: 0, // Se asignará después
     division_id: 0, // Se asignará después
     title_type: 'Undisputed',
-    won_date: '2023-01-01T00:00:00.000Z',
-    lost_date: null
+    won_date: '2023-01-01T00:00:00.000Z'
 }
 
 // Datos de prueba para actualizar un titulo
