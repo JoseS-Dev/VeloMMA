@@ -44,7 +44,7 @@ export class TeamService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
         // Se cuenta el total de registros
         const total = await this.prisma.teams.count();
         // Se obtienen los datos de los equipos activos
@@ -58,7 +58,7 @@ export class TeamService {
     // Servicio para obtener los datos de un equipo por su id
     async findById(teamId: number){
         const team = await this.prisma.teams.findUnique({
-            where: {id: teamId, deleted_at: null}
+            where: {id: teamId}
         });
         if(!team) throw new NotFoundException('No se encontró el equipo');
         return team;

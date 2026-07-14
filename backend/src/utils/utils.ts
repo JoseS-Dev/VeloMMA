@@ -20,8 +20,9 @@ import {
     oddsRouter
 } from '../modules/bouts/index.js';
 import { MonitorRouter } from '../modules/monitoring/monitor.route.js';
+import { settings } from '../../config/settings.js';
 
-export const routesConfig = [
+const baseRouteConfig = [
   { path: '/fighters', router: fighterRoutes },
   { path: '/teams',    router: teamRoutes },
   { path: '/divisions',router: divisionRoutes },
@@ -39,8 +40,13 @@ export const routesConfig = [
   { path: '/odds',  router: oddsRouter },
   { path: '/camps',  router: campRouter },
   { path: '/stats',  router: statsRouter },
-  { path: '/monitoring', router: MonitorRouter },
 ];
+
+const PrometheusRoute = { path: '/monitor', router: MonitorRouter };
+
+export const routesConfig = settings.nodeEnv !== 'test'
+    ? [...baseRouteConfig, PrometheusRoute]
+    : baseRouteConfig;
 
 // Lista de los nombres de las tablas de la base de datos que se deben limpiar antes de cada test
 export const tablesToClear: string[] = [

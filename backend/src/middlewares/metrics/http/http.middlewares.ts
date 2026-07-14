@@ -1,4 +1,5 @@
-import type {Request, Response, NextFunction} from 'express';
+// src/middlewares/metrics/http-metrics.middleware.ts
+import type { Request, Response, NextFunction } from 'express';
 import {
     httpRequestsTotal,
     httpRequestDuration,
@@ -6,44 +7,51 @@ import {
     httpResponseSize
 } from '../../../../config/metrics/index.js';
 
-// Middlewares para ver las metricas de las perticiones HTTP
-export function middlewareHttpMetrics(req: Request, res: Response, next: NextFunction){
-    const startTime = Date.now();
+// ✅ Versión optimizada - Sin sobrescritura de res.send
+export function middlewareHttpMetrics(req: Request, res: Response, next: NextFunction) {
+    const startTime = process.hrtime();
     const requestSize = parseInt(req.headers['content-length'] || '0', 10);
+    const method = req.method;
+    const route = req.route?.path || req.path || 'unknown';
 
-    const orginalSend = res.send;
-    let responseSize = 0;
+    res.on('finish', () => {
+        const diff = process.hrtime(startTime);
+        const duration = diff[0] + diff[1] / 1e9;
 
-    // Interceptamos respuesta para medir el tamaño de la respuesta
-    res.send = function(body: any) : Response {
-        if(body) responseSize = Buffer.byteLength(JSON.stringify(body), 'utf8');
-        return orginalSend.call(this, body)
-    }
+        const statusCode = res.statusCode.toString();
+        const statusCategory = `${Math.floor(res.statusCode / 100)}xx`;
 
-    // Cuando termine la respuesta , sacamos las metricas del endpoint
-    res.on('finish',() => {
-        const duration = (Date.now() - startTime) / 1000
-        const route = req.route?.path || req.path || 'unknown'
-        const method = req.method;
-        const statusCode = res.statusCode.toString()
-        const statusCategory = `${Math.floor(res.statusCode / 100)}xx`
+        try {
+            httpRequestsTotal.inc({
+                method,
+                route,
+                status_code: statusCode,
+                status_category: statusCategory,
+            });
 
-        // Con estas variables incrementamos contador de las perticiones
-        httpRequestsTotal.inc({
-            method,
-            route,
-            status_code: statusCode,
-            status_category: statusCategory
-        })
+            httpRequestDuration.observe(
+                { method, route, status_code: statusCode },
+                duration
+            );
 
-        // Se registra la duración
-        httpRequestDuration.observe(
-            {method, route, status_code: statusCode},
-            duration
-        )
-        // Registramos el tamaño
-        if(requestSize > 0) httpRequestSize.observe({method, route}, requestSize)
-        if(responseSize > 0) httpResponseSize.observe({method, route, status_code: statusCode}, responseSize)
-        next()
-    })
+            if (requestSize > 0) {
+                httpRequestSize.observe({ method, route }, requestSize);
+            }
+
+            const contentLength = res.getHeader('content-length');
+            if (contentLength) {
+                const size = parseInt(contentLength as string, 10);
+                if (size > 0) {
+                    httpResponseSize.observe(
+                        { method, route, status_code: statusCode },
+                        size
+                    );
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error recording HTTP metrics:', error);
+        }
+    });
+
+    next();
 }
