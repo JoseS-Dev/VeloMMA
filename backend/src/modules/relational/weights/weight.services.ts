@@ -47,7 +47,7 @@ export class WeightService {
         const existingFighter = await this.prisma.fighters.findUnique({
             where: {id: FighterId}
         });
-        if(!existingFighter) throw new NotFoundException('El luchador no existen')
+        if(!existingFighter) throw new NotFoundException('El luchador no existe')
         const queryOptions = buildQueryOptions({ cursor, limit, where: { fighter_id: FighterId } });
         // Se cuenta el total de registros
         const total = await this.prisma.fighterDivision.count({
