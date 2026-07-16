@@ -78,7 +78,8 @@ export class DivisionController {
     async changeStatus(req: Request, res: Response) {
         const {divisionId} = req.params;
         const {isActive} = req.body;
-        const division = await this.divisionService.changeStatus(Number(divisionId), Boolean(isActive));
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado no es un booleano');
+        const division = await this.divisionService.changeStatus(Number(divisionId), isActive);
         return division;
     }
 

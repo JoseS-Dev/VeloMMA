@@ -170,7 +170,6 @@ model fighterDivision {
   deleted_at DateTime?
   fighter fighters @relation(fields: [fighter_id], references: [id])
   division divisions @relation(fields: [division_id], references: [id])
-  @@unique([fighter_id, division_id])
   @@index([fighter_id, division_id])
   @@map("fighter_division")
 }
