@@ -2,7 +2,8 @@ import type { DivisionSchemaDTO, UpdateDivisionSchemaDTO } from './division.sche
 import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
 import { 
     BadRequestException,
-    ConflictException 
+    ConflictException, 
+    NotFoundException
 } from '../../common/errors/error.js';
 import { buildQueryOptions } from '../../utils/functions/function.js';
 
@@ -62,7 +63,7 @@ export class DivisionService {
         const division = await this.prisma.divisions.findUnique({
             where: {id: divisionId}
         });
-        if(!division) throw new BadRequestException('No se encontró la division');
+        if(!division) throw new NotFoundException('No se encontró la division');
         return division;
     }
 
@@ -71,7 +72,7 @@ export class DivisionService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que la division existe
         const existingDivision = await this.findById(divisionId);
-        if(!existingDivision) throw new BadRequestException('No se encontró la division');
+        if(!existingDivision) throw new NotFoundException('No se encontró la division');
         // Se verifica que no exista una division con el mismo nombre
         if(data.name_division && data.name_division !== existingDivision.name_division){
             const existingDivisionName = await this.prisma.divisions.findFirst({
@@ -97,10 +98,9 @@ export class DivisionService {
     // Servicio para cambiar el estado de una division
     async changeStatus(divisionId: number, isActive: boolean){
         if(!divisionId) throw new BadRequestException('El id es obligatorio')
-        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado no es un booleano')
         // Se verifica que la division existe
         const existingDivision = await this.findById(divisionId);
-        if(!existingDivision) throw new BadRequestException('No se encontró la division');
+        if(!existingDivision) throw new NotFoundException('No se encontró la division');
         // Se actualiza el estado de la division
         const division = await this.prisma.divisions.update({
             where: {id: divisionId},
@@ -114,7 +114,7 @@ export class DivisionService {
     async delete(divisionId: number){
         // Se verifica que la division existe
         const existingDivision = await this.findById(divisionId);
-        if(!existingDivision) throw new BadRequestException('No se encontró la division');
+        if(!existingDivision) throw new NotFoundException('No se encontró la division');
         // Se elimina la division
         const division = await this.prisma.divisions.update({
             where: {id: divisionId},
