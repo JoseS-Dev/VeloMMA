@@ -95,7 +95,6 @@ export class TeamService {
     // Servicio para cambiar el estado de un equipo
     async changeStatus(teamId: number, isActive: boolean){
         if(!teamId) throw new BadRequestException('El id es obligatorio');
-        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         // Se verifica que el equipo existe
         const existingTeam = await this.findById(teamId);
         if(!existingTeam) throw new NotFoundException('No se encontró el equipo');
