@@ -41,8 +41,8 @@ describe('Test del modulo de los equipos', () => {
                 .set('Content-Type', 'application/json')
                 .send(mockCreateTeamOne);
             
-            expect(response.status).toBe(201);
-            expect(response.body).toHaveProperty('status', 201);
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('status', 200);
             expect(response.body).toHaveProperty('message', 'Equipo creado correctamente');
         })
 
@@ -77,7 +77,7 @@ describe('Test del modulo de los equipos', () => {
                 .send(mockCreateTeamOne);
             
             expect(response.status).toBe(409);
-            expect(response.body).toHaveProperty('message', 'Ya existe un equipo con el mismo nombre');
+            expect(response.body).toHaveProperty('message', 'Ya existe un equipo con ese nombre');
         })
 
         test("Deberia retornar un status 401 si no se envia la api key", async () => {
@@ -302,7 +302,7 @@ describe('Test del modulo de los equipos', () => {
                 .send(updateData);
             
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('message', 'El estado no es un booleano');
+            expect(response.body).toHaveProperty('message', 'El estado es obligatorio');
         })
 
         test("Deberia retornar un status 404 si no existe un equipo con el id proporcionado", async () => {

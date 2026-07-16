@@ -1,6 +1,6 @@
 import type { EventSchemaDTO, UpdateEventSchemaDTO } from './event.schema.js';
 import type { ExtendedPrismaClient } from '../../utils/prisma/prisma.js';
-import { BadRequestException, ConflictException } from '../../common/errors/error.js';
+import { BadRequestException, ConflictException, NotFoundException } from '../../common/errors/error.js';
 import { buildQueryOptions } from '../../utils/functions/function.js';
 // Servicio para obtener todos los eventos
 export class EventService {
@@ -59,7 +59,7 @@ export class EventService {
         const event = await this.prisma.events.findUnique({
             where: {id: eventId}
         });
-        if(!event) throw new BadRequestException('No se encontró el evento');
+        if(!event) throw new NotFoundException('No se encontró el evento');
         return event;
     }
 
@@ -68,7 +68,7 @@ export class EventService {
         const events = await this.prisma.events.findMany({
             where: {location_event: location}
         });
-        if(!events) throw new BadRequestException('No se encontraron eventos en esa locación');
+        if(!events || events.length === 0) throw new NotFoundException('No se encontraron eventos en esa locación');
         return events;
     }
 
@@ -77,7 +77,7 @@ export class EventService {
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que el evento existe
         const existingEvent = await this.findById(eventId);
-        if(!existingEvent) throw new BadRequestException('No se encontró el evento');
+        if(!existingEvent) throw new NotFoundException('No se encontró el evento');
         // Se verifica que no exista un evento con el mismo nombre
         if(data.name_event && data.name_event !== existingEvent.name_event){
             const existingEventName = await this.prisma.events.findFirst({
@@ -104,7 +104,7 @@ export class EventService {
     async changeStatus(eventId: number, isActive: boolean){
         // Se verifica que el evento existe
         const existingEvent = await this.findById(eventId);
-        if(!existingEvent) throw new BadRequestException('No se encontró el evento');
+        if(!existingEvent) throw new NotFoundException('No se encontró el evento');
         // Se actualiza el estado del evento
         const event = await this.prisma.events.update({
             where: {id: eventId},
@@ -118,7 +118,7 @@ export class EventService {
     async delete(eventId: number){
         // Se verifica que el evento existe
         const existingEvent = await this.findById(eventId);
-        if(!existingEvent) throw new BadRequestException('No se encontró el evento');
+        if(!existingEvent) throw new NotFoundException('No se encontró el evento');
         // Se elimina el evento
         const event = await this.prisma.events.update({
             where: {id: eventId},
