@@ -30,7 +30,7 @@ export function registerRoutes(app: any, routes: Object) {
 
 // Record para los estados de las peleas
 export const BoutStatusRecord: Record<string, string[]> = {
-    Programada: ['Cancelada', 'En_proceso', 'Finalizada'],
+    Programada: ['Cancelada', 'En_Proceso', 'Finalizada'],
     Cancelada: ['Programada'],
     En_Proceso: ['Finalizada', 'Cancelada'],
     Finalizada: []

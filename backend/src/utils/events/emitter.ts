@@ -16,6 +16,6 @@ statsEventEmitter.on('updateFighterStats', async (data: UpdateFighterStatsEvent)
     await Promise.all([
         statsService.updateFighterCareerStats(data.redFighterId),
         statsService.updateFighterCareerStats(data.blueFighterId)
-    ])
+    ]);
 });
 

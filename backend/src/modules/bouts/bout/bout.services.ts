@@ -1,6 +1,6 @@
 import type { BoutSchemaDTO, BoutUpdateSchemaDTO } from "./bout.schema.js";
 import type { ExtendedPrismaClient } from "../../../utils/prisma/prisma.js";
-import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
+import { BadRequestException, ConflictException, NotFoundException } from "../../../common/errors/error.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
 import { BoutStatusRecord } from "../../../utils/functions/function.js";
 import { buildQueryOptions } from "../../../utils/functions/function.js";
@@ -13,16 +13,20 @@ export class BoutService {
     async create(data: BoutSchemaDTO){
         if(!data) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la división, el evento y los dos luchadores en cuestión
-        const [existingDivision, existingEvent, existingRedFighter, existingBlueFighter] = await Promise.all([
+        const [existingDivision, existingEvent, existingRedFighter, existingBlueFighter, isSameFighter] = await Promise.all([
             this.prisma.divisions.findUnique({ where: { id: data.division_id } }),
             this.prisma.events.findUnique({ where: { id: data.event_id } }),
             this.prisma.fighters.findUnique({ where: { id: data.red_corner_id } }),
-            this.prisma.fighters.findUnique({ where: { id: data.blue_corner_id } })
+            this.prisma.fighters.findUnique({ where: { id: data.blue_corner_id } }),
+            this.prisma.fighters.findUnique({ where: { id: data.red_corner_id } }).then(redFighter => {
+                return redFighter?.id === data.blue_corner_id;
+            })
         ]);
         if(!existingDivision) throw new NotFoundException('No existe la división');
         if(!existingEvent) throw new NotFoundException('No existe el evento');
         if(!existingRedFighter) throw new NotFoundException('No existe el luchador rojo');
         if(!existingBlueFighter) throw new NotFoundException('No existe el luchador azul');
+        if(isSameFighter) throw new ConflictException('Los luchadores no pueden ser el mismo');
         // Si todo esta bien, se crea la pelea
         const newBout = await this.prisma.bouts.create({
             data: data
@@ -112,7 +116,7 @@ export class BoutService {
     // Servicio para actualizar una pelea por su ID
     async update(BoutId: number, data: BoutUpdateSchemaDTO){
         if(!BoutId) throw new BadRequestException('El id de la pelea es obligatorio');
-        if(!data) throw new BadRequestException('Los datos son obligatorios');
+        if(!data || Object.keys(data).length === 0) throw new BadRequestException('Los datos son obligatorios');
         // Se verifica que exista la pelea
         const existingBout = await this.findById(BoutId);
         if(!existingBout) throw new NotFoundException('No existe la pelea');

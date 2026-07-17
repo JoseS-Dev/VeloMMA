@@ -33,8 +33,8 @@ export class StatsService {
 
         const dataHash = generateHash(JSON.stringify({fighterMetrics, opponentMetrics}));
 
-        // Verificamos si ya existen estadisticas claculadas previamente para este luchador con los mismos datos
-        const existingStats = await this.prisma.fighterStats.findUnique({
+        // Verificamos si ya existen estadisticas calculadas previamente para este luchador con los mismos datos
+        const existingStats = await this.prisma.fighterStats.findFirst({
             where: { fighter_id: fighterId }
         });
 
@@ -42,8 +42,6 @@ export class StatsService {
             // Si las estadisticas ya existen y el hash de los datos es el mismo, no se hace nada
             return existingStats;
         }
-
-        if(fighterMetrics.length === 0) throw new BadRequestException('El luchador no tiene metricas registradas, no se puede calcular estadisticas');
 
         // Defino las variables para almacenar las estatdisticas del luchador
         let totalSigLanded = 0;
@@ -137,7 +135,7 @@ export class StatsService {
             where: {id: fighterId}
         });
         if(!existingFighter) throw new NotFoundException('El luchador no existe');
-        const stats = await this.prisma.fighterStats.findUnique({
+        const stats = await this.prisma.fighterStats.findFirst({
             where: { fighter_id: fighterId }
         });
         if(!stats) throw new NotFoundException('No existen estadisticas para el luchador en cuestión');
