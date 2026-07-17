@@ -78,6 +78,7 @@ export class TeamController {
     async changeStatus(req: Request, res: Response){
         const {teamId} = req.params;
         const {isActive} = req.body;
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El estado es obligatorio');
         const team = await this.teamService.changeStatus(Number(teamId), Boolean(isActive));
         return team;
     }

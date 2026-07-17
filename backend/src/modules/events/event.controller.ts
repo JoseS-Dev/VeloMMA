@@ -85,6 +85,7 @@ export class EventController {
     async changeStatus(req: Request, res: Response) {
         const {eventId} = req.params;
         const {isActive} = req.body;
+        if(typeof isActive !== 'boolean') return res.status(400).json({message: 'El parámetro isActive debe ser un booleano'});
         const event = await this.eventService.changeStatus(Number(eventId), Boolean(isActive));
         return event;
     }

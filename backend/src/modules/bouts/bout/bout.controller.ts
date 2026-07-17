@@ -3,7 +3,6 @@ import { BoutService } from "./bout.services.js";
 import { validateBoutDTO, validateBoutUpdateDTO } from "./bout.schema.js";
 import { SendResponse } from "../../../common/decorator/decorator.js";
 import { BoutStatus } from "../../../../generated/prisma/index.js";
-import { prisma } from "../../../utils/prisma/prisma.js";
 import { statsEventEmitter } from "../../../utils/events/emitter.js";
 import { BadRequestException, NotFoundException } from "../../../common/errors/error.js";
 
@@ -12,7 +11,7 @@ export class BoutController {
     constructor(private readonly boutService: BoutService) {}
 
     // Controlador para crear una pelea
-    @SendResponse('Pelea creada correctamente', 201)
+    @SendResponse('Pelea creada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateBoutDTO(req.body);
         if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
@@ -21,7 +20,7 @@ export class BoutController {
     }
 
     // Controlador para obtener todas las peleas
-    @SendResponse('Pelea obtenidas exitosamente', 200)
+    @SendResponse('Peleas obtenidas exitosamente', 200)
     async findAll(req: Request, res: Response){
         const {page, limit} = req.query;
         // Se valida los parametros de la consulta
