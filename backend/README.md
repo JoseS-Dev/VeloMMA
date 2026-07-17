@@ -915,9 +915,17 @@ divisions 1──N fighterRankings
 
 ```
 __test__/
-├── api/api.test.ts            # Smoke: welcome, health, ping, docs
-├── fighters/fighter.test.ts   # CRUD fighter + validación
-└── helpers/testBase.ts        # Clase base con truncado de tablas
+├── api/api.test.txt                     # Smoke: welcome, health, ping, docs
+├── fighters/fighter.test.ts            # CRUD fighter + validación
+├── relational/
+│   ├── camps/camp.test.ts              # Campamentos de entrenamiento (21 tests)
+│   ├── stats/stats.test.ts             # Estadísticas de carrera (9 tests)
+│   ├── injuries/injuries.test.ts
+│   ├── ranking/ranking.test.ts
+│   ├── stables/stable.test.ts
+│   ├── titles/titles.test.ts
+│   └── weights/weight.test.ts
+└── helpers/testBase.ts                 # Clase base con truncado de tablas
 ```
 
 **Configuración:** SWC para transformación rápida, entorno Node, mock completo del módulo Redis.
