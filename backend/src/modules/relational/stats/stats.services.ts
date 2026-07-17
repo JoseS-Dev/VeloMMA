@@ -31,18 +31,6 @@ export class StatsService {
             }
         });
 
-        const dataHash = generateHash(JSON.stringify({fighterMetrics, opponentMetrics}));
-
-        // Verificamos si ya existen estadisticas calculadas previamente para este luchador con los mismos datos
-        const existingStats = await this.prisma.fighterStats.findFirst({
-            where: { fighter_id: fighterId }
-        });
-
-        if(existingStats && existingStats.data_hash === dataHash) {
-            // Si las estadisticas ya existen y el hash de los datos es el mismo, no se hace nada
-            return existingStats;
-        }
-
         // Defino las variables para almacenar las estatdisticas del luchador
         let totalSigLanded = 0;
         let totalSigAttempted = 0;
@@ -104,23 +92,42 @@ export class StatsService {
         // Promedio de tiempo por pelea
         const averageFightTime = totalBoutsCount > 0 ? (totalTimeInSeconds / totalBoutsCount) : 0;
 
+        // Calcular valores finales
+        const finalStats = {
+            sig_strikes_accuracy: parseFloat(sigStrikesAccuracy.toFixed(2)),
+            sig_strikes_absorbed_pm: parseFloat(sigStrikesAbsorbedPm.toFixed(2)),
+            takedown_accuracy: parseFloat(takedownAccuracy.toFixed(2)),
+            takedown_defense: parseFloat(takedownDefense.toFixed(2)),
+            average_fight_time: parseFloat(averageFightTime.toFixed(2))
+        };
+
+        const dataHash = generateHash(JSON.stringify({
+            fighterId,
+            ...finalStats,
+            totalBoutsCount,
+            totalTimeInSeconds
+        }));
+
+        // Verificar si ya existen estadisticas calculadas previamente
+        const existingStats = await this.prisma.fighterStats.findUnique({
+            where: { fighter_id: fighterId }
+        });
+
+        // Si existen y el hash es el mismo, no se hace nada
+        if (existingStats && existingStats.data_hash === dataHash) {
+            return existingStats;
+        }
+
         // Realizamos el upsert para la estadisticas
         const updatedStats = await this.prisma.fighterStats.upsert({
             where: { fighter_id: fighterId },
             update: {
-                sig_strikes_accuracy: parseFloat(sigStrikesAccuracy.toFixed(2)),
-                sig_strikes_absorbed_pm: parseFloat(sigStrikesAbsorbedPm.toFixed(2)),
-                takedown_accuracy: parseFloat(takedownAccuracy.toFixed(2)),
-                takedown_defense: parseFloat(takedownDefense.toFixed(2)),
-                average_fight_time: parseFloat(averageFightTime.toFixed(2)),
+                ...finalStats,
+                data_hash: dataHash
             },
             create: {
                 fighter_id: fighterId,
-                sig_strikes_accuracy: parseFloat(sigStrikesAccuracy.toFixed(2)),
-                sig_strikes_absorbed_pm: parseFloat(sigStrikesAbsorbedPm.toFixed(2)),
-                takedown_accuracy: parseFloat(takedownAccuracy.toFixed(2)),
-                takedown_defense: parseFloat(takedownDefense.toFixed(2)),
-                average_fight_time: parseFloat(averageFightTime.toFixed(2)),
+                ...finalStats,
                 data_hash: dataHash
             }
         });
