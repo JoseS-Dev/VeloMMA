@@ -2,6 +2,7 @@ import type { Response, Request } from 'express';
 import { EventService } from './event.services.js';
 import { validateEvent, validateUpdateEvent } from './event.schema.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../common/decorator/decorator.js';
+import { BadRequestException } from '../../common/errors/error.js';
 
 // Controlador para los eventos
 export class EventController {
@@ -11,7 +12,7 @@ export class EventController {
     @SendResponse('Evento creado correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateEvent(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación')
         const event = await this.eventService.create(validation.data);
         return event;
     }
@@ -61,7 +62,7 @@ export class EventController {
     async update(req: Request, res: Response) {
         const {eventId} = req.params;
         const validation = validateUpdateEvent(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de Validación')
         const event = await this.eventService.update(Number(eventId), validation.data);
         return event;
     }
@@ -71,7 +72,7 @@ export class EventController {
     async changeStatus(req: Request, res: Response) {
         const {eventId} = req.params;
         const {isActive} = req.body;
-        if(typeof isActive !== 'boolean') return res.status(400).json({message: 'El parámetro isActive debe ser un booleano'});
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El parámetro isActive debe ser un booleano');
         const event = await this.eventService.changeStatus(Number(eventId), Boolean(isActive));
         return event;
     }

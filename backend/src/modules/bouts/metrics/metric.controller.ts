@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { MetricService } from "./metric.services.js";
 import { validateMetricData, validateMetricUpdateData } from "./metric.schema.js";
 import { SendResponse, PaginationFor, buildPaginationMeta } from "../../../common/decorator/decorator.js";
+import { BadRequestException } from "../../../common/errors/error.js";
 
 // Controlador que interactua con la tabla de métricas de una pelea
 export class MetricController {
@@ -11,7 +12,7 @@ export class MetricController {
     @SendResponse('Métrica agregada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateMetricData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.metricService.create(validation.data);
         return result
     }
@@ -56,7 +57,7 @@ export class MetricController {
     async update(req: Request, res: Response){
         const {MetricId} = req.params;
         const validation = validateMetricUpdateData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.metricService.update(Number(MetricId), validation.data);
         return result
     }
@@ -66,7 +67,7 @@ export class MetricController {
     async delete(req: Request, res: Response){
         const {MetricId} = req.params;
         // Se valida los parametros
-        if(Number.isNaN(Number(MetricId))) return res.status(400).json({message: 'El id de la métrica es obligatorio'});
+        if(Number.isNaN(Number(MetricId))) throw new BadRequestException('El id de la métrica es obligatorio');
         const result = await this.metricService.delete(Number(MetricId));
         return result
     }

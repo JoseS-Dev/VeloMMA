@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { StableService } from './stable.services.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
 import { validateStable, validateUpdateStable } from './stable.schema.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador para los equipos
 export class StableController {
@@ -11,7 +12,7 @@ export class StableController {
     @SendResponse('Relación equipo con luchador creada exitosamente', 201)
     async create(req: Request, res: Response){
         const validation = validateStable(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const stable = await this.stableService.create(validation.data);
         return stable;
     }
@@ -42,7 +43,7 @@ export class StableController {
     async update(req: Request, res: Response){
         const {stableId} = req.params;
         const validation = validateUpdateStable(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const stable = await this.stableService.update(Number(stableId), validation.data);
         return stable;
     }

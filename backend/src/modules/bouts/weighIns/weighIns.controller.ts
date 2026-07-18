@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { WeighInsService } from "./weighIns.services.js";
 import { validateWeighInsData, validateWeighInsUpdateData } from "./weighIns.schema.js";
 import { SendResponse, PaginationFor, buildPaginationMeta } from "../../../common/decorator/decorator.js";
+import { BadRequestException } from "../../../common/errors/error.js";
 
 // Controlador que maneja las rutas de los pesajes oficiales de los luchadores para la pelea
 export class WeighInsController {
@@ -11,7 +12,7 @@ export class WeighInsController {
     @SendResponse('Pesaje oficial creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateWeighInsData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.weighInsService.create(validation.data);
         return result;
     }
@@ -49,7 +50,7 @@ export class WeighInsController {
     async update(req: Request, res: Response){
         const { id } = req.params;
         const validation = validateWeighInsUpdateData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.weighInsService.update(Number(id), validation.data);
         return result;
     }

@@ -3,6 +3,7 @@ import { TitleService } from "./title.services.js";
 import { TitleType } from "../../../../generated/prisma/index.js";
 import { validateTitleDTO, validateUpdateTitleDTO } from "./title.schema.js";
 import { SendResponse, PaginationFor, buildPaginationMeta } from "../../../common/decorator/decorator.js";
+import { BadRequestException } from "../../../common/errors/error.js";
 
 // Controlador para manejar las rutas relacionadas con los titulos de un luchador en una división
 export class TitleController {
@@ -12,7 +13,7 @@ export class TitleController {
     @SendResponse('Titulo creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateTitleDTO(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.titleService.create(validation.data);
         return result;
     }
@@ -70,7 +71,7 @@ export class TitleController {
     async update(req: Request, res: Response){
         const { titleId } = req.params;
         const validation = validateUpdateTitleDTO(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.titleService.update(Number(titleId), validation.data);
         return result;
     }

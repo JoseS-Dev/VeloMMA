@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { CampService } from './camp.services.js';
 import { validateCreateCampDTO, validateUpdateCampDTO } from './camp.schema.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador que maneja las rutas relacionadas con los campamentos donde entreno un luchador para una pelea
 export class CampController {
@@ -11,7 +12,7 @@ export class CampController {
     @SendResponse('Campamento creado exitosamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateCreateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.campService.create(validation.data);
         return result;
     }
@@ -55,7 +56,7 @@ export class CampController {
     async update(req: Request, res: Response){
         const { campId } = req.params;
         const validation = validateUpdateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.campService.update(Number(campId), validation.data);
         return result;
     }

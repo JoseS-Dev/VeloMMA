@@ -12,7 +12,7 @@ export class TeamController {
     @SendResponse('Equipo creado correctamente', 200)
     async create(req: Request, res: Response){
         const validation = validateTeam(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const team = await this.teamService.create(validation.data);
         return team;
     }
@@ -54,7 +54,7 @@ export class TeamController {
     async update(req: Request, res: Response){
         const {teamId} = req.params;
         const validation = validateUpdateTeam(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const team = await this.teamService.update(Number(teamId), validation.data);
         return team;
     }

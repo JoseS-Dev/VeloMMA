@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { WeightService } from './weight.services.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
 import { validateWeight, validateUpdateWeight } from './weight.schema.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador para los pesos oficiales de un luchador
 export class WeightController {
@@ -11,7 +12,7 @@ export class WeightController {
     @SendResponse('Peso oficial creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateWeight(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const weight = await this.weightService.create(validation.data);
         return weight;
     }
@@ -42,7 +43,7 @@ export class WeightController {
     async update(req: Request, res: Response){
         const {weightId} = req.params;
         const validation = validateUpdateWeight(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const weight = await this.weightService.update(Number(weightId), validation.data);
         return weight;
     }

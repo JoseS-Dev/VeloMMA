@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { FighterService } from './fighter.services.js';
 import { validateFighter, validateFighterUpdate } from './fighter.schema.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../common/decorator/decorator.js';
+import { BadRequestException } from '../../common/errors/error.js';
 
 // Clase para el controlador de los luchadores
 export class FighterController {
@@ -11,7 +12,7 @@ export class FighterController {
     @SendResponse('Luchador creado correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateFighter(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const fighter = await this.fighterService.create(validation.data);
         return fighter;
     }
@@ -61,7 +62,7 @@ export class FighterController {
     async update(req: Request, res: Response) {
         const {fighterId} = req.params;
         const validation = validateFighterUpdate(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const fighter = await this.fighterService.update(Number(fighterId), validation.data);
         return fighter;
     }

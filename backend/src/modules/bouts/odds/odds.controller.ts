@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { OddsService } from './odds.services.js';
 import { validateCreateBoutOddsDTO, validateUpdateBoutOddsDTO } from './odds.schema.js';
 import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador que maneja las rutas relacionadas con las casas de apuestas para una pelea
 export class OddsController {
@@ -11,7 +12,7 @@ export class OddsController {
     @SendResponse('Casa de apuesta creada exitosamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateCreateBoutOddsDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.oddsService.create(validation.data);
         return result;
     }
@@ -55,7 +56,7 @@ export class OddsController {
     async update(req: Request, res: Response){
         const { oddsId } = req.params;
         const validation = validateUpdateBoutOddsDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.oddsService.update(Number(oddsId), validation.data);
         return result;
     }
