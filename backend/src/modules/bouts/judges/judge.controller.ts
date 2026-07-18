@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 import { JudgeService } from './judge.services.js';
 import { validateJudgeData, validateJudgeUpdateData } from './judge.schema.js';
-import { SendResponse } from '../../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador que interactua con los jueces de una pelea
 export class JudgeController {
@@ -11,28 +12,21 @@ export class JudgeController {
     @SendResponse('Juez creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateJudgeData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.judgeService.create(validation.data);
         return result;
     }
 
     // Controlador para obtener todos los jueces de una pelea
+    @PaginationFor('cursor')
     @SendResponse('Juez obtenido correctamente', 200)
     async findAll(req: Request, res: Response){
         const { boutId } = req.params;
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { judges, total } = await this.judgeService.findAll(Number(boutId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { judges, total } = await this.judgeService.findAll(Number(boutId), cursor, limit);
         return {
             data: judges,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, judges.length)
         }
     }
 
@@ -49,7 +43,7 @@ export class JudgeController {
     async update(req: Request, res: Response){
         const { id } = req.params;
         const validation = validateJudgeUpdateData(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.judgeService.update(Number(id), validation.data);
         return result;
     }

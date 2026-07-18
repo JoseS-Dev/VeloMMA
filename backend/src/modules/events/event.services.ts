@@ -32,8 +32,10 @@ export class EventService {
         const total = await this.prisma.events.count();
         // Se obtienen los eventos
         const events = await this.prisma.events.findMany(queryOptions);
+        const nextCursor = events.length > 0 ? events.at(-1)?.id : null;
         return {
-            events, 
+            events,
+            nextCursor,
             total: total
         };
     }
@@ -43,7 +45,7 @@ export class EventService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
         // Se cuenta el total de registros
         const total = await this.prisma.events.count();
         // Se obtienen los eventos activos

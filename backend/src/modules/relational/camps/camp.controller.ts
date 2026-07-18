@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 import { CampService } from './camp.services.js';
 import { validateCreateCampDTO, validateUpdateCampDTO } from './camp.schema.js';
-import { SendResponse } from '../../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador que maneja las rutas relacionadas con los campamentos donde entreno un luchador para una pelea
 export class CampController {
@@ -11,48 +12,34 @@ export class CampController {
     @SendResponse('Campamento creado exitosamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateCreateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.campService.create(validation.data);
         return result;
     }
 
     // Controlador para obtener todos los campamentos donde ha estado un luchador
+    @PaginationFor('cursor')
     @SendResponse('Campamentos obtenidos exitosamente', 200)
     async findAllByFighter(req: Request, res: Response){
         const { fighterId } = req.params;
-        const { page, limit } = req.query;
-        // se valida los parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
-        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const cursor = page ? Number(page) : undefined;
-        const {camps, total} = await this.campService.findAllByFighter(Number(fighterId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const {camps, total} = await this.campService.findAllByFighter(Number(fighterId), cursor, limit);
         return {
             data: camps,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, camps.length)
         };
     }
 
     // Controlador para obtener todos los campamentos donde ha estado un equipo
+    @PaginationFor('cursor')
     @SendResponse('Campamentos obtenidos exitosamente', 200)
     async findAllByTeam(req: Request, res: Response){
         const { teamId } = req.params;
-        const { page, limit } = req.query;
-        // se valida los parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
-        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const cursor = page ? Number(page) : undefined;
-        const {camps, total} = await this.campService.findAllByTeam(Number(teamId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const {camps, total} = await this.campService.findAllByTeam(Number(teamId), cursor, limit);
         return {
             data: camps,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, camps.length)
         };
     }
 
@@ -69,7 +56,7 @@ export class CampController {
     async update(req: Request, res: Response){
         const { campId } = req.params;
         const validation = validateUpdateCampDTO(req.body);
-        if(!validation.success) return res.status(400).json({ message: 'Error de validación', errors: validation.error });
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const result = await this.campService.update(Number(campId), validation.data);
         return result;
     }

@@ -101,24 +101,14 @@ describe("Modulo de Fighters", () => {
 
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body.data)).toBe(true);
-            expect(response.body.meta).toMatchObject({
-                total: expect.any(Number),
-                page: 1,
-                limit: 5
-            })
         });
 
-        test("Deberia retornar la pagina 2 con limit=5", async () => {
+        test("Deberia retornar el cursor 2 con limit=5", async () => {
             const response = await setup.apiInstance
-            .get(`${settings.basePath}/fighters?page=2&limit=5`)
+            .get(`${settings.basePath}/fighters?cursor=2&limit=5`)
 
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body.data)).toBe(true);
-            expect(response.body.meta).toMatchObject({
-                total: expect.any(Number),
-                page: 2,
-                limit: 5
-            })
         });
 
         test("Deberia retornar un array vacio si no hay luchadores", async () => {

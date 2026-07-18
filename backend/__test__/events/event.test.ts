@@ -59,7 +59,6 @@ describe('Modulo de Eventos', () => {
             
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 409 si trata de crear un evento con un nombre ya existente", async () => {

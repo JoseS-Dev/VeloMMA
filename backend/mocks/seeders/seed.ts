@@ -1,122 +1,88 @@
-// prisma/seed.ts
 import { prisma } from '../../src/utils/prisma/prisma.js';
-import { seedFighters } from './fighters/fighters.seed.js';
-import { seedTeams } from './teams/team.seed.js';
+import { cleanDatabase } from '../../src/utils/seeders/seedUtils.js';
 import { seedDivisions } from './divisions/division.seed.js';
-import type { ExtendedPrismaClient } from '../../src/utils/prisma/prisma.js';
-
-// Configuración global
-const CONFIG = {
-  TOTAL_FIGHTERS: 100,
-  TOTAL_TEAMS: 30,
-  BATCH_SIZE: 10,
-  CLEAN_DATABASE: false, // Cambiar a true para limpiar antes de sembrar
-};
-
-async function cleanDatabase() {
-  if (!CONFIG.CLEAN_DATABASE) return;
-  
-  console.log('🧹 Limpiando base de datos...');
-  
-  // Orden de eliminación respetando relaciones
-  await prisma.$transaction([
-    prisma.fighterTitles.deleteMany(),
-    prisma.fighterRankings.deleteMany(),
-    prisma.boutMetrics.deleteMany(),
-    prisma.boutWeighIns.deleteMany(),
-    prisma.boutBonuses.deleteMany(),
-    prisma.bouts.deleteMany(),
-    prisma.fighterDivision.deleteMany(),
-    prisma.fighterTeams.deleteMany(),
-    prisma.trainingCamps.deleteMany(),
-    prisma.fighterInjuries.deleteMany(),
-    prisma.fighterStats.deleteMany(),
-    prisma.fighters.deleteMany(),
-    prisma.teams.deleteMany(),
-    prisma.divisions.deleteMany(),
-  ]);
-  
-  console.log('✅ Base de datos limpiada');
-}
+import { seedEvents } from './events/event.seed.js';
+import { seedTeams } from './teams/team.seed.js';
+import { seedFighters } from './fighters/fighter.seed.js';
+import { seedBouts } from './bouts/bout/bout.seed.js';
+import { seedMetrics } from './bouts/metrics/metric.seed.js';
+import { seedJudges } from './bouts/judges/judge.seed.js';
+import { seedWeighIns } from './bouts/weighIns/weighIns.seed.js';
+import { seedBonuses } from './bouts/bonus/bonus.seed.js';
+import { seedOdds } from './bouts/odds/odds.seed.js';
+import { seedFighterDivisions } from './relational/weights/weights.seed.js';
+import { seedFighterTeams } from './relational/stables/stables.seed.js';
+import { seedInjuries } from './relational/injuries/injury.seed.js';
+import { seedRankings } from './relational/ranking/rank.seed.js';
+import { seedTitles } from './relational/titles/title.seed.js';
+import { seedTrainingCamps } from './relational/camps/camp.seed.js';
+import { seedStats } from './relational/stats/stats.seed.js';
 
 async function main() {
-  console.log('🌱 Iniciando proceso de seeding...\n');
-  console.log(`📋 Configuración:`);
-  console.log(`   - Fighters: ${CONFIG.TOTAL_FIGHTERS}`);
-  console.log(`   - Teams: ${CONFIG.TOTAL_TEAMS}`);
-  console.log(`   - Limpiar DB: ${CONFIG.CLEAN_DATABASE}\n`);
-  
-  try {
-    // Limpiar base de datos si está configurado
-    await cleanDatabase();
-    
-    // 1. Crear divisiones primero (no dependen de otros)
-    console.log('📊 Paso 1: Creando divisiones...');
-    const divisions = await seedDivisions(prisma);
-    console.log(`✅ ${divisions.length} divisiones creadas\n`);
-    
-    // 2. Crear equipos
-    console.log('🏋️ Paso 2: Creando equipos...');
-    const teams = await seedTeams(prisma, CONFIG.TOTAL_TEAMS);
-    console.log(`✅ ${teams.length} equipos creados\n`);
-    
-    // 3. Crear fighters y asignar relaciones
-    console.log('🥊 Paso 3: Creando fighters y asignando relaciones...');
-    const fighters = await seedFighters(prisma, {
-      total: CONFIG.TOTAL_FIGHTERS,
-      batchSize: CONFIG.BATCH_SIZE,
-      teams: teams,
-      divisions: divisions,
-    });
-    console.log(`✅ ${fighters.length} fighters creados con sus relaciones\n`);
-    
-    // 4. Mostrar estadísticas finales
-    await showFinalStats(prisma);
-    
-    console.log('\n🎉 ¡Seeding completado exitosamente!');
-    
-  } catch (error) {
-    console.error('\n❌ Error en el proceso de seeding:', error);
+  console.log('🌱 Iniciando seeding de la base de datos...\n');
+
+  await cleanDatabase(prisma);
+  console.log('✅ Base de datos limpiada correctamente\n');
+
+  const divisionIds = await seedDivisions(prisma);
+  console.log(`✅ ${divisionIds.length} divisiones creadas\n`);
+
+  const eventIds = await seedEvents(prisma);
+  console.log(`✅ ${eventIds.length} eventos creados\n`);
+
+  const teamIds = await seedTeams(prisma);
+  console.log(`✅ ${teamIds.length} equipos creados\n`);
+
+  const fighterIds = await seedFighters(prisma);
+  console.log(`✅ ${fighterIds.length} luchadores creados\n`);
+
+  const bouts = await seedBouts(prisma, eventIds, divisionIds, fighterIds);
+  console.log(`✅ ${bouts.length} peleas creadas\n`);
+
+  await seedMetrics(prisma, bouts);
+  console.log('✅ Métricas de pelea creadas\n');
+
+  await seedJudges(prisma, bouts);
+  console.log('✅ Jueces de pelea creados\n');
+
+  await seedWeighIns(prisma, bouts);
+  console.log('✅ Pesajes oficiales creados\n');
+
+  await seedBonuses(prisma, bouts);
+  console.log('✅ Bonos de pelea creados\n');
+
+  await seedOdds(prisma, bouts);
+  console.log('✅ Apuestas creadas\n');
+
+  await seedFighterDivisions(prisma, fighterIds, divisionIds);
+  console.log('✅ Relaciones luchador-división creadas\n');
+
+  await seedFighterTeams(prisma, fighterIds, teamIds);
+  console.log('✅ Relaciones luchador-equipo creadas\n');
+
+  await seedInjuries(prisma, fighterIds);
+  console.log('✅ Lesiones creadas\n');
+
+  await seedRankings(prisma, fighterIds, divisionIds);
+  console.log(`✅ Rankings creados\n`);
+
+  await seedTitles(prisma, fighterIds, divisionIds);
+  console.log('✅ Títulos creados\n');
+
+  await seedTrainingCamps(prisma, bouts, teamIds);
+  console.log('✅ Campamentos de entrenamiento creados\n');
+
+  await seedStats(prisma, fighterIds);
+  console.log('✅ Estadísticas de luchadores creadas\n');
+
+  console.log('🎉 Seeding completado exitosamente');
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Error durante el seeding:', e);
     process.exit(1);
-  } finally {
+  })
+  .finally(async () => {
     await prisma.$disconnect();
-  }
-}
-
-async function showFinalStats(prisma: ExtendedPrismaClient) {
-  console.log('📊 Estadísticas finales:');
-  
-  const stats = await prisma.$transaction([
-    prisma.fighters.count(),
-    prisma.fighters.count({ where: { is_active: true } }),
-    prisma.teams.count(),
-    prisma.teams.count({ where: { is_active: true } }),
-    prisma.divisions.count(),
-    prisma.divisions.count({ where: { is_active: true } }),
-    prisma.fighterTeams.count(),
-    prisma.fighterDivision.count(),
-    prisma.fighterTitles.count(),
-  ]);
-  
-  const [
-    totalFighters,
-    activeFighters,
-    totalTeams,
-    activeTeams,
-    totalDivisions,
-    activeDivisions,
-    totalFighterTeams,
-    totalFighterDivisions,
-    totalTitles,
-  ] = stats;
-  
-  console.log(`   🥊 Fighters: ${totalFighters} (${activeFighters} activos)`);
-  console.log(`   🏋️ Teams: ${totalTeams} (${activeTeams} activos)`);
-  console.log(`   📊 Divisiones: ${totalDivisions} (${activeDivisions} activas)`);
-  console.log(`   🔗 Fighter-Teams: ${totalFighterTeams} relaciones`);
-  console.log(`   🔗 Fighter-Divisions: ${totalFighterDivisions} relaciones`);
-  console.log(`   🏆 Títulos: ${totalTitles}`);
-}
-
-// Ejecutar
-main();
+  });

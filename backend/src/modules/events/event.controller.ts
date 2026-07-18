@@ -1,7 +1,8 @@
 import type { Response, Request } from 'express';
 import { EventService } from './event.services.js';
 import { validateEvent, validateUpdateEvent } from './event.schema.js';
-import { SendResponse } from '../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../common/decorator/decorator.js';
+import { BadRequestException } from '../../common/errors/error.js';
 
 // Controlador para los eventos
 export class EventController {
@@ -11,46 +12,32 @@ export class EventController {
     @SendResponse('Evento creado correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateEvent(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación')
         const event = await this.eventService.create(validation.data);
         return event;
     }
 
     // Controlador para obtener todos los eventos
+    @PaginationFor('cursor')
     @SendResponse('Eventos obtenidos correctamente', 200)
     async findAll(req: Request, res: Response) {
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { events, total } = await this.eventService.findAll(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { events, nextCursor, total } = await this.eventService.findAll(cursor, limit);
         return { 
             data: events,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, events.length, nextCursor)
         };
     }
 
     // Controlador para obtener todos los eventos activos
+    @PaginationFor('cursor')
     @SendResponse('Eventos obtenidos correctamente', 200)
     async findAllActive(req: Request, res: Response) {
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { events, total } = await this.eventService.findAllActive(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { events, total } = await this.eventService.findAllActive(cursor, limit);
         return { 
             data: events,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, events.length)
         };
     }
 
@@ -75,7 +62,7 @@ export class EventController {
     async update(req: Request, res: Response) {
         const {eventId} = req.params;
         const validation = validateUpdateEvent(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de Validación')
         const event = await this.eventService.update(Number(eventId), validation.data);
         return event;
     }
@@ -85,7 +72,7 @@ export class EventController {
     async changeStatus(req: Request, res: Response) {
         const {eventId} = req.params;
         const {isActive} = req.body;
-        if(typeof isActive !== 'boolean') return res.status(400).json({message: 'El parámetro isActive debe ser un booleano'});
+        if(typeof isActive !== 'boolean') throw new BadRequestException('El parámetro isActive debe ser un booleano');
         const event = await this.eventService.changeStatus(Number(eventId), Boolean(isActive));
         return event;
     }

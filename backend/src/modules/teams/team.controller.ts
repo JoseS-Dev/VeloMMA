@@ -1,7 +1,7 @@
 import type { Response, Request } from 'express';
 import { TeamService } from './team.services.js';
 import { validateTeam, validateUpdateTeam } from './team.schema.js';
-import { SendResponse } from '../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../common/decorator/decorator.js';
 import { BadRequestException } from '../../common/errors/error.js';
 
 // Controlador para los equipos
@@ -12,46 +12,32 @@ export class TeamController {
     @SendResponse('Equipo creado correctamente', 200)
     async create(req: Request, res: Response){
         const validation = validateTeam(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const team = await this.teamService.create(validation.data);
         return team;
     }
 
     // Controlador para obtener todos los equipos
+    @PaginationFor('cursor')
     @SendResponse('Equipos obtenidos correctamente', 200)
     async findAll(req: Request, res: Response){
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { teams, total } = await this.teamService.findAll(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { teams, nextCursor, total } = await this.teamService.findAll(cursor, limit);
         return { 
             data: teams,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, teams.length, nextCursor)
         };
     }
 
     // Controlador para obtener todos los equipos activos
+    @PaginationFor('cursor')
     @SendResponse('Equipos obtenidos correctamente', 200)
     async findAllActive(req: Request, res: Response){
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { teams, total } = await this.teamService.findAllActive(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { teams, total } = await this.teamService.findAllActive(cursor, limit);
         return { 
             data: teams,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, teams.length)
         };
     }
 
@@ -68,7 +54,7 @@ export class TeamController {
     async update(req: Request, res: Response){
         const {teamId} = req.params;
         const validation = validateUpdateTeam(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const team = await this.teamService.update(Number(teamId), validation.data);
         return team;
     }

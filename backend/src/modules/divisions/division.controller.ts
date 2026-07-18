@@ -1,7 +1,7 @@
 import type { Response, Request } from 'express';
 import { DivisionService } from './division.services.js';
 import { validateDivision, validateUpdateDivision } from './division.schema.js';
-import { SendResponse } from '../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../common/decorator/decorator.js';
 import { BadRequestException } from '../../common/errors/error.js';
 
 // Controlador para las divisiones
@@ -12,46 +12,32 @@ export class DivisionController {
     @SendResponse('Division creada correctamente', 201)
     async create(req: Request, res: Response) {
         const validation = validateDivision(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const division = await this.divisionService.create(validation.data);
         return division;
     }
 
     // Controlador para obtener todas las divisiones
+    @PaginationFor('cursor')
     @SendResponse('Divisiones obtenidas correctamente', 200)
     async findAll(req: Request, res: Response) {
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
-        if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
-        const cursor = page ? Number(page) : undefined;
-        const { divisions, total } = await this.divisionService.findAll(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { divisions, nextCursor, total } = await this.divisionService.findAll(cursor, limit);
         return { 
             data: divisions,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, divisions.length, nextCursor)
         };
     }
 
     // Controlador para obtener todas las divisiones activas
+    @PaginationFor('cursor')
     @SendResponse('Divisiones obtenidas correctamente', 200)
     async findAllActive(req: Request, res: Response) {
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
-        if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
-        const cursor = page ? Number(page) : undefined;
-        const { divisions, total } = await this.divisionService.findAllActive(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { divisions, total } = await this.divisionService.findAllActive(cursor, limit);
         return { 
             data: divisions,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, divisions.length)
         };
     }
 
@@ -68,7 +54,7 @@ export class DivisionController {
     async update(req: Request, res: Response) {
         const {divisionId} = req.params;
         const validation = validateUpdateDivision(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const division = await this.divisionService.update(Number(divisionId), validation.data);
         return division;
     }

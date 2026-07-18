@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 import { WeightService } from './weight.services.js';
-import { SendResponse } from '../../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
 import { validateWeight, validateUpdateWeight } from './weight.schema.js';
+import { BadRequestException } from '../../../common/errors/error.js';
 
 // Controlador para los pesos oficiales de un luchador
 export class WeightController {
@@ -11,28 +12,21 @@ export class WeightController {
     @SendResponse('Peso oficial creado correctamente', 201)
     async create(req: Request, res: Response){
         const validation = validateWeight(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const weight = await this.weightService.create(validation.data);
         return weight;
     }
 
     // Controlador para obtener todos los pesos oficiales de un luchador
+    @PaginationFor('cursor')
     @SendResponse('Pesos oficiales obtenidos correctamente', 200)
     async findAll(req: Request, res: Response){
         const {fighterId} = req.params;
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
-        if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { weights, total } = await this.weightService.findAll(Number(fighterId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { weights, total } = await this.weightService.findAll(Number(fighterId), cursor, limit);
         return { 
             data: weights,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10,
-            } 
+            meta: buildPaginationMeta(req.pagination!, total, weights.length)
         };
     }
 
@@ -49,7 +43,7 @@ export class WeightController {
     async update(req: Request, res: Response){
         const {weightId} = req.params;
         const validation = validateUpdateWeight(req.body);
-        if(!validation.success) return res.status(400).json({message: 'Error de validación', error: validation.error});
+        if(!validation.success) throw new BadRequestException('Error de validación');
         const weight = await this.weightService.update(Number(weightId), validation.data);
         return weight;
     }

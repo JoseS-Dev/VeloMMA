@@ -8,11 +8,13 @@ export function errorsMiddleware(
     next: NextFunction
 ){
     if(error instanceof HttpException){
-        return res.status(error.status).json({
+        const body: Record<string, unknown> = {
             status: error.status,
             message: error.message,
-            data: null,
-        });
+        };
+        const details = (error as any).details;
+        if(details) body.details = details;
+        return res.status(error.status).json(body);
     }
     return res.status(500).json({
         status: 500,

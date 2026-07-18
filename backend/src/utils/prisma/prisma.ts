@@ -17,8 +17,6 @@ const prismaWithSoftDelete = prismaRaw.$extends({
   query: {
     $allModels: {
       async findMany({ args, query }) {
-        args.where = args.where || {};
-        if (args.where.deleted_at === undefined) args.where.deleted_at = null;
         return query(args);
       },
       async findFirst({ args, query }) {
