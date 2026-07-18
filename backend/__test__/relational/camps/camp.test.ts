@@ -236,12 +236,12 @@ describe('Modulo de campamentos de entrenamiento de una pelea', () => {
             expect(response.body).toHaveProperty('message', 'No existe el luchador en cuestión');
         })
 
-        test("Deberia retornar un status 400 si el parametro page no es un numero", async () => {
+        test("Deberia retornar un status 400 si el parametro cursor no es un numero", async () => {
             const response = await setup.apiInstance
-                .get(`${settings.basePath}/camps/fighter/${testRedCornerId}?page=abc`)
+                .get(`${settings.basePath}/camps/fighter/${testRedCornerId}?cursor=abc`)
 
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('message', 'El parámetro de paginación "page" es inválido');
+            expect(response.body).toHaveProperty('message', 'El parámetro cursor debe ser un número entero positivo');
         })
     })
 
@@ -286,7 +286,7 @@ describe('Modulo de campamentos de entrenamiento de una pelea', () => {
                 .get(`${settings.basePath}/camps/team/${testTeamOneId}?limit=abc`)
 
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('message', 'El parámetro de paginación "limit" es inválido');
+            expect(response.body).toHaveProperty('message', 'El parámetro limit debe ser un número entero positivo');
         })
     })
 

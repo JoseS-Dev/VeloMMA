@@ -183,12 +183,12 @@ describe('Modulo de pesajes oficiales de una pelea', () => {
             expect(response.body.data.length).toBe(2);
         })
 
-        test("Deberia retornar un status 400 si el parametro page no es un numero entero", async () => {
+        test("Deberia retornar un status 400 si el parametro cursor no es un numero entero", async () => {
             const response = await setup.apiInstance
-                .get(`${settings.basePath}/weighIns?page=abc`)
+                .get(`${settings.basePath}/weighIns?cursor=abc`)
 
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('message', 'El parámetro page debe ser un número entero');
+            expect(response.body).toHaveProperty('message', 'El parámetro cursor debe ser un número entero positivo');
         })
     })
 

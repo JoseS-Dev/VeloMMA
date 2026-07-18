@@ -183,12 +183,12 @@ describe('Modulo de bonos de una pelea', () => {
             expect(response.body.data.length).toBe(2);
         })
 
-        test("Deberia retornar un status 400 si el parametro page no es un numero", async () => {
+        test("Deberia retornar un status 400 si el parametro cursor no es un numero", async () => {
             const response = await setup.apiInstance
-                .get(`${settings.basePath}/bonuses?page=abc`)
+                .get(`${settings.basePath}/bonuses?cursor=abc`)
 
             expect(response.status).toBe(400);
-            expect(response.body).toHaveProperty('message', 'El page debe ser un número');
+            expect(response.body).toHaveProperty('message', 'El parámetro cursor debe ser un número entero positivo');
         })
     })
 
