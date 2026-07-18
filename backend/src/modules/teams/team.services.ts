@@ -33,8 +33,10 @@ export class TeamService {
         const total = await this.prisma.teams.count();
         // Se obtienen los datos de los equipos
         const teams = await this.prisma.teams.findMany(queryOptions);
+        const nextCursor = teams.length > 0 ? teams.at(-1)?.id : null;
         return {
             teams, 
+            nextCursor,
             total: total
         };
     }
@@ -44,7 +46,7 @@ export class TeamService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
         // Se cuenta el total de registros
         const total = await this.prisma.teams.count();
         // Se obtienen los datos de los equipos activos

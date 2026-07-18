@@ -20,18 +20,19 @@ export class DivisionController {
     // Controlador para obtener todas las divisiones
     @SendResponse('Divisiones obtenidas correctamente', 200)
     async findAll(req: Request, res: Response) {
-        const { page, limit } = req.query;
-        // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) throw new BadRequestException('El parámetro page debe ser un número entero');
+        const { cursor, limit } = req.query;
+        // Se valida el parámetro cursor y limit
+        if(cursor && !Number.isInteger(Number(cursor))) throw new BadRequestException('El parámetro cursor debe ser un número entero');
         if(limit && !Number.isInteger(Number(limit))) throw new BadRequestException('El parámetro limit debe ser un número entero');
-        const cursor = page ? Number(page) : undefined;
-        const { divisions, total } = await this.divisionService.findAll(cursor, Number(limit) || 10);
+        const pageSize = Number(limit) || 10;
+        const { divisions, nextCursor, total } = await this.divisionService.findAll(Number(cursor), pageSize);
         return { 
             data: divisions,
             meta: {
                 total: total,
-                page: Number(page) || 1,
+                nextCursor: nextCursor,
                 limit: Number(limit) || 10,
+                hasMore: divisions.length === pageSize
             } 
         };
     }

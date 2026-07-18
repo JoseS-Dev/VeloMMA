@@ -19,18 +19,19 @@ export class FighterController {
     // Controlador para obtener todos los luchadores
     @SendResponse('Luchadores obtenidos correctamente', 200)
     async findAll(req: Request, res: Response) {
-        const { page, limit } = req.query;
+        const { cursor, limit } = req.query;
         // Se valida el parámetro page y limit
-        if(page && !Number.isInteger(Number(page))) return res.status(400).json({message: 'El parámetro page debe ser un número entero'});
+        if(cursor && !Number.isInteger(Number(cursor))) return res.status(400).json({message: 'El parámetro cursor debe ser un número entero'});
         if(limit && !Number.isInteger(Number(limit))) return res.status(400).json({message: 'El parámetro limit debe ser un número entero'});
-        const cursor = page ? Number(page) : undefined;
-        const { fighters, total } = await this.fighterService.findAll(cursor, Number(limit) || 10);
+        const pageSize = Number(limit) || 10;
+        const { fighters, nextCursor, total } = await this.fighterService.findAll(Number(cursor), pageSize);
         return { 
             data: fighters,
             meta: {
                 total: total,
-                page: Number(page) || 1,
+                nextCursor: nextCursor,
                 limit: Number(limit) || 10,
+                hasMore: fighters.length === pageSize
             } 
         };
     }

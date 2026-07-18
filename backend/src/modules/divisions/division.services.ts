@@ -37,8 +37,10 @@ export class DivisionService {
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
         const divisions = await this.prisma.divisions.findMany(queryOptions);
+        const nextCursor = divisions.length > 0 ? divisions.at(-1)?.id : null;
         return {
-            divisions, 
+            divisions,
+            nextCursor,
             total: total
         };
     }
@@ -47,7 +49,7 @@ export class DivisionService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true } });
+        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
         // Se cuenta el total de registros
         const total = await this.prisma.divisions.count();
         // Se obtienen las divisiones
