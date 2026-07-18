@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
 import { globalCacheMiddleware } from './src/middlewares/cache/global-cache.middleware.js';
+import { notFoundMiddleware } from './src/middlewares/routes/notFound.middlewares.js';
 import { middlewareHttpMetrics } from './src/middlewares/metrics/http/http.middlewares.js';
 import { settings } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
@@ -91,7 +92,7 @@ app.use(`${settings.basePath}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpe
 
 // Rutas
 app.use(apiRouter);
-
+app.use(notFoundMiddleware);
 app.use(errorsMiddleware);
 
 if(!isTest){
