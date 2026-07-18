@@ -9,9 +9,11 @@ import {
     DIVISIONS_DATA 
 } from '../constants/constant.js';
 import { Gender } from '../../../generated/prisma/index.js';
+import { BadRequestException } from '../../common/errors/error.js';
 
 interface CursorOptions {
     cursor?: number;
+    page?: number;
     limit?: number;
     orderBy?: { [key: string]: 'asc' | 'desc' };
     where?: { [key: string]: any };
@@ -43,7 +45,7 @@ export function generateHash(data: string) {
 
 // Función para la consulta base de los metodos findAll y findAllActive de los servicios de la API
 export const buildQueryOptions = (options: CursorOptions) => {
-    const { cursor, limit = 10, orderBy = { id: 'asc' }, where = {} } = options;
+    const { cursor, page, limit = 10, orderBy = { id: 'asc' }, where = {} } = options;
     const queryOptions: any = {
         take: limit,
         orderBy,
@@ -52,6 +54,10 @@ export const buildQueryOptions = (options: CursorOptions) => {
     if (cursor){
         queryOptions.cursor = { id: cursor };
         queryOptions.skip = 1;
+    }
+    else{
+      const skip = page && page > 1 ? (page - 1) * limit : 0;
+      queryOptions.skip = skip;
     }
     return queryOptions;
 }
@@ -180,4 +186,14 @@ export function generateCreativeDivision(): typeof DIVISIONS_DATA[0] | null {
       gender: gender,
       is_active: faker.datatype.boolean(0.7)
     };
+}
+
+// Funciòn para validar los parametros de query (page, limit y cursor)
+export function toPositiveInt(value: unknown, name: string): number {
+  const num = Number(value);
+  if (value === undefined || value === null) return num;
+  if (isNaN(num) || !Number.isInteger(num) || num < 1) {
+    throw new BadRequestException(`El parámetro ${name} debe ser un número entero positivo`);
+  }
+  return num;
 }

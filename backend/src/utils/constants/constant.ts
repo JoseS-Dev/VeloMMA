@@ -1,4 +1,11 @@
 import { Gender } from "../../../generated/prisma/index.js";
+
+export const TTL_SECONDS = 120; // Tiempo de vida en segundos para la cache
+export const EXCLUDED_PATHS = [
+  '/api/v1/health',
+  '/api/v1/ping',
+  '/api/v1/metrics'
+]
 // Listas de nacionalidades comunes en UFC/MMA
 export const NATIONALITIES = [
   'Estados Unidos', 'Brasil', 'Rusia', 'Reino Unido', 
