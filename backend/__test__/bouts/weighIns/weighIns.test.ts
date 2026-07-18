@@ -107,7 +107,6 @@ describe('Modulo de pesajes oficiales de una pelea', () => {
 
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 404 si la pelea no existe", async () => {

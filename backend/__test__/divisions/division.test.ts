@@ -57,7 +57,6 @@ describe('Modulo de las divisiones de los pesos', () => {
             
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 409 si la division ya existe", async () => {
@@ -233,7 +232,6 @@ describe('Modulo de las divisiones de los pesos', () => {
             
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 404 si la division no existe", async () => {

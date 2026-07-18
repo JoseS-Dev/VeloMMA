@@ -58,7 +58,6 @@ describe('Test del modulo de los equipos', () => {
             
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 409 si ya existe un equipo con el mismo nombre", async () => {

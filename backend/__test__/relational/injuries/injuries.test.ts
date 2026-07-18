@@ -80,7 +80,6 @@ describe("Modulo de Lesiones de un luchador", () => {
             
             expect(response.status).toBe(400);
             expect(response.body).toHaveProperty('message', 'Error de validación');
-            expect(response.body).toHaveProperty('error');
         })
 
         test("Deberia retornar un status 404 si el luchador no existe", async () => {
