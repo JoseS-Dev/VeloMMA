@@ -2,7 +2,7 @@ import type {Request, Response} from "express";
 import { TitleService } from "./title.services.js";
 import { TitleType } from "../../../../generated/prisma/index.js";
 import { validateTitleDTO, validateUpdateTitleDTO } from "./title.schema.js";
-import { SendResponse } from "../../../common/decorator/decorator.js";
+import { SendResponse, PaginationFor, buildPaginationMeta } from "../../../common/decorator/decorator.js";
 
 // Controlador para manejar las rutas relacionadas con los titulos de un luchador en una división
 export class TitleController {
@@ -18,64 +18,42 @@ export class TitleController {
     }
 
     // Controlador para obtener todos los titulos de un luchador
+    @PaginationFor('cursor')
     @SendResponse('Titulos obtenidos correctamente', 200)
     async findAllByFighter(req: Request, res: Response){
         const { fighterId } = req.params;
-        const { page, limit } = req.query;
-        // Se valida os parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({message: 'El parametro page debe ser un número'});
-        if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
-        const cursor = page ? Number(page) : undefined;
-        const {titles, total} = await this.titleService.findAllByFighter(Number(fighterId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const {titles, total} = await this.titleService.findAllByFighter(Number(fighterId), cursor, limit);
         return {
             data: titles,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, titles.length)
         }
     }
 
     // Controlador para obtener todos los titulos de una división
+    @PaginationFor('cursor')
     @SendResponse('Titulos obtenidos correctamente', 200)
     async findAllByDivision(req: Request, res: Response){
         const { divisionId } = req.params;
-        const { page, limit } = req.query;
-        // Se valida os parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({message: 'El parametro page debe ser un número'});
-        if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
-        const cursor = page ? Number(page) : undefined;
-        const {titles, total} = await this.titleService.findAllByDivision(Number(divisionId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const {titles, total} = await this.titleService.findAllByDivision(Number(divisionId), cursor, limit);
         return {
             data: titles,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, titles.length)
         }
     }
 
     // Controlador para obtener todos los titulos de una división y tipo de titulo
+    @PaginationFor('cursor')
     @SendResponse('Titulos obtenidos correctamente', 200)
     async findAllByDivisionAndTitleType(req: Request, res: Response){
         const { divisionId, titleType } = req.params;
-        const { page, limit } = req.query;
-        // Se valida os parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({message: 'El parametro page debe ser un número'});
-        if(limit && isNaN(Number(limit))) return res.status(400).json({message: 'El parametro limit debe ser un número'});
-        // Se valida el tipo de titulo
+        const { cursor, limit } = req.pagination!;
         if(!Object.values(TitleType).includes(titleType as TitleType)) return res.status(400).json({message: 'El parametro titleType es inválido'});
-        const cursor = page ? Number(page) : undefined;
-        const {titles, total} = await this.titleService.findAllByDivisionAndTitleType(Number(divisionId), titleType as TitleType, cursor, Number(limit) || 10);
+        const {titles, total} = await this.titleService.findAllByDivisionAndTitleType(Number(divisionId), titleType as TitleType, cursor, limit);
         return {
             data: titles,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, titles.length)
         }
     }
 

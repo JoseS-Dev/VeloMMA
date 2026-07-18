@@ -37,10 +37,8 @@ export class FighterService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: {} });
-        // se obtiene todos los luchadores
+        const queryOptions = buildQueryOptions({cursor, limit});
         const fighters = await this.prisma.fighters.findMany(queryOptions);
-        // Se obtiene el proximo cursor
         const nextCursor = fighters.length > 0 ? fighters.at(-1)?.id : null;
         return {
             fighters,
@@ -54,8 +52,7 @@ export class FighterService {
         cursor?: number,
         limit: number = 10,
     ){
-        const queryOptions = buildQueryOptions({ cursor, limit, where: { is_active: true, deleted_at: null } });
-        // se obtiene todos los luchadores activos
+        const queryOptions = buildQueryOptions({cursor, limit, where: { is_active: true, deleted_at: null }});
         const fighters = await this.prisma.fighters.findMany(queryOptions);
         return {
             fighters,

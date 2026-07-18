@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { BonusService } from "./bonus.services.js";
 import { validateBonusData, validateBonusUpdateData } from "./bonus.schema.js";
-import { SendResponse } from "../../../common/decorator/decorator.js";
+import { SendResponse, PaginationFor, buildPaginationMeta } from "../../../common/decorator/decorator.js";
 
 // Controlador que interactua con la tabla de bonos de una pelea
 export class BonusController {
@@ -17,41 +17,27 @@ export class BonusController {
     }
 
     // Controlador para obtener todos los bonos recibidos
+    @PaginationFor('cursor')
     @SendResponse('Bonos obtenidos exitosamente', 200)
     async findAll(req: Request, res: Response){
-        const {page, limit} = req.query;
-        // Se valida los parametros
-        if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
-        if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const cursor = page ? Number(page) : undefined;
-        const { bonuses, total } = await this.bonusService.findAll(cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { bonuses, total } = await this.bonusService.findAll(cursor, limit);
         return {
             data: bonuses,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, bonuses.length)
         }
     }
 
     // Controlador para obtener todos los bonos recibidos por un luchador
+    @PaginationFor('cursor')
     @SendResponse('Bonos obtenidos exitosamente', 200)
     async findAllByFighter(req: Request, res: Response){
-        const {fighterId, page, limit} = req.params;
-        // Se valida los parametros
-        if(Number.isNaN(Number(fighterId))) return res.status(400).json({message: 'El id del luchador es obligatorio'});
-        if(page && Number.isNaN(Number(page))) return res.status(400).json({message: 'El page debe ser un número'});
-        if(limit && Number.isNaN(Number(limit))) return res.status(400).json({message: 'El limit debe ser un número'});
-        const cursor = page ? Number(page) : undefined;
-        const { bonuses, total } = await this.bonusService.findAllByFighter(Number(fighterId), cursor, Number(limit) || 10);
+        const {fighterId} = req.params;
+        const { cursor, limit } = req.pagination!;
+        const { bonuses, total } = await this.bonusService.findAllByFighter(Number(fighterId), cursor, limit);
         return {
             data: bonuses,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, bonuses.length)
         }
     }
 

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { OddsService } from './odds.services.js';
 import { validateCreateBoutOddsDTO, validateUpdateBoutOddsDTO } from './odds.schema.js';
-import { SendResponse } from '../../../common/decorator/decorator.js';
+import { SendResponse, PaginationFor, buildPaginationMeta } from '../../../common/decorator/decorator.js';
 
 // Controlador que maneja las rutas relacionadas con las casas de apuestas para una pelea
 export class OddsController {
@@ -17,42 +17,28 @@ export class OddsController {
     }
 
     // Controlador para obtener todas las casas de apuestas para una pelea
+    @PaginationFor('cursor')
     @SendResponse('Casas de apuestas obtenidas exitosamente', 200)
     async findAll(req: Request, res: Response){
         const { boutId } = req.params;
-        const { page, limit } = req.query;
-        // se valida los parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
-        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const cursor = page ? Number(page) : undefined;
-        const { Odds, total } = await this.oddsService.findAll(Number(boutId), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { Odds, total } = await this.oddsService.findAll(Number(boutId), cursor, limit);
         return {
             data: Odds,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, Odds.length)
         };
     }
 
     // Controlador para obtener todas las casas de apuestas de un proveedor en común
+    @PaginationFor('cursor')
     @SendResponse('Casas de apuestas obtenidas exitosamente', 200)
     async findAllByProvider(req: Request, res: Response){
         const { provider } = req.params;
-        const { page, limit } = req.query;
-        // se valida los parametros de paginación
-        if(page && isNaN(Number(page))) return res.status(400).json({ message: 'El parámetro de paginación "page" es inválido' });
-        if(limit && isNaN(Number(limit))) return res.status(400).json({ message: 'El parámetro de paginación "limit" es inválido' });
-        const cursor = page ? Number(page) : undefined;
-        const { Odds, total } = await this.oddsService.findAllByProvider(String(provider), cursor, Number(limit) || 10);
+        const { cursor, limit } = req.pagination!;
+        const { Odds, total } = await this.oddsService.findAllByProvider(String(provider), cursor, limit);
         return {
             data: Odds,
-            meta: {
-                total: total,
-                page: Number(page) || 1,
-                limit: Number(limit) || 10
-            }
+            meta: buildPaginationMeta(req.pagination!, total, Odds.length)
         };
     }
 
