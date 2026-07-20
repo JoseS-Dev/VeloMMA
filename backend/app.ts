@@ -1,31 +1,35 @@
 import express, { json } from 'express';
 import type { Request, Response } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
-import { errorsMiddleware } from './src/middlewares/Exception/errors.middleware.js';
+import { errorsMiddleware } from './src/middlewares/exception/errors.middleware.js';
 import { globalCacheMiddleware } from './src/middlewares/cache/global-cache.middleware.js';
 import { notFoundMiddleware } from './src/middlewares/routes/notFound.middlewares.js';
+import { httpLoggerMiddleware } from './src/middlewares/logger/logger.middleware.js';
+import { correlationIdMiddleware } from './src/middlewares/correlation/correlation.middlewares.js';
 import { middlewareHttpMetrics } from './src/middlewares/metrics/http/http.middlewares.js';
-import { settings } from './config/settings.js';
+import { settings, helmetConfig } from './config/settings.js';
 import { apiRouter } from './src/api/routes.js';
 import { swaggerSpec } from './config/swagger/docs.js';
 import { connectRedis } from './config/cache/redis.js';
 import { prisma } from './src/utils/prisma/prisma.js';
+import { logger } from './src/utils/logger/logger.js';
 
 // Inició e servidor express
 const app: express.Application = express();
 const isTest = settings.nodeEnv === 'test';
 
 // Middlewares
+app.use(correlationIdMiddleware);
+app.use(httpLoggerMiddleware);
 app.use(json());
 app.use(cors({
     origin: settings.corsOrigin,
     credentials: true
 }));
-app.use(helmet());
+app.use(helmetConfig);
 app.use(cookieParser());
 
 
@@ -98,7 +102,14 @@ app.use(errorsMiddleware);
 if(!isTest){
     if(settings.redisEnv) await connectRedis();
     app.listen(settings.port, () => {
-        console.log(`Servidor corriendo en http://localhost:${settings.port}${settings.basePath}`);
+        logger.info(
+            `🚀 Servidor iniciado`,
+            {
+                port: settings.port,
+                basePath: settings.basePath,
+                environment: settings.nodeEnv
+            }
+        )
     });
 }
 
