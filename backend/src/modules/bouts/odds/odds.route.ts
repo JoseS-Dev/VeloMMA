@@ -107,6 +107,8 @@ import { Router } from 'express';
 import { OddsController } from './odds.controller.js';
 import { OddsService } from './odds.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new OddsController(new OddsService(prisma));
@@ -141,7 +143,7 @@ const controller = new OddsController(new OddsService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Odds'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/odds`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -276,7 +278,7 @@ router.get('/:oddsId', controller.findOne.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Odds'
  */
-router.patch('/:oddsId', controller.update.bind(controller));
+router.patch('/:oddsId', clearCacheMiddleware(`${settings.basePath}/odds`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -309,6 +311,6 @@ router.patch('/:oddsId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Odds'
  */
-router.patch('/soft/:oddsId', controller.delete.bind(controller));
+router.patch('/soft/:oddsId', clearCacheMiddleware(`${settings.basePath}/odds`), controller.delete.bind(controller));
 
 export const oddsRouter = router;

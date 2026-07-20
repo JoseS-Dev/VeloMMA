@@ -101,6 +101,8 @@ import {Router} from 'express';
 import { TitleController } from './title.controller.js';
 import { TitleService } from './title.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new TitleController(new TitleService(prisma));
@@ -135,7 +137,7 @@ const controller = new TitleController(new TitleService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Title'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/', clearCacheMiddleware(`${settings.basePath}/titles`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -310,7 +312,7 @@ router.get('/:titleId', controller.findById.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Title'
  */
-router.patch('/:titleId', controller.update.bind(controller));
+router.patch('/:titleId', clearCacheMiddleware(`${settings.basePath}/titles`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -343,6 +345,6 @@ router.patch('/:titleId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Title'
  */
-router.patch('/soft/:titleId', controller.delete.bind(controller));
+router.patch('/soft/:titleId', clearCacheMiddleware(`${settings.basePath}/titles`), controller.delete.bind(controller));
 
 export const titleRouter = router;

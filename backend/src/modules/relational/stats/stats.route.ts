@@ -75,6 +75,8 @@ import {Router} from "express";
 import { StatsController } from "./stats.controller.js";
 import { StatsService } from "./stats.services.js";
 import { prisma } from "../../../utils/prisma/prisma.js";
+import { settings } from "../../../../config/settings.js";
+import { clearCacheMiddleware } from "../../../middlewares/cache/clear-cache.middleware.js";
 
 const router: Router = Router();
 const controller = new StatsController(new StatsService(prisma));
@@ -116,7 +118,7 @@ const controller = new StatsController(new StatsService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/FighterStats'
  */
-router.patch('/:fighterId', controller.updateFighterCareerStats.bind(controller));
+router.patch('/:fighterId', clearCacheMiddleware(`${settings.basePath}/stats`), controller.updateFighterCareerStats.bind(controller));
 
 /**
  * @openapi
