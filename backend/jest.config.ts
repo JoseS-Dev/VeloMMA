@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'test';
 
 const config: Config = {
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/jest.setup.ts'], 
   transform: {
     '^.+\\.tsx?$': [
       '@swc/jest',
@@ -31,6 +30,10 @@ const config: Config = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(.pnpm|@t3-oss))',
+  ],
+  slowTestThreshold: 15_000,
 };
 
 export default config;
