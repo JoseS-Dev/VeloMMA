@@ -1,11 +1,16 @@
 import type { Request, Response, NextFunction } from 'express';
 import { logger, logHttpRequest } from '../../utils/logger/logger.js';
 import { getCorrelationId } from '../../utils/context/correlation.context.js';
+import { settings } from '../../../config/settings.js';
+
+const isTest = settings.nodeEnv === 'test';
 
 // ✅ Middleware para loggear todas las requests
 export function httpLoggerMiddleware(req: Request, res: Response, next: NextFunction) {
     const startTime = Date.now();
     const correlationId = req.correlationId || getCorrelationId();
+
+    if(isTest) return next(); // No loggear en tests
 
     // ✅ Log de inicio de request
     logger.debug(`→ ${req.method} ${req.originalUrl}`, {
