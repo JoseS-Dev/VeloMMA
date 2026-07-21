@@ -1,143 +1,138 @@
+// src/utils/logger/logger.ts
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { getCorrelationId } from '../context/correlation.context.js';
 import { settings } from '../../../config/settings.js';
+import { getCorrelationId } from '../context/correlation.context.js';
 
-// Defino niveles de logs
+// ✅ Detectar si estamos en test
+const isTest = settings.nodeEnv === 'test';
+const isDevelopment = settings.nodeEnv === 'development';
+
+// ✅ Configuración de niveles
 const levels = {
     error: 0,
     warn: 1,
     info: 2,
     http: 3,
-    debug: 4
-}
+    debug: 4,
+};
 
-// Defino colores para cada nivel de log
-const colors = {
-    error: 'red',
-    warn: 'yellow',
-    info: 'green',
-    http: 'magenta',
-    debug: 'white'
-}
+// ✅ Crear transportes según entorno
+const createTransports = () => {
+    if (isTest) {
+        return [
+            new winston.transports.Console({
+                level: 'error',
+                silent: true,
+                format: winston.format.json(),
+            }),
+        ];
+    }
 
-winston.addColors(colors);
+    // ✅ EN DESARROLLO: Console con colores
+    if (isDevelopment) {
+        return [
+            new winston.transports.Console({
+                level: 'debug',
+                format: winston.format.combine(
+                    winston.format.colorize({ all: true }),
+                    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+                    winston.format.printf(({ timestamp, level, message, correlationId, ...meta }) => {
+                        const cid = correlationId || getCorrelationId() || 'no-cid';
+                        const metaStr = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : '';
+                        return `[${timestamp}] [${cid}] ${level}: ${message}${metaStr}`;
+                    })
+                ),
+            }),
+            new DailyRotateFile({
+                filename: 'logs/%DATE%-application.log',
+                datePattern: 'YYYY-MM-DD',
+                maxSize: '20m',
+                maxFiles: '14d',
+                level: 'info',
+                format: winston.format.json(),
+                silent: isTest,
+            }),
+        ];
+    }
+    return [
+        new winston.transports.Console({
+            level: 'info',
+            format: winston.format.combine(
+                winston.format.timestamp({ format: 'ISO' }),
+                winston.format.json()
+            ),
+        }),
+        new DailyRotateFile({
+            filename: 'logs/%DATE%-application.log',
+            datePattern: 'YYYY-MM-DD',
+            maxSize: '20m',
+            maxFiles: '14d',
+            format: winston.format.json(),
+            silent: isTest, 
+        }),
+        new DailyRotateFile({
+            filename: 'logs/%DATE%-error.log',
+            datePattern: 'YYYY-MM-DD',
+            maxSize: '20m',
+            maxFiles: '30d',
+            level: 'error',
+            format: winston.format.json(),
+            silent: isTest,
+        }),
+    ];
+};
 
-// Formato de JSON para producción
-const jsonFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'ISO' }),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-)
-
-// Transporte para logs en consola
-const consoleTransport = new winston.transports.Console({
-    format: winston.format.combine(
-        winston.format.colorize({ all: true }),
-    )
-})
-
-// Transporte para archivos
-const fileTransport = new DailyRotateFile({
-    filename: 'logs/application-%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
-    maxSize: '20m',
-    maxFiles: '14d',
-    format: jsonFormat
-})
-
-// Transporte para errores
-const errorTransport = new DailyRotateFile({
-    filename: 'logs/error-%DATE%.log',
-    datePattern: 'YYYY-MM-DD',
-    maxSize: '20m',
-    maxFiles: '14d',
-    level: 'error',
-    format: jsonFormat
-})
-
-// Configurar logger según el nivel
-const level = () => {
-    const env = settings.nodeEnv || 'development';
-    const isDevelopment = env === 'development';
-    return isDevelopment ? 'debug' : 'info';
-}
-
-// creamos el logger}
+// ✅ Crear logger
 export const logger = winston.createLogger({
-    level: level(),
+    level: isTest ? 'error' : (isDevelopment ? 'debug' : 'info'),
     levels,
-    format: jsonFormat,
-    defaultMeta: {
-        service: 'velomma-api',
-        environment: settings.nodeEnv,
-    },
-    transports: [
-        consoleTransport,
-        fileTransport,
-        errorTransport,
-    ],
-    exceptionHandlers: [
+    format: winston.format.json(),
+    transports: createTransports(),
+    exceptionHandlers: isTest ? [] : [
         new winston.transports.File({
             filename: 'logs/exceptions.log',
-            format: jsonFormat,
-        }),
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize()
-            ),
+            format: winston.format.json(),
         }),
     ],
-    rejectionHandlers: [
+    rejectionHandlers: isTest ? [] : [
         new winston.transports.File({
             filename: 'logs/rejections.log',
-            format: jsonFormat,
-        }),
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize()
-            ),
+            format: winston.format.json(),
         }),
     ],
-    exitOnError: false,
+    exitOnError: !isTest,
 });
-
-// Función para loggear perticiones HTTP
-export function logHttpRequest(req: any, res: any, duration: number) {
-    const correlationId = req.correlationId || 'no-cid';
-    const loggerWithCid = logger.child({ correlationId });
-
-    loggerWithCid.http(`${req.method} ${req.originalUrl}`, {
-        method: req.method,
-        url: req.originalUrl,
-        status: res.statusCode,
-        duration: `${duration}ms`,
-        ip: req.ip,
-        userAgent: req.headers['user-agent'],
-        userId: req.user?.id,
-    });
-}
 
 export const log = {
     error: (message: string, meta?: any) => {
-        const correlationId = getCorrelationId();
-        logger.error(message, { ...meta, correlationId });
+        if (!isTest) {
+            const correlationId = getCorrelationId();
+            logger.error(message, { ...meta, correlationId });
+        }
     },
     warn: (message: string, meta?: any) => {
-        const correlationId = getCorrelationId();
-        logger.warn(message, { ...meta, correlationId });
+        if (!isTest) {
+            const correlationId = getCorrelationId();
+            logger.warn(message, { ...meta, correlationId });
+        }
     },
     info: (message: string, meta?: any) => {
-        const correlationId = getCorrelationId();
-        logger.info(message, { ...meta, correlationId });
+        if (!isTest) {
+            const correlationId = getCorrelationId();
+            logger.info(message, { ...meta, correlationId });
+        }
     },
     http: (message: string, meta?: any) => {
-        const correlationId = getCorrelationId();
-        logger.http(message, { ...meta, correlationId });
+        if (!isTest) {
+            const correlationId = getCorrelationId();
+            logger.http(message, { ...meta, correlationId });
+        }
     },
     debug: (message: string, meta?: any) => {
-        const correlationId = getCorrelationId();
-        logger.debug(message, { ...meta, correlationId });
+        if (!isTest) {
+            const correlationId = getCorrelationId();
+            logger.debug(message, { ...meta, correlationId });
+        }
     },
 };
-

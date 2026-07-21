@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { logger, logHttpRequest } from '../../utils/logger/logger.js';
+import { logger } from '../../utils/logger/logger.js';
 import { getCorrelationId } from '../../utils/context/correlation.context.js';
 import { settings } from '../../../config/settings.js';
 
