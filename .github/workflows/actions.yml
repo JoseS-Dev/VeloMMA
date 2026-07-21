@@ -43,7 +43,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Se recomienda Node LTS actual
+          node-version: 22 # Se recomienda Node LTS actual
           cache: pnpm
           cache-dependency-path: ./backend/pnpm-lock.yaml
 
