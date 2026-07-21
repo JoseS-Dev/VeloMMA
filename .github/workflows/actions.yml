@@ -51,16 +51,16 @@ jobs:
       - name: Instalar dependencias (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
-      # ── Fast Fail Check (Validaciones rápidas) ─────────
-      - name: TypeScript type check
-        run: pnpm typecheck
+      # ── Generación de código ──────────────────────────
+      - name: Generar cliente de Prisma
+        run: pnpm prisma generate
 
       - name: Validar esquema de Prisma
         run: pnpm prisma:validate
 
-      # ── Generación de código ──────────────────────────
-      - name: Generar cliente de Prisma
-        run: pnpm prisma generate
+      # ── Fast Fail Check (Validaciones rápidas) ─────────
+      - name: TypeScript type check
+        run: pnpm typecheck
 
       # ── Preparar Entorno ──────────────────────────────
       - name: Crear archivo .env.test
