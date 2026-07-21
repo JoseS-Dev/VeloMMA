@@ -15,9 +15,9 @@ jobs:
       postgres-test:
         image: postgres:17-alpine
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER || 'test_user' }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'test_password' }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB || 'test_db' }}
         ports:
           - 5432:5432
         options: >-
@@ -25,7 +25,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
+
     # Todos los comandos se ejecutan dentro de ./backend
     defaults:
       run:
@@ -45,56 +45,66 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ secrets.NODE_VERSION }}
-          cache: pnpm                           # Cachea la pnpm store global
+          cache: pnpm                            # Cachea la pnpm store global
           cache-dependency-path: ./backend/pnpm-lock.yaml
 
       # ── Instalación ──────────────────────────
       - name: Instalar dependencias (frozen lockfile)
         run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
 
-      # Crear archivo .env.test dinámico
-      - name: Crear archivo .env.test
-        run: |
-          echo 'DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}?schema=public"' > .env.test
-          echo 'PORT=2300' >> .env.test
-          echo 'NODE_ENV="test"' >> .env.test
-          echo 'BASE_PATH="/api/v1"' >> .env.test
-          echo 'JWT_SECRET="test-jwt-secret-min-32-characters-1234567890"' >> .env.test
-          echo 'API_SECRET_KEY="test-api-key-16chars"' >> .env.test
-          echo 'COOKIE_SECRET="test-cookie-secret-min-32-characters-123456789"' >> .env.test
-          echo 'CORS_ORIGIN="http://localhost:5173"' >> .env.test
-          echo 'REDIS_URL="redis://localhost:6379"' >> .env.test
-          echo 'REDIS_PORT=6379' >> .env.test
-          echo 'REDIS_ENV=false' >> .env.test
-          echo 'LIMIT_READ_WINDOW_MS=1' >> .env.test
-          echo 'LIMIT_READ_MAX=999999' >> .env.test
-          echo 'LIMIT_WRITE_WINDOW_MS=1' >> .env.test
-          echo 'LIMIT_WRITE_MAX=99999' >> .env.test
-          
+      # ── Generación de Prisma (PRIMERO) ───────
+      - name: Generar cliente de Prisma
+        run: pnpm prisma generate
+
       # ── Validación de esquema Prisma ─────────
       - name: Validar esquema de Prisma
         run: pnpm prisma:validate
 
-      # ── Generación de Prisma ─────────────────
-      - name: Generar cliente de Prisma
-        run: pnpm prisma generate
+      # ── Type Check (sin emitir archivos) ─────
+      - name: TypeScript type check
+        run: pnpm typecheck
+
+      # Crear archivo .env.test dinámico (seguro contra expansión de caracteres)
+      - name: Crear archivo .env.test
+        run: |
+          cat << 'EOF' > .env.test
+          DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER || 'test_user' }}:${{ secrets.POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/${{ secrets.POSTGRES_DB || 'test_db' }}"
+          PORT=2300
+          NODE_ENV="test"
+          BASE_PATH="/api/v1"
+          JWT_SECRET="test-jwt-secret-min-32-characters-1234567890"
+          API_SECRET_KEY="test-api-key-16chars"
+          COOKIE_SECRET="test-cookie-secret-min-32-characters-123456789"
+          CORS_ORIGIN="http://localhost:5173"
+          REDIS_URL="redis://localhost:6379"
+          REDIS_PORT=6379
+          REDIS_ENV=false
+          LIMIT_READ_WINDOW_MS=1
+          LIMIT_READ_MAX=999999
+          LIMIT_WRITE_WINDOW_MS=1
+          LIMIT_WRITE_MAX=99999
+          EOF
+
+      # Esperar a que el puerto de Postgres acepte conexiones locales
+      - name: Esperar disponibilidad de PostgreSQL
+        run: |
+          until nc -z -v -w30 localhost 5432; do
+            echo "Esperando conexión al puerto 5432 de Postgres..."
+            sleep 1
+          done
 
       # ── Sincronizar Base de Datos de Pruebas ─
       - name: Sincronizar Base de Datos de Pruebas
         run: pnpm prisma db push
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
-      
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER || 'test_user' }}:${{ secrets.POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/${{ secrets.POSTGRES_DB || 'test_db' }}
+
       # ── Ejecutar pruebas unitarias ─────────────
       - name: Ejecutar pruebas unitarias
         run: pnpm test
         env:
           NODE_OPTIONS: --experimental-vm-modules
-
-      # ── Type Check (sin emitir archivos) ─────
-      - name: TypeScript type check
-        run: pnpm typecheck
 
       # ── Compilación TypeScript ───────────────
       - name: Compilar TypeScript
