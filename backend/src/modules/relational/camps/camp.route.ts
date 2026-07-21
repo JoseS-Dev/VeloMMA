@@ -74,6 +74,8 @@ import {Router} from 'express';
 import { CampController } from './camp.controller.js';
 import { CampService } from './camp.services.js';
 import { prisma } from '../../../utils/prisma/prisma.js';
+import { settings } from '../../../../config/settings.js';
+import { clearCacheMiddleware } from '../../../middlewares/cache/clear-cache.middleware.js';
 
 const router: Router = Router();
 const controller = new CampController(new CampService(prisma));
@@ -108,7 +110,7 @@ const controller = new CampController(new CampService(prisma));
  *                 data:
  *                   $ref: '#/components/schemas/Camp'
  */
-router.post('/', controller.create.bind(controller));
+router.post('/',clearCacheMiddleware(`${settings.basePath}/camps`), controller.create.bind(controller));
 
 /**
  * @openapi
@@ -243,7 +245,7 @@ router.get('/:campId', controller.findOne.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Camp'
  */
-router.patch('/:campId', controller.update.bind(controller));
+router.patch('/:campId', clearCacheMiddleware(`${settings.basePath}/camps`), controller.update.bind(controller));
 
 /**
  * @openapi
@@ -276,6 +278,6 @@ router.patch('/:campId', controller.update.bind(controller));
  *                 data:
  *                   $ref: '#/components/schemas/Camp'
  */
-router.patch('/soft/:campId', controller.delete.bind(controller));
+router.patch('/soft/:campId', clearCacheMiddleware(`${settings.basePath}/camps`), controller.delete.bind(controller));
 
 export const campRouter = router;

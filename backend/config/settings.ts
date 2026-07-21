@@ -1,4 +1,5 @@
 import { env } from './validation/env.js';
+import helmet from 'helmet';
 
 // Variables de entorno del servidor
 export const settings = {
@@ -24,3 +25,19 @@ export const settings = {
         message: 'Demasiadas peticiones de escritura, por favor espere un minuto y vuelva a intentarlo.',
     }
 } as const;
+
+// Configuraciones del Helmet
+export const helmetConfig = helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
+    dnsPrefetchControl: false,
+    frameguard: false,
+    hidePoweredBy: true,
+    hsts: false,
+    ieNoOpen: false,
+    noSniff: true,
+    referrerPolicy: false,
+    xssFilter: false,
+})

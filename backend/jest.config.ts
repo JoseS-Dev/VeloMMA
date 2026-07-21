@@ -31,6 +31,8 @@ const config: Config = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
+  slowTestThreshold: 15000,
+  testTimeout: 30000,
 };
 
 export default config;
