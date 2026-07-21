@@ -26,6 +26,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    # Todos los comandos se ejecutan dentro de ./backend
     defaults:
       run:
         working-directory: ./backend
@@ -34,39 +35,40 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      # ── Configuración de pnpm + Node ───────────────────
+      # ── pnpm + Node ──────────────────────────
       - name: Instalar pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9 # O la versión exacta que uses (evita secrets para esto)
+          version: ${{ secrets.PNPM_VERSION }}
 
-      - name: Configurar Node.js
+      - name: Configurar Node.js ${{ secrets.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Se recomienda Node LTS actual
-          cache: pnpm
+          node-version: ${{ secrets.NODE_VERSION }}
+          cache: pnpm                            # Cachea la pnpm store global
           cache-dependency-path: ./backend/pnpm-lock.yaml
 
-      # ── Instalación ───────────────────────────────────
+      # ── Instalación ──────────────────────────
       - name: Instalar dependencias (frozen lockfile)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile     # Falla si lockfile está desactualizado
 
-      # ── Generación de código ──────────────────────────
+      # ── Generación de Prisma (PRIMERO) ───────
       - name: Generar cliente de Prisma
         run: pnpm prisma generate
 
+      # ── Validación de esquema Prisma ─────────
       - name: Validar esquema de Prisma
         run: pnpm prisma:validate
 
-      # ── Fast Fail Check (Validaciones rápidas) ─────────
+      # ── Type Check (sin emitir archivos) ─────
       - name: TypeScript type check
         run: pnpm typecheck
 
-      # ── Preparar Entorno ──────────────────────────────
+      # Crear archivo .env.test dinámico (seguro contra expansión de caracteres)
       - name: Crear archivo .env.test
         run: |
           cat << 'EOF' > .env.test
-          DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER || 'test_user' }}:${{ secrets.POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/${{ secrets.POSTGRES_DB || 'test_db' }}?schema=public"
+          DATABASE_URL="postgresql://${{ secrets.POSTGRES_USER || 'test_user' }}:${{ secrets.POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/${{ secrets.POSTGRES_DB || 'test_db' }}"
           PORT=2300
           NODE_ENV="test"
           BASE_PATH="/api/v1"
@@ -83,7 +85,7 @@ jobs:
           LIMIT_WRITE_MAX=99999
           EOF
 
-      # Esperar brevemente a que el puerto del host acepte conexiones de Postgres
+      # Esperar a que el puerto de Postgres acepte conexiones locales
       - name: Esperar disponibilidad de PostgreSQL
         run: |
           until nc -z -v -w30 localhost 5432; do
@@ -91,19 +93,19 @@ jobs:
             sleep 1
           done
 
-      # ── Sincronización e Integración ──────────────────
+      # ── Sincronizar Base de Datos de Pruebas ─
       - name: Sincronizar Base de Datos de Pruebas
         run: pnpm prisma db push
         env:
           NODE_ENV: test
-          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER || 'test_user' }}:${{ secrets.POSTGRES_PASSWORD || 'test_password' }}@localhost:5432/${{ secrets.POSTGRES_DB || 'test_db' }}
 
-      # ── Ejecución de Tests ────────────────────────────
+      # ── Ejecutar pruebas unitarias ─────────────
       - name: Ejecutar pruebas unitarias
         run: pnpm test
         env:
           NODE_OPTIONS: --experimental-vm-modules
 
-      # ── Compilación Final ─────────────────────────────
+      # ── Compilación TypeScript ───────────────
       - name: Compilar TypeScript
         run: pnpm build
