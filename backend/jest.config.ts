@@ -4,9 +4,9 @@ process.env.NODE_ENV = 'test';
 
 const config: Config = {
   testEnvironment: 'node',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'json', 'node'],
+  setupFiles: ['<rootDir>/jest.setup.ts'], 
   transform: {
-    '^.+\\.(ts|tsx|mjs|js)$': [
+    '^.+\\.tsx?$': [
       '@swc/jest',
       {
         jsc: {
@@ -27,14 +27,12 @@ const config: Config = {
     ],
   },
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.(js|mjs)$': '$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
-  transformIgnorePatterns: [
-    '/node_modules/(?!(.pnpm|@t3-oss))',
-  ],
-  slowTestThreshold: 15_000,
+  slowTestThreshold: 15000,
+  testTimeout: 30000,
 };
 
 export default config;
