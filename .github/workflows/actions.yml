@@ -94,6 +94,9 @@ jobs:
       # ── Sincronización e Integración ──────────────────
       - name: Sincronizar Base de Datos de Pruebas
         run: pnpm prisma db push
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
 
       # ── Ejecución de Tests ────────────────────────────
       - name: Ejecutar pruebas unitarias
