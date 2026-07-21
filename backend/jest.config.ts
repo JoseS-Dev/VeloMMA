@@ -4,8 +4,9 @@ process.env.NODE_ENV = 'test';
 
 const config: Config = {
   testEnvironment: 'node',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'json', 'node'],
   transform: {
-    '^.+\\.tsx?$': [
+    '^.+\\.(ts|tsx|mjs|js)$': [
       '@swc/jest',
       {
         jsc: {
@@ -26,7 +27,7 @@ const config: Config = {
     ],
   },
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^(\\.{1,2}/.*)\\.(js|mjs)$': '$1',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
